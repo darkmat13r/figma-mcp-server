@@ -188,10 +188,11 @@ val appModule = module {
 
     // MCP Server (Singleton)
     // Uses official Kotlin SDK for MCP communication with Claude Code
+    // ✅ REFACTORED: Now uses FigmaToolRegistry instead of FigmaToolExecutor
     single {
         McpServer(
             logger = get(),
-            figmaToolExecutor = get()
+            toolRegistry = get()
         )
     }
 }

@@ -344,11 +344,8 @@ export async function createGroup(params: Record<string, any>): Promise<GroupNod
 export async function createSection(params: Record<string, any>): Promise<SectionNode> {
   const section = figma.createSection();
 
-  section.resize(
-    params[ParamNames.WIDTH] ?? Defaults.DEFAULT_WIDTH,
-    params[ParamNames.HEIGHT] ?? Defaults.DEFAULT_HEIGHT
-  );
-
+  // Note: SectionNode doesn't have resize method, dimensions are auto-calculated
+  // We can only set the name for sections
   if (params[ParamNames.NAME]) {
     section.name = params[ParamNames.NAME];
   }
