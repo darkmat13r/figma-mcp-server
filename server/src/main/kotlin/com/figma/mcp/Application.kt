@@ -3,7 +3,13 @@ package com.figma.mcp
 import com.figma.mcp.plugins.*
 import com.figma.mcp.transport.McpServer
 import io.ktor.server.application.*
+import io.ktor.server.cio.CIO
+import io.ktor.server.engine.embeddedServer
+import io.modelcontextprotocol.kotlin.sdk.server.mcp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
 
 /**
@@ -28,6 +34,8 @@ import org.koin.ktor.ext.inject
  */
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
+
+
 }
 
 /**
@@ -52,6 +60,9 @@ fun Application.module() {
     // Configure WebSocket support
     configureWebSockets()
 
+    // Configure Server-Sent Events (SSE) for MCP
+    configureSSE()
+
     // Configure JSON serialization
     configureSerialization()
 
@@ -61,28 +72,16 @@ fun Application.module() {
     // Configure request/response logging
     configureMonitoring()
 
-    // Configure routing (WebSocket + REST endpoints)
+    // Configure routing (WebSocket + MCP + REST endpoints)
     configureRouting()
 
-    // ========================================
-    // Start MCP Server with Official SDK
-    // ========================================
-    // The MCP server uses the official Kotlin SDK and communicates with
-    // Claude Code via stdin/stdout. This runs in parallel with the
-    // WebSocket transport for the Figma plugin.
-    val mcpServer: McpServer by inject()
 
-    // Start MCP server in a background coroutine
-    environment.monitor.subscribe(ApplicationStarted) {
-        launch {
-            log.info("Starting MCP server with official Kotlin SDK...")
-            mcpServer.start()
-        }
-    }
-
-    // Graceful shutdown
-    environment.monitor.subscribe(ApplicationStopped) {
-        log.info("Stopping MCP server...")
-        mcpServer.stop()
+    launch {
+        embeddedServer(CIO, host = "127.0.0.1", port = 1234) {
+            mcp {
+                val mcpServer by inject<McpServer>()
+                return@mcp mcpServer.getServer()
+            }
+        }.startSuspend(wait = true)
     }
 }

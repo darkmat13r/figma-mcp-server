@@ -76,6 +76,18 @@ export function useWebSocket() {
           }
           break;
 
+        case 'ws-response':
+          // Plugin sending response to a tool command
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            const response = {
+              id: message.requestId,
+              result: message.result,
+            };
+            wsRef.current.send(JSON.stringify(response));
+            addLog('sent', response);
+          }
+          break;
+
         case 'operation-complete':
           console.log('Operation complete:', message.message);
           addLog('info', message.message);
@@ -121,22 +133,38 @@ export function useWebSocket() {
 
       ws.onmessage = (event) => {
         try {
-          const response = JSON.parse(event.data) as MCPResponse;
-          setLastResponse(response);
+          const data = JSON.parse(event.data);
 
-          // Log received message
-          addLog('received', response);
-
-          // Forward response to plugin
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'mcp-response',
-                response,
+          // Check if this is a tool command (has 'method' field)
+          if (data.method) {
+            // This is a command from the server to execute in Figma
+            addLog('received', data);
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: 'ws-command',
+                  command: data,
+                },
               },
-            },
-            '*'
-          );
+              '*'
+            );
+          } else {
+            // This is a response
+            const response = data as MCPResponse;
+            setLastResponse(response);
+            addLog('received', response);
+
+            // Forward response to plugin
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: 'mcp-response',
+                  response,
+                },
+              },
+              '*'
+            );
+          }
         } catch (error) {
           console.error('Failed to parse WebSocket message:', error);
           const errorMsg = 'Failed to parse server response';

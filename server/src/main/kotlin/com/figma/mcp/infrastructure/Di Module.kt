@@ -4,6 +4,7 @@ import com.figma.mcp.commands.*
 import com.figma.mcp.commands.mcp.*
 import com.figma.mcp.core.CommandRegistry
 import com.figma.mcp.core.ILogger
+import com.figma.mcp.routes.McpRoutes
 import com.figma.mcp.routes.WebSocketRoutes
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.services.FigmaToolExecutor
@@ -96,6 +97,17 @@ val appModule = module {
     single {
         WebSocketRoutes(
             commandRegistry = get(),
+            logger = get(),
+            json = get(),
+            figmaConnectionManager = get()
+        )
+    }
+
+    // MCP Routes (Singleton)
+    // For HTTP/SSE communication with Claude Code
+    single {
+        McpRoutes(
+            mcpServer = get(),
             logger = get(),
             json = get()
         )

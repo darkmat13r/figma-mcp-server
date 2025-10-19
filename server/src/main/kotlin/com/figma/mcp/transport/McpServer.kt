@@ -200,24 +200,25 @@ class McpServer(
     }
 
     /**
-     * Start the MCP server with stdio transport
+     * Get the MCP Server instance for HTTP/SSE transport
+     * This allows the Ktor routing to handle MCP requests via SSE
+     */
+    fun getServer(): Server {
+        return server
+    }
+
+    /**
+     * Start the MCP server with stdio transport (for direct CLI usage)
+     * Not used when running as HTTP server - SSE transport is handled by routing
      */
     suspend fun start() {
         try {
-            logger.info("Starting MCP server with stdio transport...")
-
-            // Create stdio transport with kotlinx.io Source and Sink
-            val transport = StdioServerTransport(
-                inputStream = System.`in`.asSource().buffered(),
-                outputStream = System.out.asSink().buffered()
-            )
-
-            // Connect the server to the transport
-            server.connect(transport)
-
-            logger.info("MCP server started successfully on stdio")
+            logger.info("MCP server initialized and ready for SSE transport")
+            logger.info("Server will accept connections via HTTP/SSE endpoints")
+            // When using SSE transport, the connection is handled by Ktor routing
+            // No need to start stdio transport
         } catch (e: Exception) {
-            logger.error("Failed to start MCP server", e)
+            logger.error("Failed to initialize MCP server", e)
             throw e
         }
     }

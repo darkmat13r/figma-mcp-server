@@ -19,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap
 class WebSocketRoutes(
     private val commandRegistry: CommandRegistry,
     private val logger: ILogger,
-    private val json: Json
+    private val json: Json,
+    private val figmaConnectionManager: com.figma.mcp.services.FigmaConnectionManager
 ) {
     // Store active WebSocket sessions
     private val sessions = ConcurrentHashMap<String, DefaultWebSocketServerSession>()
@@ -28,6 +29,9 @@ class WebSocketRoutes(
         webSocket("/") {
             val clientId = UUID.randomUUID().toString()
             sessions[clientId] = this
+
+            // Register with FigmaConnectionManager so tools can send commands to this plugin
+            figmaConnectionManager.registerConnection(clientId, this)
 
             logger.info("Client connected", "clientId" to clientId, "totalClients" to sessions.size)
 
@@ -68,6 +72,8 @@ class WebSocketRoutes(
                 logger.error("WebSocket error", e, "clientId" to clientId)
             } finally {
                 sessions.remove(clientId)
+                // Unregister from FigmaConnectionManager
+                figmaConnectionManager.unregisterConnection(clientId)
                 logger.info("Client disconnected", "clientId" to clientId, "totalClients" to sessions.size)
             }
         }
@@ -77,7 +83,29 @@ class WebSocketRoutes(
         try {
             logger.debug("Received message", "clientId" to clientId, "message" to message)
 
-            // Parse the request
+            // Try to parse as JSON first
+            val jsonElement = try {
+                json.parseToJsonElement(message)
+            } catch (e: Exception) {
+                sendErrorResponse(clientId, "", ErrorCode.PARSE_ERROR, "Invalid JSON: ${e.message}")
+                return
+            }
+
+            // Check if this is a response to a tool command (has 'id' and 'result')
+            if (jsonElement is kotlinx.serialization.json.JsonObject) {
+                val idElement = jsonElement["id"]
+                if (idElement is kotlinx.serialization.json.JsonPrimitive && idElement.isString) {
+                    val id = idElement.content
+                    if (id.startsWith("req_")) {
+                        // This is a response to a tool command from FigmaConnectionManager
+                        logger.debug("Received tool response", "requestId" to id)
+                        figmaConnectionManager.handleResponse(id, jsonElement["result"])
+                        return
+                    }
+                }
+            }
+
+            // Parse as regular MCP request
             val request = try {
                 json.decodeFromString<MCPRequest>(message)
             } catch (e: Exception) {

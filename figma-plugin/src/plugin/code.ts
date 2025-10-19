@@ -127,13 +127,25 @@ async function createTextStyles(styles: TextStyleToken[]): Promise<void> {
 }
 
 // Create nodes based on type
-function createNode(nodeType: string, properties: Record<string, any>): void {
+async function createNode(
+  nodeType: string,
+  properties: Record<string, any>,
+  requestId?: string
+): Promise<void> {
   try {
     let node: SceneNode | null = null;
 
     switch (nodeType.toUpperCase()) {
       case 'RECTANGLE':
         node = figma.createRectangle();
+        if (properties.width) node.resize(properties.width, node.height);
+        if (properties.height) node.resize(node.width, properties.height);
+        if (properties.x !== undefined) node.x = properties.x;
+        if (properties.y !== undefined) node.y = properties.y;
+        if (properties.fillColor) {
+          const rgb = hexToRgb(properties.fillColor);
+          (node as GeometryMixin).fills = [{ type: 'SOLID', color: rgb }];
+        }
         break;
       case 'ELLIPSE':
         node = figma.createEllipse();
@@ -143,6 +155,14 @@ function createNode(nodeType: string, properties: Record<string, any>): void {
         break;
       case 'TEXT':
         node = figma.createText();
+        // Load default font for text nodes
+        await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
+        if (properties.text) (node as TextNode).characters = properties.text;
+        if (properties.fontSize) (node as TextNode).fontSize = properties.fontSize;
+        if (properties.color) {
+          const rgb = hexToRgb(properties.color);
+          (node as TextNode).fills = [{ type: 'SOLID', color: rgb }];
+        }
         break;
       case 'LINE':
         node = figma.createLine();
@@ -152,19 +172,20 @@ function createNode(nodeType: string, properties: Record<string, any>): void {
     }
 
     if (node) {
-      // Apply properties
+      // Apply any remaining properties
       Object.entries(properties).forEach(([key, value]) => {
-        if (key === 'fills' && Array.isArray(value)) {
-          (node as GeometryMixin).fills = value.map((fill: any) => {
-            if (fill.type === 'SOLID' && fill.color) {
-              return {
-                type: 'SOLID',
-                color: hexToRgb(fill.color),
-              };
-            }
-            return fill;
-          });
-        } else if (key in node) {
+        if (
+          key !== 'width' &&
+          key !== 'height' &&
+          key !== 'x' &&
+          key !== 'y' &&
+          key !== 'fillColor' &&
+          key !== 'text' &&
+          key !== 'fontSize' &&
+          key !== 'color' &&
+          key !== 'type' &&
+          key in node
+        ) {
           (node as any)[key] = value;
         }
       });
@@ -174,16 +195,33 @@ function createNode(nodeType: string, properties: Record<string, any>): void {
       figma.currentPage.selection = [node];
       figma.viewport.scrollAndZoomIntoView([node]);
 
-      sendMessage({
-        type: 'operation-complete',
-        message: `Created ${nodeType} node`,
-      });
+      // If this was from a tool command (has requestId), send response back via WebSocket
+      if (requestId) {
+        sendWSResponse(requestId, {
+          success: true,
+          nodeId: node.id,
+          message: `Created ${nodeType} node`,
+        });
+      } else {
+        sendMessage({
+          type: 'operation-complete',
+          message: `Created ${nodeType} node`,
+        });
+      }
     }
   } catch (error) {
-    sendMessage({
-      type: 'operation-error',
-      error: error instanceof Error ? error.message : String(error),
-    });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (requestId) {
+      sendWSResponse(requestId, {
+        success: false,
+        error: errorMessage,
+      });
+    } else {
+      sendMessage({
+        type: 'operation-error',
+        error: errorMessage,
+      });
+    }
   }
 }
 
@@ -209,6 +247,15 @@ function getSelectionInfo(): void {
 // Send message to UI
 function sendMessage(message: PluginMessage): void {
   figma.ui.postMessage(message);
+}
+
+// Send WebSocket response (via UI which has the WebSocket connection)
+function sendWSResponse(requestId: string, result: any): void {
+  sendMessage({
+    type: 'ws-response',
+    requestId: requestId,
+    result: result,
+  });
 }
 
 // Handle connection (actual WebSocket is in UI thread)
@@ -261,6 +308,11 @@ figma.ui.onmessage = async (msg: UIMessage) => {
       // Can process server responses here if needed
       break;
 
+    case 'ws-command':
+      // Handle tool execution commands from MCP server via WebSocket
+      await handleWSCommand(msg.command);
+      break;
+
     case 'create-color-styles':
       await createColorStyles(msg.colors);
       break;
@@ -270,7 +322,7 @@ figma.ui.onmessage = async (msg: UIMessage) => {
       break;
 
     case 'create-node':
-      createNode(msg.nodeType, msg.properties);
+      await createNode(msg.nodeType, msg.properties);
       break;
 
     case 'get-selection':
@@ -281,6 +333,70 @@ figma.ui.onmessage = async (msg: UIMessage) => {
       console.warn('Unknown message type:', (msg as any).type);
   }
 };
+
+// Handle WebSocket commands (tool execution from MCP server)
+async function handleWSCommand(command: any): Promise<void> {
+  try {
+    const { id, method, params } = command;
+
+    switch (method) {
+      case 'createNode':
+        await createNode(params.type, params, id);
+        break;
+
+      case 'getInfo':
+        if (params.type === 'selection') {
+          const selection = figma.currentPage.selection;
+          const selectionInfo = selection.map((node) => ({
+            id: node.id,
+            name: node.name,
+            type: node.type,
+            x: 'x' in node ? node.x : 0,
+            y: 'y' in node ? node.y : 0,
+            width: 'width' in node ? node.width : 0,
+            height: 'height' in node ? node.height : 0,
+          }));
+          sendWSResponse(id, selectionInfo);
+        } else if (params.nodeId) {
+          const node = figma.getNodeById(params.nodeId);
+          if (node) {
+            const nodeInfo = {
+              id: node.id,
+              name: node.name,
+              type: node.type,
+              x: 'x' in node ? node.x : 0,
+              y: 'y' in node ? node.y : 0,
+              width: 'width' in node ? node.width : 0,
+              height: 'height' in node ? node.height : 0,
+            };
+            sendWSResponse(id, nodeInfo);
+          } else {
+            sendWSResponse(id, { error: 'Node not found' });
+          }
+        }
+        break;
+
+      case 'setProperties':
+        const node = figma.getNodeById(params.nodeId);
+        if (node) {
+          Object.entries(params.properties).forEach(([key, value]) => {
+            if (key in node) {
+              (node as any)[key] = value;
+            }
+          });
+          sendWSResponse(id, { success: true });
+        } else {
+          sendWSResponse(id, { error: 'Node not found' });
+        }
+        break;
+
+      default:
+        sendWSResponse(id, { error: `Unknown method: ${method}` });
+    }
+  } catch (error) {
+    console.error('Error handling WS command:', error);
+  }
+}
 
 // Listen for selection changes
 figma.on('selectionchange', () => {
