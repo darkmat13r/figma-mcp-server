@@ -1,15 +1,41 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ConnectionState, MCPRequest, MCPResponse } from '../types';
 
+export interface ConsoleLog {
+  id: number;
+  timestamp: Date;
+  type: 'sent' | 'received' | 'error' | 'info';
+  data: any;
+}
+
 export function useWebSocket() {
   const [connectionState, setConnectionState] = useState<ConnectionState>(
     ConnectionState.DISCONNECTED
   );
   const [lastResponse, setLastResponse] = useState<MCPResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [logs, setLogs] = useState<ConsoleLog[]>([]);
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const logIdCounter = useRef(0);
+
+  const addLog = useCallback((type: ConsoleLog['type'], data: any) => {
+    setLogs((prev) => [
+      ...prev,
+      {
+        id: logIdCounter.current++,
+        timestamp: new Date(),
+        type,
+        data,
+      },
+    ]);
+  }, []);
+
+  const clearLogs = useCallback(() => {
+    setLogs([]);
+    logIdCounter.current = 0;
+  }, []);
 
   // Clean up WebSocket on unmount
   useEffect(() => {
@@ -34,12 +60,15 @@ export function useWebSocket() {
           // Plugin wants to send a request via WebSocket
           if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify(message.request));
+            addLog('sent', message.request);
           } else {
+            const errorMsg = 'WebSocket not connected';
+            addLog('error', errorMsg);
             parent.postMessage(
               {
                 pluginMessage: {
                   type: 'ws-error',
-                  error: 'WebSocket not connected',
+                  error: errorMsg,
                 },
               },
               '*'
@@ -49,17 +78,19 @@ export function useWebSocket() {
 
         case 'operation-complete':
           console.log('Operation complete:', message.message);
+          addLog('info', message.message);
           break;
 
         case 'operation-error':
           setError(message.error);
+          addLog('error', message.error);
           break;
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [addLog]);
 
   const connect = useCallback((url: string) => {
     setConnectionState(ConnectionState.CONNECTING);
@@ -84,6 +115,7 @@ export function useWebSocket() {
           '*'
         );
 
+        addLog('info', `Connected to ${url}`);
         console.log('WebSocket connected to', url);
       };
 
@@ -91,6 +123,9 @@ export function useWebSocket() {
         try {
           const response = JSON.parse(event.data) as MCPResponse;
           setLastResponse(response);
+
+          // Log received message
+          addLog('received', response);
 
           // Forward response to plugin
           parent.postMessage(
@@ -104,20 +139,24 @@ export function useWebSocket() {
           );
         } catch (error) {
           console.error('Failed to parse WebSocket message:', error);
-          setError('Failed to parse server response');
+          const errorMsg = 'Failed to parse server response';
+          setError(errorMsg);
+          addLog('error', errorMsg);
         }
       };
 
       ws.onerror = (event) => {
         console.error('WebSocket error:', event);
         setConnectionState(ConnectionState.ERROR);
-        setError('WebSocket connection error');
+        const errorMsg = 'WebSocket connection error';
+        setError(errorMsg);
+        addLog('error', errorMsg);
 
         parent.postMessage(
           {
             pluginMessage: {
               type: 'ws-error',
-              error: 'WebSocket connection error',
+              error: errorMsg,
             },
           },
           '*'
@@ -129,11 +168,14 @@ export function useWebSocket() {
         setConnectionState(ConnectionState.DISCONNECTED);
         wsRef.current = null;
 
+        const disconnectMsg = event.reason || 'Connection closed';
+        addLog('info', `Disconnected: ${disconnectMsg}`);
+
         parent.postMessage(
           {
             pluginMessage: {
               type: 'ws-disconnected',
-              reason: event.reason || 'Connection closed',
+              reason: disconnectMsg,
             },
           },
           '*'
@@ -143,6 +185,7 @@ export function useWebSocket() {
         if (!event.wasClean && connectionState === ConnectionState.CONNECTED) {
           reconnectTimeoutRef.current = setTimeout(() => {
             console.log('Attempting to reconnect...');
+            addLog('info', 'Attempting to reconnect...');
             connect(url);
           }, 3000);
         }
@@ -151,6 +194,7 @@ export function useWebSocket() {
       setConnectionState(ConnectionState.ERROR);
       const errorMessage = error instanceof Error ? error.message : 'Failed to connect';
       setError(errorMessage);
+      addLog('error', errorMessage);
 
       parent.postMessage(
         {
@@ -162,7 +206,7 @@ export function useWebSocket() {
         '*'
       );
     }
-  }, [connectionState]);
+  }, [connectionState, addLog]);
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {
@@ -188,25 +232,31 @@ export function useWebSocket() {
 
   const sendRequest = useCallback((request: MCPRequest) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      setError('Not connected to WebSocket server');
+      const errorMsg = 'Not connected to WebSocket server';
+      setError(errorMsg);
+      addLog('error', errorMsg);
       return;
     }
 
     try {
       wsRef.current.send(JSON.stringify(request));
+      addLog('sent', request);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send request';
       setError(errorMessage);
+      addLog('error', errorMessage);
       console.error('Failed to send WebSocket message:', error);
     }
-  }, []);
+  }, [addLog]);
 
   return {
     connectionState,
     lastResponse,
     error,
+    logs,
     connect,
     disconnect,
     sendRequest,
+    clearLogs,
   };
 }

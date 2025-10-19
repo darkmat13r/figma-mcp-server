@@ -5,7 +5,7 @@
       "command": "java",
       "args": [
         "-jar",
-        "/path/to/figma-mcp-server/build/libs/figma-mcp-server-all.jar"
+        "/Volumes/ExtStorage/Projects/FigmaMcp/server/build/libs/server-all.jar"
       ],
       "env": {
         "LOG_LEVEL": "info"

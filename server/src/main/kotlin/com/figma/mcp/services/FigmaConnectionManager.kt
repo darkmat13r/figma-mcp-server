@@ -2,6 +2,7 @@ package com.figma.mcp.services
 
 import com.figma.mcp.core.ILogger
 import io.ktor.websocket.*
+import io.ktor.server.websocket.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.*

@@ -17,6 +17,13 @@ You strictly adhere to:
 - Interface Segregation: Components receive only the props they need
 - Dependency Inversion: Depend on abstractions (interfaces/types) not concrete implementations
 
+**Icon Usage Policy:**
+- **CRITICAL: NEVER use emojis in component code or UI**
+- **ALWAYS use icon library components** (lucide-react or the configured icon library)
+- **Use centralized icon abstraction** from `@/design-system/icons` or project-specific icon mapping
+- Emojis are not accessible, not themeable, and render inconsistently across platforms
+- Icons provide better control over size, color, and styling
+
 **DRY & Centralization:**
 - **CRITICAL: ALWAYS use semantic Tailwind theme colors** - NEVER hardcode RGB values or use default Tailwind colors
 - **Use semantic color classes**: `bg-primary`, `text-error`, `border-input` (defined in `tailwind.config.js`)
@@ -297,7 +304,8 @@ Before considering code complete, verify:
 - ✅ **Component Index updated** - New component documented if created
 - ✅ No hardcoded colors, spacing, or magic numbers
 - ✅ All repeated UI patterns extracted to reusable components
-- ✅ Icons use centralized abstraction layer
+- ✅ Icons use centralized abstraction layer (NEVER emojis)
+- ✅ No emojis in component code or UI - use icon library instead
 - ✅ Strings and messages in constants files
 - ✅ All tests pass and provide meaningful coverage
 - ✅ No console warnings or errors
@@ -483,6 +491,23 @@ import { commonStyles } from '@/styles/utils';
 <button className="bg-primary text-primary-foreground hover:opacity-90">
   Consistent
 </button>
+```
+
+❌ **NEVER use emojis in UI:**
+```typescript
+// BAD - Emojis are not accessible, not themeable, render inconsistently
+<button>✓ Submit</button>
+<div>⚠️ Warning message</div>
+<span>🔍 Search</span>
+```
+
+✅ **ALWAYS use icon library components:**
+```typescript
+// GOOD - Icons are accessible, themeable, and consistent
+import { Icons } from '@/design-system/icons';
+<button><Icons.check className="mr-2" />Submit</button>
+<div><Icons.alertTriangle className="mr-2" />Warning message</div>
+<span><Icons.search className="mr-2" />Search</span>
 ```
 
 ❌ Inline icon imports:

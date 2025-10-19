@@ -414,8 +414,9 @@ Set `LOG_LEVEL=debug` in the MCP config:
 ```
 server/
 ├── src/main/kotlin/com/figma/mcp/
+│   ├── Application.kt                  # Main entry point (dual-mode: HTTP + stdio)
 │   ├── protocol/
-│   │   └── MCPTypes.kt           # MCP protocol type definitions
+│   │   └── MCPTypes.kt                 # MCP protocol type definitions
 │   ├── commands/
 │   │   └── mcp/
 │   │       ├── InitializeCommand.kt    # Handle initialize
@@ -426,11 +427,10 @@ server/
 │   │   └── FigmaConnectionManager.kt   # Manage plugin connections
 │   ├── transport/
 │   │   └── StdioTransport.kt           # stdio communication
-│   ├── infrastructure/
-│   │   └── Di Module.kt                # Dependency injection
-│   └── MCPStdioServer.kt               # Main entry point
+│   └── infrastructure/
+│       └── Di Module.kt                # Dependency injection
 ├── build.gradle.kts
-└── MCP_IMPLEMENTATION.md         # This file
+└── MCP_IMPLEMENTATION.md               # This file
 ```
 
 ---

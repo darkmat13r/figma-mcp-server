@@ -1,7 +1,7 @@
 package com.figma.mcp
 
 import com.figma.mcp.plugins.*
-import com.figma.mcp.transport.StdioTransport
+import com.figma.mcp.transport.McpServer
 import io.ktor.server.application.*
 import kotlinx.coroutines.launch
 import org.koin.ktor.ext.inject
@@ -65,24 +65,24 @@ fun Application.module() {
     configureRouting()
 
     // ========================================
-    // Start Stdio Transport for Claude Code
+    // Start MCP Server with Official SDK
     // ========================================
-    // The stdio transport allows Claude Code to communicate with this server
-    // via stdin/stdout using the MCP protocol. This runs in parallel with
-    // the WebSocket transport for the Figma plugin.
-    val stdioTransport: StdioTransport by inject()
+    // The MCP server uses the official Kotlin SDK and communicates with
+    // Claude Code via stdin/stdout. This runs in parallel with the
+    // WebSocket transport for the Figma plugin.
+    val mcpServer: McpServer by inject()
 
-    // Start stdio transport in a background coroutine
+    // Start MCP server in a background coroutine
     environment.monitor.subscribe(ApplicationStarted) {
         launch {
-            log.info("Starting MCP stdio transport for Claude Code integration...")
-            stdioTransport.start()
+            log.info("Starting MCP server with official Kotlin SDK...")
+            mcpServer.start()
         }
     }
 
     // Graceful shutdown
     environment.monitor.subscribe(ApplicationStopped) {
-        log.info("Stopping MCP stdio transport...")
-        stdioTransport.stop()
+        log.info("Stopping MCP server...")
+        mcpServer.stop()
     }
 }

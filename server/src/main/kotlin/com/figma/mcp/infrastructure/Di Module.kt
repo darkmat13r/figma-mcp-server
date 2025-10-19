@@ -7,7 +7,7 @@ import com.figma.mcp.core.ILogger
 import com.figma.mcp.routes.WebSocketRoutes
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.services.FigmaToolExecutor
-import com.figma.mcp.transport.StdioTransport
+import com.figma.mcp.transport.McpServer
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
@@ -101,13 +101,12 @@ val appModule = module {
         )
     }
 
-    // Stdio Transport (Singleton)
-    // For stdio communication with Claude Code
+    // MCP Server (Singleton)
+    // Uses official Kotlin SDK for MCP communication with Claude Code
     single {
-        StdioTransport(
-            commandRegistry = get(),
+        McpServer(
             logger = get(),
-            json = get()
+            figmaToolExecutor = get()
         )
     }
 }

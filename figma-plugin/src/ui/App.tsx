@@ -1,18 +1,15 @@
 import React from 'react';
 import { useWebSocket } from './hooks/useWebSocket';
-import { useSelection } from './hooks/useSelection';
 import { ConnectionPanel } from './components/ConnectionPanel';
-import { DesignSystemPanel } from './components/DesignSystemPanel';
-import { SelectionPanel } from './components/SelectionPanel';
-import { ConnectionState } from './types';
+import { ConsolePanel } from './components/ConsolePanel';
+import { TestPanel } from './components/TestPanel';
 
 export const App: React.FC = () => {
   console.log('App component rendering...');
 
   let content;
   try {
-    const { connectionState, error, connect, disconnect } = useWebSocket();
-    const selection = useSelection();
+    const { connectionState, error, logs, connect, disconnect, clearLogs, sendRequest } = useWebSocket();
 
     console.log('Hooks initialized successfully');
 
@@ -36,13 +33,14 @@ export const App: React.FC = () => {
           onDisconnect={disconnect}
         />
 
-        {/* Main Content */}
-        <DesignSystemPanel
-          connected={connectionState === ConnectionState.CONNECTED}
+        {/* Test Panel */}
+        <TestPanel
+          connectionState={connectionState}
+          onSendMessage={sendRequest}
         />
 
-        {/* Selection Info */}
-        <SelectionPanel selection={selection} />
+        {/* Console Panel */}
+        <ConsolePanel logs={logs} onClear={clearLogs} />
       </div>
     );
   } catch (err) {

@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.server.config.yaml)
     implementation("io.ktor:ktor-server-cors:3.3.0")
+    implementation("com.squareup.okio:okio:3.12.0")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }
