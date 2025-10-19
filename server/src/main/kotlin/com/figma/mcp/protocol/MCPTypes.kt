@@ -335,26 +335,7 @@ object JSONSchema {
 
             put("properties", kotlinx.serialization.json.buildJsonObject {
                 properties.forEach { (key, value) ->
-                    put(key, kotlinx.serialization.json.buildJsonObject {
-                        value.forEach { (k, v) ->
-                            put(k, when (v) {
-                                is String -> kotlinx.serialization.json.JsonPrimitive(v)
-                                is Number -> kotlinx.serialization.json.JsonPrimitive(v)
-                                is Boolean -> kotlinx.serialization.json.JsonPrimitive(v)
-                                is List<*> -> kotlinx.serialization.json.buildJsonArray {
-                                    (v as List<*>).forEach { item ->
-                                        when (item) {
-                                            is String -> add(kotlinx.serialization.json.JsonPrimitive(item))
-                                            is Number -> add(kotlinx.serialization.json.JsonPrimitive(item))
-                                            is Boolean -> add(kotlinx.serialization.json.JsonPrimitive(item))
-                                            else -> add(kotlinx.serialization.json.JsonPrimitive(item.toString()))
-                                        }
-                                    }
-                                }
-                                else -> kotlinx.serialization.json.JsonPrimitive(v.toString())
-                            })
-                        }
-                    })
+                    put(key, buildPropertySchema(value))
                 }
             })
 
@@ -363,6 +344,40 @@ object JSONSchema {
                     required.forEach { add(kotlinx.serialization.json.JsonPrimitive(it)) }
                 })
             }
+        }
+    }
+
+    /**
+     * Build a property schema from a map, handling nested objects recursively
+     */
+    private fun buildPropertySchema(propertyDef: Map<String, Any>): kotlinx.serialization.json.JsonObject {
+        return kotlinx.serialization.json.buildJsonObject {
+            propertyDef.forEach { (key, value) ->
+                put(key, convertValue(value))
+            }
+        }
+    }
+
+    /**
+     * Convert a value to JsonElement, handling nested structures
+     */
+    private fun convertValue(value: Any): kotlinx.serialization.json.JsonElement {
+        return when (value) {
+            is String -> kotlinx.serialization.json.JsonPrimitive(value)
+            is Number -> kotlinx.serialization.json.JsonPrimitive(value)
+            is Boolean -> kotlinx.serialization.json.JsonPrimitive(value)
+            is List<*> -> kotlinx.serialization.json.buildJsonArray {
+                value.forEach { item ->
+                    add(convertValue(item ?: "null"))
+                }
+            }
+            is Map<*, *> -> kotlinx.serialization.json.buildJsonObject {
+                @Suppress("UNCHECKED_CAST")
+                (value as Map<String, Any>).forEach { (k, v) ->
+                    put(k, convertValue(v))
+                }
+            }
+            else -> kotlinx.serialization.json.JsonPrimitive(value.toString())
         }
     }
 }

@@ -161,12 +161,15 @@ class McpServer(
         }
 
         tools.forEach { toolDefinition ->
-            // Convert our Tool definition to SDK's Tool.Input format
+            // Pass the complete input schema directly to the SDK
+            // The schema already includes type, properties, and required fields
             val inputSchema = Tool.Input(
                 properties = toolDefinition.inputSchema["properties"] as? kotlinx.serialization.json.JsonObject
                     ?: kotlinx.serialization.json.buildJsonObject { },
                 required = (toolDefinition.inputSchema["required"] as? kotlinx.serialization.json.JsonArray)
-                    ?.map { it.toString().removeSurrounding("\"") }
+                    ?.map { element ->
+                        element.toString().removeSurrounding("\"")
+                    }
                     ?: emptyList()
             )
 
