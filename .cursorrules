@@ -1,0 +1,52 @@
+# FigmaMcp Project Instructions
+
+## Code Documentation Policy
+
+**Do NOT document implementation steps or progress**. Only maintain API catalogs.
+
+### What to Document
+- Class definitions and their purposes in `docs/api/`
+- Public API endpoints and methods
+- Data structures and interfaces
+- Configuration options
+
+### What NOT to Document
+- ❌ Step-by-step implementation progress
+- ❌ "First I will...", "Next I will..." narratives
+- ❌ Detailed change logs in code comments
+- ❌ Implementation reasoning in files
+
+### Documentation Structure
+
+```
+docs/
+  api/
+    server/          # Server-side API catalog
+    plugin/          # Plugin API catalog
+    mcp/             # MCP protocol interfaces
+```
+
+### Example Documentation Format
+
+```markdown
+# ClassName
+
+**Purpose**: Brief description
+**Location**: `path/to/file.kt`
+
+## Public API
+- `method(params): ReturnType` - Brief description
+
+## Properties
+- `propertyName: Type` - Brief description
+```
+
+## Code Style
+- Follow SOLID principles
+- Use dependency injection (Koin)
+- Write clean, self-documenting code
+- Keep functions focused and small
+
+## Testing
+- Skip tests during rapid development: `./gradlew build -x test`
+- Run tests before commits: `./gradlew test`

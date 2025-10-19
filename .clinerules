@@ -1,0 +1,32 @@
+# FigmaMcp Project Rules for AI Agents
+
+## Documentation Policy: API Catalog Only
+
+**IMPORTANT**: Do not add step-by-step documentation or progress comments to code files.
+
+### Rules
+1. **No step documentation** - Don't write "// Step 1: Initialize...", "// Next we...", etc.
+2. **No progress narratives** - Don't explain what you're doing in comments
+3. **API catalog only** - Maintain class/API reference in `docs/api/` folder
+4. **Self-documenting code** - Write clear code that explains itself
+
+### When Making Changes
+- Update API catalog in `docs/api/` if public interfaces change
+- Don't add implementation comments unless absolutely necessary
+- Keep existing documentation style consistent
+
+### Documentation Location
+- **Server API**: `docs/api/server/`
+- **Plugin API**: `docs/api/plugin/`
+- **MCP Protocol**: `docs/api/mcp/`
+
+### Code Comments
+Only add comments for:
+- Complex algorithms that need explanation
+- Non-obvious business logic
+- Public API documentation (KDoc/JSDoc)
+
+### Build Commands
+- Quick build: `./gradlew build -x test`
+- Full build: `./gradlew build`
+- Plugin build: `npm run build`
