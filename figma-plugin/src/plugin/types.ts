@@ -45,6 +45,7 @@ export type PluginMessage =
   | { type: 'ws-connected' }
   | { type: 'ws-disconnected'; reason?: string }
   | { type: 'ws-error'; error: string }
+  | { type: 'mcp-request'; request: MCPRequest }
   | { type: 'mcp-response'; response: MCPResponse }
   | { type: 'selection-changed'; selection: SelectionInfo[] }
   | { type: 'operation-complete'; message: string }
@@ -54,6 +55,7 @@ export type UIMessage =
   | { type: 'connect-ws'; url: string }
   | { type: 'disconnect-ws' }
   | { type: 'mcp-request'; request: MCPRequest }
+  | { type: 'mcp-response'; response: MCPResponse }
   | { type: 'create-color-styles'; colors: ColorToken[] }
   | { type: 'create-text-styles'; styles: TextStyleToken[] }
   | { type: 'create-node'; nodeType: string; properties: Record<string, any> }

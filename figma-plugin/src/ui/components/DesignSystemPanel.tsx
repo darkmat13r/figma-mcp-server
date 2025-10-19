@@ -1,27 +1,80 @@
+/**
+ * DesignSystemPanel Component
+ *
+ * Displays design system tools for creating color and typography styles.
+ * Uses design system components for consistent styling.
+ */
+
 import React from 'react';
 import { ColorToken, TextStyleToken } from '../types';
 import { Button } from '@/ui/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/ui/tabs';
+import { ScrollArea } from '@/ui/components/ui/scroll-area';
+import { Section } from '@/ui/components/composed/Section';
+import { ColorSwatch } from '@/ui/components/composed/ColorSwatch';
 
 interface DesignSystemPanelProps {
   connected: boolean;
 }
+
+// Sample color palette from design tokens
+const sampleColors = [
+  { name: 'Primary', hex: '#0EA5E9', description: 'Primary brand color' },
+  { name: 'Primary Hover', hex: '#0284C7', description: 'Primary hover state' },
+  { name: 'Primary Active', hex: '#0369A1', description: 'Primary active state' },
+  { name: 'Secondary', hex: '#A855F7', description: 'Secondary accent' },
+  { name: 'Neutral Light', hex: '#F9FAFB', description: 'Light background' },
+  { name: 'Neutral Dark', hex: '#111827', description: 'Dark text' },
+];
+
+// Sample typography styles
+const sampleTypographyStyles = [
+  {
+    name: 'mobile/h1',
+    fontSize: 32,
+    fontWeight: 700,
+    lineHeight: 1.25,
+    letterSpacing: -0.025,
+    fontFamily: 'Inter',
+  },
+  {
+    name: 'mobile/h2',
+    fontSize: 28,
+    fontWeight: 700,
+    lineHeight: 1.25,
+    letterSpacing: -0.025,
+    fontFamily: 'Inter',
+  },
+  {
+    name: 'mobile/body',
+    fontSize: 16,
+    fontWeight: 400,
+    lineHeight: 1.5,
+    letterSpacing: 0,
+    fontFamily: 'Inter',
+  },
+  {
+    name: 'tablet/h1',
+    fontSize: 48,
+    fontWeight: 700,
+    lineHeight: 1.25,
+    letterSpacing: -0.025,
+    fontFamily: 'Inter',
+  },
+];
 
 export const DesignSystemPanel: React.FC<DesignSystemPanelProps> = ({
   connected,
 }) => {
 
   const handleCreateColorStyles = () => {
-    // Sample color tokens
-    const colors: ColorToken[] = [
-      { name: 'color/primary/500', hex: '#0EA5E9', description: 'Primary brand color' },
-      { name: 'color/primary/600', hex: '#0284C7', description: 'Primary hover' },
-      { name: 'color/primary/700', hex: '#0369A1', description: 'Primary active' },
-      { name: 'color/secondary/500', hex: '#A855F7', description: 'Secondary accent' },
-      { name: 'color/neutral/50', hex: '#F9FAFB', description: 'Light background' },
-      { name: 'color/neutral/900', hex: '#111827', description: 'Dark text' },
-    ];
+    // Convert sample colors to ColorToken format
+    const colors: ColorToken[] = sampleColors.map(color => ({
+      name: `color/${color.name.toLowerCase().replace(/\s+/g, '-')}`,
+      hex: color.hex,
+      description: color.description,
+    }));
 
     parent.postMessage(
       {
@@ -35,41 +88,7 @@ export const DesignSystemPanel: React.FC<DesignSystemPanelProps> = ({
   };
 
   const handleCreateTextStyles = () => {
-    // Sample text style tokens
-    const styles: TextStyleToken[] = [
-      {
-        name: 'mobile/h1',
-        fontSize: 32,
-        fontWeight: 700,
-        lineHeight: 1.25,
-        letterSpacing: -0.025,
-        fontFamily: 'Inter',
-      },
-      {
-        name: 'mobile/h2',
-        fontSize: 28,
-        fontWeight: 700,
-        lineHeight: 1.25,
-        letterSpacing: -0.025,
-        fontFamily: 'Inter',
-      },
-      {
-        name: 'mobile/body',
-        fontSize: 16,
-        fontWeight: 400,
-        lineHeight: 1.5,
-        letterSpacing: 0,
-        fontFamily: 'Inter',
-      },
-      {
-        name: 'tablet/h1',
-        fontSize: 48,
-        fontWeight: 700,
-        lineHeight: 1.25,
-        letterSpacing: -0.025,
-        fontFamily: 'Inter',
-      },
-    ];
+    const styles: TextStyleToken[] = sampleTypographyStyles;
 
     parent.postMessage(
       {
@@ -83,71 +102,94 @@ export const DesignSystemPanel: React.FC<DesignSystemPanelProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-figma-text">Design System</h2>
+    <ScrollArea className="flex-1">
+      <div className="p-4">
+        <Section
+          title="Design System"
+          description="Create and manage design tokens for your Figma project"
+        >
+          <Tabs defaultValue="colors" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="colors">Colors</TabsTrigger>
+              <TabsTrigger value="typography">Typography</TabsTrigger>
+            </TabsList>
 
-        <Tabs defaultValue="colors" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="colors">Colors</TabsTrigger>
-            <TabsTrigger value="typography">Typography</TabsTrigger>
-          </TabsList>
+            <TabsContent value="colors" className="space-y-4 mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Color Palette</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Generate color styles from the predefined palette below.
+                  </p>
 
-          <TabsContent value="colors" className="space-y-4">
-            <p className="text-sm text-figma-text-secondary">
-              Create color styles for your design system. This will generate a set
-              of predefined color tokens.
-            </p>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Sample Colors</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="h-8 w-8 rounded border border-gray-600" style={{ backgroundColor: '#0EA5E9' }} />
-                    <span className="text-xs text-figma-text-secondary">Primary</span>
+                  <div className="grid grid-cols-3 gap-4">
+                    {sampleColors.map((color) => (
+                      <ColorSwatch
+                        key={color.hex}
+                        color={color.hex}
+                        name={color.name}
+                        size="sm"
+                        showHex={false}
+                      />
+                    ))}
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="h-8 w-8 rounded border border-gray-600" style={{ backgroundColor: '#A855F7' }} />
-                    <span className="text-xs text-figma-text-secondary">Secondary</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="h-8 w-8 rounded border border-gray-600" style={{ backgroundColor: '#111827' }} />
-                    <span className="text-xs text-figma-text-secondary">Neutral</span>
-                  </div>
-                </div>
-                <Button onClick={handleCreateColorStyles} className="w-full" size="sm">
-                  Create Color Styles
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          <TabsContent value="typography" className="space-y-4">
-            <p className="text-sm text-figma-text-secondary">
-              Create text styles for mobile and tablet responsive designs.
-            </p>
+                  <Button
+                    onClick={handleCreateColorStyles}
+                    className="w-full"
+                    size="sm"
+                  >
+                    Create Color Styles
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Sample Text Styles</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2 text-figma-text">
-                  <div className="text-2xl font-bold">Heading 1</div>
-                  <div className="text-xl font-bold">Heading 2</div>
-                  <div className="text-base">Body Text</div>
-                </div>
-                <Button onClick={handleCreateTextStyles} className="w-full" size="sm">
-                  Create Text Styles
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="typography" className="space-y-4 mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Typography Styles</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Create responsive text styles for mobile and tablet designs.
+                  </p>
+
+                  <div className="space-y-3 border border-border rounded-lg p-4 bg-muted/30">
+                    {sampleTypographyStyles.map((style) => (
+                      <div key={style.name} className="space-y-1">
+                        <div
+                          className="text-foreground"
+                          style={{
+                            fontSize: `${style.fontSize * 0.5}px`,
+                            fontWeight: style.fontWeight,
+                            lineHeight: style.lineHeight,
+                          }}
+                        >
+                          {style.name}
+                        </div>
+                        <div className="text-xs text-muted-foreground font-mono">
+                          {style.fontSize}px / {style.fontWeight}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    onClick={handleCreateTextStyles}
+                    className="w-full"
+                    size="sm"
+                  >
+                    Create Text Styles
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </Section>
       </div>
-    </div>
+    </ScrollArea>
   );
 };

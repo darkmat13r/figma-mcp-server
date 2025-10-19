@@ -64,6 +64,7 @@ module.exports = {
           border: '#3C3C3C',
           text: '#FFFFFF',
           'text-secondary': '#B3B3B3',
+          'text-tertiary': '#8C8C8C',
         }
       },
       borderRadius: {

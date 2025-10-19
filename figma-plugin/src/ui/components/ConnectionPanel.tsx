@@ -1,9 +1,17 @@
+/**
+ * ConnectionPanel Component
+ *
+ * Displays MCP server connection status and controls.
+ * Uses design system components for consistent styling.
+ */
+
 import React, { useState } from 'react';
 import { ConnectionState } from '../types';
 import { Button } from '@/ui/components/ui/button';
 import { Input } from '@/ui/components/ui/input';
 import { Alert, AlertDescription } from '@/ui/components/ui/alert';
-import { Badge } from '@/ui/components/ui/badge';
+import { Section } from '@/ui/components/composed/Section';
+import { StatusBadge, StatusType } from '@/ui/components/composed/StatusBadge';
 
 interface ConnectionPanelProps {
   connectionState: ConnectionState;
@@ -26,18 +34,20 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     }
   };
 
-  const getStatusBadgeVariant = () => {
+  const getStatusType = (): StatusType => {
     switch (connectionState) {
       case ConnectionState.CONNECTED:
-        return 'default';
+        return 'success';
+      case ConnectionState.CONNECTING:
+        return 'loading';
       case ConnectionState.ERROR:
-        return 'destructive';
+        return 'error';
       default:
-        return 'secondary';
+        return 'neutral';
     }
   };
 
-  const getStatusText = () => {
+  const getStatusLabel = (): string => {
     switch (connectionState) {
       case ConnectionState.CONNECTED:
         return 'Connected';
@@ -51,54 +61,58 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   };
 
   return (
-    <div className="border-b border-gray-700 bg-figma-bg-secondary p-4">
-      <div className="space-y-3">
-        {/* Status Indicator */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-figma-text">MCP Server</h2>
-          <Badge variant={getStatusBadgeVariant() as any}>
-            {getStatusText()}
-          </Badge>
-        </div>
-
-        {/* Server URL Input */}
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            value={serverUrl}
-            onChange={(e) => setServerUrl(e.target.value)}
-            placeholder="ws://localhost:8080/mcp"
-            disabled={connectionState === ConnectionState.CONNECTED}
-            className="flex-1"
+    <div className="border-b border-border bg-card p-4">
+      <Section
+        title="MCP Server"
+        action={
+          <StatusBadge
+            status={getStatusType()}
+            label={getStatusLabel()}
           />
-          {connectionState === ConnectionState.CONNECTED ? (
-            <Button
-              onClick={onDisconnect}
-              variant="destructive"
-              size="sm"
-            >
-              Disconnect
-            </Button>
-          ) : (
-            <Button
-              onClick={handleConnect}
-              disabled={connectionState === ConnectionState.CONNECTING}
-              size="sm"
-            >
-              Connect
-            </Button>
+        }
+        className="space-y-3"
+      >
+        <div className="space-y-3">
+          {/* Server URL Input */}
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <Input
+                type="text"
+                value={serverUrl}
+                onChange={(e) => setServerUrl(e.target.value)}
+                placeholder="ws://localhost:8080/mcp"
+                disabled={connectionState === ConnectionState.CONNECTED}
+              />
+            </div>
+            {connectionState === ConnectionState.CONNECTED ? (
+              <Button
+                onClick={onDisconnect}
+                variant="destructive"
+                size="sm"
+              >
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                onClick={handleConnect}
+                disabled={connectionState === ConnectionState.CONNECTING}
+                size="sm"
+              >
+                Connect
+              </Button>
+            )}
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription className="text-xs">
+                {error}
+              </AlertDescription>
+            </Alert>
           )}
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription className="text-xs">
-              {error}
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
+      </Section>
     </div>
   );
 };

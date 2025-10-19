@@ -17,13 +17,13 @@ export const App: React.FC = () => {
     console.log('Hooks initialized successfully');
 
     content = (
-      <div className="flex h-screen flex-col bg-figma-bg text-figma-text">
+      <div className="dark flex h-screen flex-col bg-background text-foreground">
         {/* Header */}
-        <div className="border-b border-gray-700 bg-figma-bg p-4">
-          <h1 className="text-xl font-bold text-figma-text">
+        <div className="border-b border-border bg-background p-4">
+          <h1 className="text-xl font-bold">
             Figma MCP Bridge
           </h1>
-          <p className="text-xs text-figma-text-secondary">
+          <p className="text-xs text-muted-foreground">
             Connect to MCP server and control Figma
           </p>
         </div>
