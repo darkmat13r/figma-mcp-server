@@ -44,7 +44,17 @@ You strictly adhere to:
 
 **For New Components:**
 1. Clarify requirements and acceptance criteria
-2. **ALWAYS check existing components first** - Review the component library before creating new components:
+2. **CRITICAL: Check Component Index FIRST** - ALWAYS read the Component Index to avoid duplicates:
+   - **READ**: `/src/ui/components/COMPONENT_INDEX.md` (or project-specific component index location)
+   - **Verify**: Check if a similar component already exists in the index
+   - **Review sections**:
+     - Base Components (shadcn/ui) - foundational UI elements
+     - Composed Components - higher-level reusable patterns
+     - Feature Panels - feature-specific components
+     - Design Tokens - colors, spacing, typography
+   - **Decision**: Only create new components if no suitable alternative exists in the index
+   - **Document new components**: Update the Component Index after creating a new component
+3. **Check existing component directories** as a secondary verification:
    - **Buttons**: `/src/components/buttons/` (Button, PrimaryButton, ButtonWithoutLink, FooterButton, etc.)
    - **Forms**: `/src/components/forms/` (FormField, Checkbox, Select, TextArea, FAQItem, FAQAccordion)
    - **Cards**: `/src/components/cards/` (TestimonialCard, ServicesCard, PricingCard, BenefitCard, BlogItem, etc.)
@@ -52,13 +62,18 @@ You strictly adhere to:
    - **Misc**: `/src/components/misc/` (Logo, TextItem, PricingToggle, ItemWithIcon, etc.)
    - **Registration-specific**: `/src/components/registration/` (CountryCodePicker, PhoneNumberInput, OTPInput, etc.)
    - **For common UI elements (buttons, inputs, checkboxes, selects), ALWAYS reuse existing components**
-   - Only create new base components if no suitable alternative exists
-3. Identify reusable patterns and check for existing components
-4. Design component API (props, state, behavior)
-5. Write test cases first using React Testing Library and Jest
-6. Implement component incrementally, making tests pass
-7. Refactor for clarity and performance
-8. Document usage with examples
+4. Identify reusable patterns and check for existing components
+5. Design component API (props, state, behavior)
+6. Write test cases first using React Testing Library and Jest
+7. Implement component incrementally, making tests pass
+8. Refactor for clarity and performance
+9. **Document the new component**: Add entry to COMPONENT_INDEX.md with:
+   - Component name and file location
+   - Purpose/description
+   - Props interface with TypeScript types
+   - Usage example
+   - Any dependencies or used sub-components
+10. Document usage with additional examples if needed
 
 **For Refactoring:**
 1. Analyze existing code for SOLID violations and hardcoded values
@@ -203,9 +218,83 @@ src/
 - Keep state as local as possible
 - Use appropriate state management (useState, useReducer, context, external libraries)
 
+## Component Index Management
+
+**MANDATORY: Track Every Component**
+
+The Component Index (`COMPONENT_INDEX.md`) is the single source of truth for all available components. You MUST follow this workflow:
+
+**Before Creating a Component:**
+1. **READ the Component Index** - Always start by reading `COMPONENT_INDEX.md`
+2. **Search for similar components** - Check all sections:
+   - Base Components (shadcn/ui components)
+   - Composed Components (custom reusable components)
+   - Feature Panels (feature-specific components)
+3. **Reuse if possible** - If a similar component exists, use or extend it
+4. **Justify new components** - Only create new components if:
+   - No existing component serves the purpose
+   - Extending existing component would violate Single Responsibility Principle
+   - The new component is sufficiently different to warrant separate implementation
+
+**After Creating a Component:**
+1. **UPDATE the Component Index immediately** - Add a new entry in the appropriate section
+2. **Include complete documentation**:
+   ```markdown
+   ### ComponentName
+
+   **File**: `path/to/Component.tsx`
+
+   **Purpose**: Brief description of what this component does
+
+   **Props**:
+   ```typescript
+   {
+     propName: PropType;
+     // ... all props with types
+   }
+   ```
+
+   **Example**:
+   ```tsx
+   <ComponentName prop="value" />
+   ```
+
+   **Used Components**: List any sub-components used
+   ```
+
+3. **Maintain organization** - Place the entry in the correct section:
+   - **Base Components**: For shadcn/ui or fundamental UI elements
+   - **Composed Components**: For reusable combinations of base components
+   - **Feature Panels**: For feature-specific, complex components
+
+**Index Section Guidelines:**
+
+- **Base Components**: Single-purpose, highly reusable UI primitives (Button, Input, Card, etc.)
+- **Composed Components**: Combinations of base components with specific patterns (FormField, StatusBadge, Section, etc.)
+- **Feature Panels**: Complex, feature-specific components (ConnectionPanel, SelectionPanel, etc.)
+- **Design Tokens**: Colors, spacing, typography constants
+
+**Anti-Pattern - Component Duplication:**
+❌ **NEVER create duplicate components:**
+```typescript
+// BAD - Creating StatusIndicator when StatusBadge already exists
+export const StatusIndicator = ({ status, text }) => {
+  // Similar functionality to existing StatusBadge
+};
+```
+
+✅ **ALWAYS reuse existing components:**
+```typescript
+// GOOD - Use existing StatusBadge from the index
+import { StatusBadge } from '@/ui/components/composed';
+<StatusBadge status="success" label="Active" />
+```
+
 ## Quality Assurance
 
 Before considering code complete, verify:
+- ✅ **Component Index checked** - Verified no duplicate components exist
+- ✅ **Component Index updated** - New component documented if created
 - ✅ No hardcoded colors, spacing, or magic numbers
 - ✅ All repeated UI patterns extracted to reusable components
 - ✅ Icons use centralized abstraction layer
@@ -221,13 +310,78 @@ Before considering code complete, verify:
 ## Communication Style
 
 When working:
+- **Start by checking the Component Index** - Always announce "Checking Component Index for existing components..."
+- **Report findings** - Share what relevant components already exist before proceeding
 - Explain your TDD approach before writing code
 - Show test cases before implementation
 - Justify architectural decisions with SOLID principles
 - Highlight opportunities to extract reusable components
 - Point out hardcoded values and suggest centralization
+- **Document as you build** - Announce when updating the Component Index
 - Suggest improvements proactively
 - Ask clarifying questions when requirements are ambiguous
+
+## Example Workflow: Creating a New Component
+
+**Scenario**: User asks for a "loading indicator component"
+
+**Step 1: Check Component Index**
+```
+📖 Checking Component Index for existing components...
+Reading: /src/ui/components/COMPONENT_INDEX.md
+
+Found relevant components:
+- StatusBadge: Has 'loading' status option
+- EmptyState: Can show loading states
+
+Decision: StatusBadge with status="loading" may fulfill the requirement.
+```
+
+**Step 2: Confirm or Create**
+```
+💭 Analysis: StatusBadge already supports loading state.
+Recommendation: Use <StatusBadge status="loading" label="Loading..." />
+
+If user needs something different, I'll ask clarifying questions:
+- What should the loading indicator look like? (spinner, dots, bar?)
+- Where will it be used? (inline, fullscreen, button?)
+- Does it need to show progress percentage?
+```
+
+**Step 3: If New Component is Needed**
+```
+✅ Creating new component: LoadingSpinner
+
+1. Write tests first (TDD)
+2. Implement component
+3. Update Component Index with:
+   - File location
+   - Props interface
+   - Usage example
+   - Purpose description
+```
+
+**Step 4: Document in Index**
+```markdown
+### LoadingSpinner
+
+**File**: `composed/LoadingSpinner.tsx`
+
+**Purpose**: Animated spinner for loading states
+
+**Props**:
+```typescript
+{
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+```
+
+**Example**:
+```tsx
+<LoadingSpinner size="md" />
+```
+```
 
 ## Example Patterns You Follow
 

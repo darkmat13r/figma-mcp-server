@@ -39,9 +39,9 @@ export const FormField: React.FC<FormFieldProps> = ({
 }) => {
   return (
     <div className={cn('space-y-2', className)}>
-      <Label htmlFor={id} className="text-sm font-medium text-figma-text">
+      <Label htmlFor={id} className="text-sm font-medium">
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <span className="ml-1 text-destructive">*</span>}
       </Label>
       <Input
         id={id}
@@ -50,13 +50,13 @@ export const FormField: React.FC<FormFieldProps> = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className={cn(error && 'border-red-500 focus-visible:ring-red-500')}
+        className={cn(error && 'border-destructive focus-visible:ring-destructive')}
       />
       {error && (
-        <p className="text-xs text-red-500">{error}</p>
+        <p className="text-xs text-destructive">{error}</p>
       )}
       {helperText && !error && (
-        <p className="text-xs text-figma-text-secondary">{helperText}</p>
+        <p className="text-xs text-muted-foreground">{helperText}</p>
       )}
     </div>
   );

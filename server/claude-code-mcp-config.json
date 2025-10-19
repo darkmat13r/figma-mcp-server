@@ -1,0 +1,15 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp-config.json",
+  "mcpServers": {
+    "figma": {
+      "command": "java",
+      "args": [
+        "-jar",
+        "/path/to/figma-mcp-server/build/libs/figma-mcp-server-all.jar"
+      ],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}

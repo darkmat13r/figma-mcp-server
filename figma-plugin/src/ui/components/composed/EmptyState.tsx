@@ -35,15 +35,15 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       )}
     >
       {icon && (
-        <div className="mb-4 text-figma-text-secondary opacity-50">
+        <div className="mb-4 text-muted-foreground opacity-50">
           {icon}
         </div>
       )}
-      <h3 className="text-base font-semibold text-figma-text mb-2">
+      <h3 className="text-base font-semibold mb-2">
         {title}
       </h3>
       {description && (
-        <p className="text-sm text-figma-text-secondary max-w-sm mb-6">
+        <p className="text-sm text-muted-foreground max-w-sm mb-6">
           {description}
         </p>
       )}

@@ -19,7 +19,7 @@ interface SelectionPanelProps {
 
 export const SelectionPanel: React.FC<SelectionPanelProps> = ({ selection }) => {
   return (
-    <div className="border-t border-figma-border bg-figma-bg-secondary">
+    <div className="border-t border-border bg-card">
       <ScrollArea className="max-h-64">
         <div className="p-4">
           <Section
@@ -37,26 +37,26 @@ export const SelectionPanel: React.FC<SelectionPanelProps> = ({ selection }) => 
                 {selection.map((node) => (
                   <Card
                     key={node.id}
-                    className="bg-figma-bg border-figma-border hover:border-primary/50 transition-colors"
+                    className="hover:border-primary/50 transition-colors"
                   >
                     <CardContent className="p-3">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="text-sm font-medium text-figma-text truncate">
+                            <h4 className="text-sm font-medium truncate">
                               {node.name}
                             </h4>
                             <Badge variant="outline" className="text-xs shrink-0">
                               {node.type}
                             </Badge>
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-figma-text-secondary">
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
-                              <span className="text-figma-text-tertiary">Size:</span>
+                              <span className="opacity-70">Size:</span>
                               {Math.round(node.width)} × {Math.round(node.height)}
                             </span>
                             <span className="flex items-center gap-1">
-                              <span className="text-figma-text-tertiary">Pos:</span>
+                              <span className="opacity-70">Pos:</span>
                               ({Math.round(node.x)}, {Math.round(node.y)})
                             </span>
                           </div>
