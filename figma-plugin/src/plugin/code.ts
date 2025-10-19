@@ -38,6 +38,13 @@ let isConnected = false;
 /**
  * Registry mapping node types to their creation handlers
  * ✅ REFACTORED: Uses Strategy Pattern instead of switch statement
+ *
+ * All 12 Category 1 tools are supported:
+ * - FRAME, COMPONENT, INSTANCE (containers)
+ * - RECTANGLE, ELLIPSE, TEXT (basic shapes)
+ * - POLYGON, STAR, LINE (geometric shapes)
+ * - SECTION (organizational)
+ * - GROUP and BOOLEAN_OPERATION handled by separate methods
  */
 const nodeCreationHandlers: Record<string, (params: Record<string, any>) => Promise<SceneNode>> = {
   [NodeTypes.FRAME]: NodeHandlers.createFrame,
@@ -49,6 +56,7 @@ const nodeCreationHandlers: Record<string, (params: Record<string, any>) => Prom
   [NodeTypes.POLYGON]: NodeHandlers.createPolygon,
   [NodeTypes.STAR]: NodeHandlers.createStar,
   [NodeTypes.LINE]: NodeHandlers.createLine,
+  [NodeTypes.SECTION]: NodeHandlers.createSection,
 };
 
 // ============================================================================

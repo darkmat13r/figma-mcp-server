@@ -100,8 +100,8 @@ export async function createFrame(params: Record<string, any>): Promise<FrameNod
 
   // Set dimensions with defaults
   frame.resize(
-    params[ParamNames.WIDTH] ?? Defaults.DEFAULT_WIDTH,
-    params[ParamNames.HEIGHT] ?? Defaults.DEFAULT_HEIGHT
+    params[ParamNames.WIDTH] !== undefined ? params[ParamNames.WIDTH] : Defaults.DEFAULT_WIDTH,
+    params[ParamNames.HEIGHT] !== undefined ? params[ParamNames.HEIGHT] : Defaults.DEFAULT_HEIGHT
   );
 
   // Apply common properties
@@ -124,8 +124,8 @@ export async function createComponent(params: Record<string, any>): Promise<Comp
 
   // Set dimensions with defaults
   component.resize(
-    params[ParamNames.WIDTH] ?? Defaults.DEFAULT_WIDTH,
-    params[ParamNames.HEIGHT] ?? Defaults.DEFAULT_HEIGHT
+    params[ParamNames.WIDTH] !== undefined ? params[ParamNames.WIDTH] : Defaults.DEFAULT_WIDTH,
+    params[ParamNames.HEIGHT] !== undefined ? params[ParamNames.HEIGHT] : Defaults.DEFAULT_HEIGHT
   );
 
   // Name is required for components
@@ -170,8 +170,8 @@ export async function createRectangle(params: Record<string, any>): Promise<Rect
   const rectangle = figma.createRectangle();
 
   rectangle.resize(
-    params[ParamNames.WIDTH] ?? Defaults.DEFAULT_WIDTH,
-    params[ParamNames.HEIGHT] ?? Defaults.DEFAULT_HEIGHT
+    params[ParamNames.WIDTH] !== undefined ? params[ParamNames.WIDTH] : Defaults.DEFAULT_WIDTH,
+    params[ParamNames.HEIGHT] !== undefined ? params[ParamNames.HEIGHT] : Defaults.DEFAULT_HEIGHT
   );
 
   applyCommonProperties(rectangle, params);
@@ -186,8 +186,8 @@ export async function createEllipse(params: Record<string, any>): Promise<Ellips
   const ellipse = figma.createEllipse();
 
   ellipse.resize(
-    params[ParamNames.WIDTH] ?? Defaults.DEFAULT_WIDTH,
-    params[ParamNames.HEIGHT] ?? Defaults.DEFAULT_HEIGHT
+    params[ParamNames.WIDTH] !== undefined ? params[ParamNames.WIDTH] : Defaults.DEFAULT_WIDTH,
+    params[ParamNames.HEIGHT] !== undefined ? params[ParamNames.HEIGHT] : Defaults.DEFAULT_HEIGHT
   );
 
   applyCommonProperties(ellipse, params);
@@ -202,8 +202,8 @@ export async function createText(params: Record<string, any>): Promise<TextNode>
   const textNode = figma.createText();
 
   // Load font
-  const fontFamily = params[ParamNames.FONT_FAMILY] ?? Defaults.DEFAULT_FONT_FAMILY;
-  const fontStyle = params[ParamNames.FONT_STYLE] ?? Defaults.DEFAULT_FONT_STYLE;
+  const fontFamily = params[ParamNames.FONT_FAMILY] !== undefined ? params[ParamNames.FONT_FAMILY] : Defaults.DEFAULT_FONT_FAMILY;
+  const fontStyle = params[ParamNames.FONT_STYLE] !== undefined ? params[ParamNames.FONT_STYLE] : Defaults.DEFAULT_FONT_STYLE;
 
   try {
     await figma.loadFontAsync({ family: fontFamily, style: fontStyle });
@@ -246,7 +246,7 @@ export async function createPolygon(params: Record<string, any>): Promise<Polygo
   const polygon = figma.createPolygon();
   polygon.pointCount = sides;
 
-  const radius = params[ParamNames.RADIUS] ?? Defaults.DEFAULT_WIDTH / 2;
+  const radius = params[ParamNames.RADIUS] !== undefined ? params[ParamNames.RADIUS] : Defaults.DEFAULT_WIDTH / 2;
   polygon.resize(radius * 2, radius * 2);
 
   applyCommonProperties(polygon, params);
@@ -266,7 +266,7 @@ export async function createStar(params: Record<string, any>): Promise<StarNode>
   const star = figma.createStar();
   star.pointCount = points;
 
-  const radius = params[ParamNames.RADIUS] ?? Defaults.DEFAULT_WIDTH / 2;
+  const radius = params[ParamNames.RADIUS] !== undefined ? params[ParamNames.RADIUS] : Defaults.DEFAULT_WIDTH / 2;
   star.resize(radius * 2, radius * 2);
 
   // Inner radius (controls star sharpness)
@@ -285,8 +285,8 @@ export async function createStar(params: Record<string, any>): Promise<StarNode>
 export async function createLine(params: Record<string, any>): Promise<LineNode> {
   const line = figma.createLine();
 
-  const x1 = params[ParamNames.X1] ?? 0;
-  const y1 = params[ParamNames.Y1] ?? 0;
+  const x1 = params[ParamNames.X1] !== undefined ? params[ParamNames.X1] : 0;
+  const y1 = params[ParamNames.Y1] !== undefined ? params[ParamNames.Y1] : 0;
   const x2 = params[ParamNames.X2];
   const y2 = params[ParamNames.Y2];
 

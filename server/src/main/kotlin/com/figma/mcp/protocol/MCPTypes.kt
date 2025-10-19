@@ -332,6 +332,7 @@ object JSONSchema {
     ): JsonObject {
         return kotlinx.serialization.json.buildJsonObject {
             put("type", kotlinx.serialization.json.JsonPrimitive("object"))
+
             put("properties", kotlinx.serialization.json.buildJsonObject {
                 properties.forEach { (key, value) ->
                     put(key, kotlinx.serialization.json.buildJsonObject {
@@ -340,12 +341,23 @@ object JSONSchema {
                                 is String -> kotlinx.serialization.json.JsonPrimitive(v)
                                 is Number -> kotlinx.serialization.json.JsonPrimitive(v)
                                 is Boolean -> kotlinx.serialization.json.JsonPrimitive(v)
+                                is List<*> -> kotlinx.serialization.json.buildJsonArray {
+                                    (v as List<*>).forEach { item ->
+                                        when (item) {
+                                            is String -> add(kotlinx.serialization.json.JsonPrimitive(item))
+                                            is Number -> add(kotlinx.serialization.json.JsonPrimitive(item))
+                                            is Boolean -> add(kotlinx.serialization.json.JsonPrimitive(item))
+                                            else -> add(kotlinx.serialization.json.JsonPrimitive(item.toString()))
+                                        }
+                                    }
+                                }
                                 else -> kotlinx.serialization.json.JsonPrimitive(v.toString())
                             })
                         }
                     })
                 }
             })
+
             if (required.isNotEmpty()) {
                 put("required", kotlinx.serialization.json.buildJsonArray {
                     required.forEach { add(kotlinx.serialization.json.JsonPrimitive(it)) }
