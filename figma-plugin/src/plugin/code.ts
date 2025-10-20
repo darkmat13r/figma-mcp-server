@@ -26,6 +26,7 @@ import { NodeTypes, PluginMethods, ErrorMessages, SuccessMessages } from './cons
 import * as NodeHandlers from './nodeHandlers';
 import * as StyleHandlers from './styleHandlers';
 import * as UtilityHandlers from './utilityHandlers';
+import * as TypographyHandlers from './typographyHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -279,6 +280,120 @@ async function handleUtilityOperation(params: Record<string, any>, requestId: st
 }
 
 /**
+ * Handle setTextContent command (Category 4: Typography Tools)
+ */
+async function handleSetTextContent(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await TypographyHandlers.handleSetTextContent(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set text content for node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setTextStyle command (Category 4: Typography Tools)
+ */
+async function handleSetTextStyle(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await TypographyHandlers.handleSetTextStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set text style for node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setTextAlignment command (Category 4: Typography Tools)
+ */
+async function handleSetTextAlignment(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await TypographyHandlers.handleSetTextAlignment(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set text alignment for node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setTextAutoResize command (Category 4: Typography Tools)
+ */
+async function handleSetTextAutoResize(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await TypographyHandlers.handleSetTextAutoResize(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set text auto-resize for node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setTextTruncation command (Category 4: Typography Tools)
+ */
+async function handleSetTextTruncation(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await TypographyHandlers.handleSetTextTruncation(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set text truncation for node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle loadFont command (Category 4: Typography Tools)
+ */
+async function handleLoadFont(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await TypographyHandlers.handleLoadFont(params);
+    sendWSResponse(requestId, {
+      success: result.available,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -317,6 +432,30 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.UTILITY_OPERATION:
         await handleUtilityOperation(params, id);
+        break;
+
+      case PluginMethods.SET_TEXT_CONTENT:
+        await handleSetTextContent(params, id);
+        break;
+
+      case PluginMethods.SET_TEXT_STYLE:
+        await handleSetTextStyle(params, id);
+        break;
+
+      case PluginMethods.SET_TEXT_ALIGNMENT:
+        await handleSetTextAlignment(params, id);
+        break;
+
+      case PluginMethods.SET_TEXT_AUTO_RESIZE:
+        await handleSetTextAutoResize(params, id);
+        break;
+
+      case PluginMethods.SET_TEXT_TRUNCATION:
+        await handleSetTextTruncation(params, id);
+        break;
+
+      case PluginMethods.LOAD_FONT:
+        await handleLoadFont(params, id);
         break;
 
       default:

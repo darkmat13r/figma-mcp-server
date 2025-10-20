@@ -115,6 +115,14 @@ val appModule = module {
             ApplyEffectStyleTool(get(), get()),
             ApplyTextStyleTool(get(), get()),
 
+            // Category 4: Typography Tools (6 tools)
+            SetTextContentTool(get(), get()),
+            SetTextStyleTool(get(), get()),
+            SetTextAlignmentTool(get(), get()),
+            SetTextAutoResizeTool(get(), get()),
+            SetTextTruncationTool(get(), get()),
+            LoadFontTool(get(), get()),
+
             // Category 10: Utility Tools (6 tools)
             DeleteNodeTool(get(), get()),
             ShowNodeTool(get(), get()),

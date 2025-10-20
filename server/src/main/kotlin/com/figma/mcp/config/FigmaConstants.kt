@@ -53,6 +53,14 @@ object FigmaConstants {
         const val APPLY_EFFECT_STYLE = "figma_apply_effect_style"
         const val APPLY_TEXT_STYLE = "figma_apply_text_style"
 
+        // Category 4: Typography Tools
+        const val SET_TEXT_CONTENT = "figma_set_text_content"
+        const val SET_TEXT_STYLE = "figma_set_text_style"
+        const val SET_TEXT_ALIGNMENT = "figma_set_text_alignment"
+        const val SET_TEXT_AUTO_RESIZE = "figma_set_text_auto_resize"
+        const val SET_TEXT_TRUNCATION = "figma_set_text_truncation"
+        const val LOAD_FONT = "figma_load_font"
+
         // Category 10: Utility Tools
         const val DELETE_NODE = "figma_delete_node"
         const val SHOW_NODE = "figma_show_node"
@@ -81,6 +89,14 @@ object FigmaConstants {
         const val SET_STYLE = "setStyle"
         const val APPLY_STYLE = "applyStyle"
         const val UTILITY_OPERATION = "utilityOperation"
+
+        // Typography methods
+        const val SET_TEXT_CONTENT = "setTextContent"
+        const val SET_TEXT_STYLE = "setTextStyle"
+        const val SET_TEXT_ALIGNMENT = "setTextAlignment"
+        const val SET_TEXT_AUTO_RESIZE = "setTextAutoResize"
+        const val SET_TEXT_TRUNCATION = "setTextTruncation"
+        const val LOAD_FONT = "loadFont"
     }
 
     // ========================================================================
@@ -194,6 +210,18 @@ object FigmaConstants {
         const val FONT_STYLE = "fontStyle"
         const val FONT_SIZE = "fontSize"
         const val TEXT_ALIGN_HORIZONTAL = "textAlignHorizontal"
+
+        // Typography (Category 4)
+        const val CHARACTERS = "characters"
+        const val FONT_WEIGHT = "fontWeight"
+        const val LINE_HEIGHT = "lineHeight"
+        const val LETTER_SPACING = "letterSpacing"
+        const val TEXT_CASE = "textCase"
+        const val TEXT_DECORATION = "textDecoration"
+        const val TEXT_ALIGN_VERTICAL = "textAlignVertical"
+        const val TEXT_AUTO_RESIZE = "textAutoResize"
+        const val TEXT_TRUNCATION = "textTruncation"
+        const val MAX_LINES = "maxLines"
 
         // Shapes
         const val SIDES = "sides"

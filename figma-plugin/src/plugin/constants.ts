@@ -43,6 +43,13 @@ export const PluginMethods = {
   SET_STYLE: 'setStyle',
   APPLY_STYLE: 'applyStyle',
   UTILITY_OPERATION: 'utilityOperation',
+  // Typography methods
+  SET_TEXT_CONTENT: 'setTextContent',
+  SET_TEXT_STYLE: 'setTextStyle',
+  SET_TEXT_ALIGNMENT: 'setTextAlignment',
+  SET_TEXT_AUTO_RESIZE: 'setTextAutoResize',
+  SET_TEXT_TRUNCATION: 'setTextTruncation',
+  LOAD_FONT: 'loadFont',
 } as const;
 
 // ============================================================================
@@ -130,10 +137,20 @@ export const ParamNames = {
 
   // Text
   TEXT: 'text',
+  CHARACTERS: 'characters',
   FONT_FAMILY: 'fontFamily',
   FONT_STYLE: 'fontStyle',
   FONT_SIZE: 'fontSize',
+  FONT_WEIGHT: 'fontWeight',
+  LINE_HEIGHT: 'lineHeight',
+  LETTER_SPACING: 'letterSpacing',
+  TEXT_CASE: 'textCase',
+  TEXT_DECORATION: 'textDecoration',
   TEXT_ALIGN_HORIZONTAL: 'textAlignHorizontal',
+  TEXT_ALIGN_VERTICAL: 'textAlignVertical',
+  TEXT_AUTO_RESIZE: 'textAutoResize',
+  TEXT_TRUNCATION: 'textTruncation',
+  MAX_LINES: 'maxLines',
 
   // Shapes
   SIDES: 'sides',

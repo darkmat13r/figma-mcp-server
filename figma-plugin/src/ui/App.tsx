@@ -4,6 +4,7 @@ import { ConnectionPanel } from './components/ConnectionPanel';
 import { ConsolePanel } from './components/ConsolePanel';
 import { TestPanel } from './components/TestPanel';
 import { StylingTestPanel } from './components/StylingTestPanel';
+import { TypographyTestPanel } from './components/TypographyTestPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 export const App: React.FC = () => {
@@ -40,7 +41,8 @@ export const App: React.FC = () => {
           <Tabs defaultValue="node-creation" className="h-full flex flex-col">
             <TabsList className="w-full justify-start rounded-none border-b">
               <TabsTrigger value="node-creation">Node Creation</TabsTrigger>
-              <TabsTrigger value="styling">Styling Tools</TabsTrigger>
+              <TabsTrigger value="styling">Styling</TabsTrigger>
+              <TabsTrigger value="typography">Typography</TabsTrigger>
               <TabsTrigger value="console">Console</TabsTrigger>
             </TabsList>
 
@@ -53,6 +55,13 @@ export const App: React.FC = () => {
 
             <TabsContent value="styling" className="flex-1 overflow-auto m-0">
               <StylingTestPanel
+                onSendCommand={sendRequest}
+                isConnected={connectionState === 'connected'}
+              />
+            </TabsContent>
+
+            <TabsContent value="typography" className="flex-1 overflow-auto m-0">
+              <TypographyTestPanel
                 onSendCommand={sendRequest}
                 isConnected={connectionState === 'connected'}
               />
