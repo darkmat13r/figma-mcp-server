@@ -78,6 +78,11 @@ export const PluginMethods = {
   GET_VARIABLES: 'getVariables',
   SET_VARIABLE_VALUE: 'setVariableValue',
   UNBIND_VARIABLE: 'unbindVariable',
+  // Image & Media methods
+  CREATE_IMAGE: 'createImage',
+  SET_IMAGE_FILL: 'setImageFill',
+  EXPORT_NODE: 'exportNode',
+  GET_IMAGE_FILLS: 'getImageFills',
 } as const;
 
 // ============================================================================
@@ -242,6 +247,14 @@ export const ParamNames = {
   VALUES: 'values',
   DEFAULT_VALUE: 'defaultValue',
   VARIANT_OPTIONS: 'variantOptions',
+
+  // Image & Media
+  IMAGE_DATA: 'imageData',
+  SCALE_MODE: 'scaleMode',
+  FORMAT: 'format',
+  SCALE: 'scale',
+  CONSTRAINT: 'constraint',
+  ROTATION: 'rotation',
 } as const;
 
 // ============================================================================

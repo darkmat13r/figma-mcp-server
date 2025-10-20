@@ -93,6 +93,12 @@ object FigmaConstants {
         const val SWITCH_PAGE = "figma_switch_page"
         const val CREATE_PAGE = "figma_create_page"
 
+        // Category 9: Image & Media Tools
+        const val CREATE_IMAGE = "figma_create_image"
+        const val SET_IMAGE_FILL = "figma_set_image_fill"
+        const val EXPORT_NODE = "figma_export_node"
+        const val GET_IMAGE_FILLS = "figma_get_image_fills"
+
         // Category 10: Utility Tools
         const val DELETE_NODE = "figma_delete_node"
         const val SHOW_NODE = "figma_show_node"
@@ -158,6 +164,12 @@ object FigmaConstants {
         const val GET_ALL_PAGES = "getAllPages"
         const val SWITCH_PAGE = "switchPage"
         const val CREATE_PAGE = "createPage"
+
+        // Image & Media methods
+        const val CREATE_IMAGE = "createImage"
+        const val SET_IMAGE_FILL = "setImageFill"
+        const val EXPORT_NODE = "exportNode"
+        const val GET_IMAGE_FILLS = "getImageFills"
     }
 
     // ========================================================================
@@ -347,6 +359,14 @@ object FigmaConstants {
         const val PAGE_ID = "pageId"
         const val PAGE_NAME = "pageName"
         const val SWITCH_TO_PAGE = "switchToPage"
+
+        // Image & Media Parameters
+        const val IMAGE_DATA = "imageData"
+        const val SCALE_MODE = "scaleMode"
+        const val ROTATION = "rotation"
+        const val FORMAT = "format"
+        const val SCALE = "scale"
+        const val CONSTRAINT = "constraint"
     }
 
     // ========================================================================

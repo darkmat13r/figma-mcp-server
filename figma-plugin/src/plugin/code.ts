@@ -30,6 +30,7 @@ import * as TypographyHandlers from './typographyHandlers';
 import * as HierarchyHandlers from './hierarchyHandlers';
 import * as ComponentHandlers from './componentHandlers';
 import * as VariableHandlers from './variableHandlers';
+import * as ImageHandlers from './imageHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -902,6 +903,82 @@ async function handleUnbindVariableCommand(params: Record<string, any>, requestI
 }
 
 /**
+ * Handle createImage command (Category 9: Image & Media Tools)
+ */
+async function handleCreateImageCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ImageHandlers.handleCreateImage(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setImageFill command (Category 9: Image & Media Tools)
+ */
+async function handleSetImageFillCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await ImageHandlers.handleSetImageFill(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set image fill for node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle exportNode command (Category 9: Image & Media Tools)
+ */
+async function handleExportNodeCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ImageHandlers.handleExportNode(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getImageFills command (Category 9: Image & Media Tools)
+ */
+async function handleGetImageFillsCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ImageHandlers.handleGetImageFills(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -1071,6 +1148,23 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.UNBIND_VARIABLE:
         await handleUnbindVariableCommand(params, id);
+        break;
+
+      // Category 9: Image & Media Tools
+      case PluginMethods.CREATE_IMAGE:
+        await handleCreateImageCommand(params, id);
+        break;
+
+      case PluginMethods.SET_IMAGE_FILL:
+        await handleSetImageFillCommand(params, id);
+        break;
+
+      case PluginMethods.EXPORT_NODE:
+        await handleExportNodeCommand(params, id);
+        break;
+
+      case PluginMethods.GET_IMAGE_FILLS:
+        await handleGetImageFillsCommand(params, id);
         break;
 
       default:

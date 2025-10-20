@@ -13,6 +13,7 @@ import com.figma.mcp.tools.impl.*
 import com.figma.mcp.tools.impl.hierarchy.*
 import com.figma.mcp.tools.impl.components.*
 import com.figma.mcp.tools.impl.variables.*
+import com.figma.mcp.tools.impl.images.*
 import com.figma.mcp.transport.McpServer
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
@@ -157,6 +158,12 @@ val appModule = module {
             GetAllPagesTool(get(), get()),
             SwitchPageTool(get(), get()),
             CreatePageTool(get(), get()),
+
+            // Category 9: Image & Media Tools (4 tools)
+            CreateImageTool(get(), get()),
+            SetImageFillTool(get(), get()),
+            ExportNodeTool(get(), get()),
+            GetImageFillsTool(get(), get()),
 
             // Category 10: Utility Tools (6 tools)
             DeleteNodeTool(get(), get()),
