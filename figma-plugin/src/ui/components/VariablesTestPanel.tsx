@@ -183,7 +183,7 @@ export const VariablesTestPanel: React.FC<VariablesTestPanelProps> = ({ onSendCo
     const params: any = {};
 
     if (getVarsCollectionId) params.collectionId = getVarsCollectionId;
-    if (getVarsType) params.type = getVarsType;
+    if (getVarsType && getVarsType !== 'ALL') params.type = getVarsType;
 
     sendCommand('getVariables', params);
   };
@@ -358,7 +358,7 @@ export const VariablesTestPanel: React.FC<VariablesTestPanelProps> = ({ onSendCo
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="ALL">All Types</SelectItem>
                   <SelectItem value="BOOLEAN">Boolean</SelectItem>
                   <SelectItem value="FLOAT">Float</SelectItem>
                   <SelectItem value="STRING">String</SelectItem>

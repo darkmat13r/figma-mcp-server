@@ -197,7 +197,7 @@ export const ImageTestPanel: React.FC<ImageTestPanelProps> = ({ onSendCommand, i
 
     if (exportScale) params.scale = parseFloat(exportScale);
 
-    if (exportConstraintType && exportConstraintValue) {
+    if (exportConstraintType && exportConstraintType !== 'NONE' && exportConstraintValue) {
       params.constraint = {
         type: exportConstraintType,
         value: parseFloat(exportConstraintValue)
@@ -483,7 +483,7 @@ export const ImageTestPanel: React.FC<ImageTestPanelProps> = ({ onSendCommand, i
                   <SelectValue placeholder="Constraint Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="NONE">None</SelectItem>
                   <SelectItem value="SCALE">Scale</SelectItem>
                   <SelectItem value="WIDTH">Width</SelectItem>
                   <SelectItem value="HEIGHT">Height</SelectItem>
@@ -494,7 +494,7 @@ export const ImageTestPanel: React.FC<ImageTestPanelProps> = ({ onSendCommand, i
                 value={exportConstraintValue}
                 onChange={(e) => setExportConstraintValue(e.target.value)}
                 placeholder="Value"
-                disabled={!exportConstraintType}
+                disabled={!exportConstraintType || exportConstraintType === 'NONE'}
               />
             </div>
           </div>

@@ -522,7 +522,7 @@ async function handleMoveNodeCommand(params: Record<string, any>, requestId: str
     await HierarchyHandlers.handleMoveNode(params);
     sendWSResponse(requestId, {
       success: true,
-      message: `Successfully moved node ${params.nodeId} to parent ${params.parentId}`,
+      message: `Successfully moved node ${params.nodeId} to parent ${params.newParentId}`,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

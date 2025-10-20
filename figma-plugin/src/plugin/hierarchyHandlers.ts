@@ -449,38 +449,33 @@ export async function handleGetParent(params: Record<string, any>): Promise<Node
  */
 export async function handleMoveNode(params: Record<string, any>): Promise<void> {
   const nodeId = params[ParamNames.NODE_ID];
-  const parentId = params.parentId;
-  const index = params.index;
+  const newParentId = params[ParamNames.NEW_PARENT_ID];
+  const index = params[ParamNames.INDEX];
 
   if (!nodeId) {
     throw new Error(ErrorMessages.missingParam(ParamNames.NODE_ID));
   }
-  if (!parentId) {
-    throw new Error(ErrorMessages.missingParam('parentId'));
+  if (!newParentId) {
+    throw new Error(ErrorMessages.missingParam(ParamNames.NEW_PARENT_ID));
   }
 
   const node = await getNode(nodeId);
-  const newParent = await getNode(parentId);
+  const newParent = await getNode(newParentId);
 
   if (!('children' in newParent)) {
     throw new Error('Target parent node does not support children');
   }
 
-  // Move node to new parent
-  (newParent as any).appendChild(node);
-
-  // Set index if specified
+  // Move node to new parent at specified index or end
   if (index !== undefined && typeof index === 'number') {
-    const parent = node.parent as any;
-    if (parent && 'children' in parent) {
-      const currentIndex = parent.children.indexOf(node);
-      if (currentIndex !== -1) {
-        parent.insertChild(index, node);
-      }
-    }
+    // Use insertChild to place node at specific index
+    (newParent as any).insertChild(index, node);
+  } else {
+    // Use appendChild to place node at end
+    (newParent as any).appendChild(node);
   }
 
-  console.log('[HierarchyHandlers] Moved node', nodeId, 'to parent', parentId);
+  console.log('[HierarchyHandlers] Moved node', nodeId, 'to parent', newParentId, index !== undefined ? `at index ${index}` : 'at end');
 }
 
 /**

@@ -227,6 +227,7 @@ export const ParamNames = {
   NAME_REGEX: 'nameRegex',
   TYPES: 'types',
   PARENT_ID: 'parentId',
+  NEW_PARENT_ID: 'newParentId',
   RECURSIVE: 'recursive',
   INDEX: 'index',
   DEEP: 'deep',
