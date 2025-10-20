@@ -103,17 +103,22 @@ val appModule = module {
             CreateLineTool(get(), get()),
             CreateGroupTool(get(), get()),
             CreateSectionTool(get(), get()),
-            CreateBooleanOperationTool(get(), get())
+            CreateBooleanOperationTool(get(), get()),
+
+            // Category 3: Styling Tools (8 tools)
+            SetFillsTool(get(), get()),
+            SetStrokesTool(get(), get()),
+            SetEffectsTool(get(), get()),
+            SetOpacityTool(get(), get()),
+            SetCornerRadiusTool(get(), get()),
+            ApplyPaintStyleTool(get(), get()),
+            ApplyEffectStyleTool(get(), get()),
+            ApplyTextStyleTool(get(), get())
 
             // Future categories can be added here:
             // Category 2: Layout Management Tools
             // SetAutoLayoutTool(get(), get()),
             // SetConstraintsTool(get(), get()),
-            // ...
-
-            // Category 3: Styling Tools
-            // SetFillsTool(get(), get()),
-            // SetStrokesTool(get(), get()),
             // ...
         )
 

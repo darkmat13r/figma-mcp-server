@@ -43,6 +43,16 @@ object FigmaConstants {
         const val CREATE_SECTION = "figma_create_section"
         const val CREATE_BOOLEAN_OPERATION = "figma_create_boolean_operation"
 
+        // Category 3: Styling Tools
+        const val SET_FILLS = "figma_set_fills"
+        const val SET_STROKES = "figma_set_strokes"
+        const val SET_EFFECTS = "figma_set_effects"
+        const val SET_OPACITY = "figma_set_opacity"
+        const val SET_CORNER_RADIUS = "figma_set_corner_radius"
+        const val APPLY_PAINT_STYLE = "figma_apply_paint_style"
+        const val APPLY_EFFECT_STYLE = "figma_apply_effect_style"
+        const val APPLY_TEXT_STYLE = "figma_apply_text_style"
+
         // Existing tools
         const val GET_SELECTION = "figma_get_selection"
         const val SET_PROPERTIES = "figma_set_properties"
@@ -60,6 +70,8 @@ object FigmaConstants {
         const val GET_SELECTION = "getSelection"
         const val GROUP_NODES = "groupNodes"
         const val CREATE_BOOLEAN_OP = "createBooleanOperation"
+        const val SET_STYLE = "setStyle"
+        const val APPLY_STYLE = "applyStyle"
     }
 
     // ========================================================================
@@ -148,8 +160,21 @@ object FigmaConstants {
         const val FILLS = "fills"
         const val STROKES = "strokes"
         const val STROKE_WEIGHT = "strokeWeight"
+        const val STROKE_ALIGN = "strokeAlign"
+        const val STROKE_CAP = "strokeCap"
+        const val STROKE_JOIN = "strokeJoin"
         const val CORNER_RADIUS = "cornerRadius"
+        const val TOP_LEFT_RADIUS = "topLeftRadius"
+        const val TOP_RIGHT_RADIUS = "topRightRadius"
+        const val BOTTOM_LEFT_RADIUS = "bottomLeftRadius"
+        const val BOTTOM_RIGHT_RADIUS = "bottomRightRadius"
+        const val CORNER_SMOOTHING = "cornerSmoothing"
         const val FILL_COLOR = "fillColor"
+        const val EFFECTS = "effects"
+        const val OPACITY = "opacity"
+        const val BLEND_MODE = "blendMode"
+        const val STYLE_TYPE = "styleType"
+        const val STYLE_ID = "styleId"
 
         // Layout
         const val LAYOUT_MODE = "layoutMode"
