@@ -27,6 +27,7 @@ import * as NodeHandlers from './nodeHandlers';
 import * as StyleHandlers from './styleHandlers';
 import * as UtilityHandlers from './utilityHandlers';
 import * as TypographyHandlers from './typographyHandlers';
+import * as HierarchyHandlers from './hierarchyHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -394,6 +395,263 @@ async function handleLoadFont(params: Record<string, any>, requestId: string): P
 }
 
 /**
+ * Handle getNodeInfo command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleGetNodeInfo(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const nodeInfo = await HierarchyHandlers.handleGetNodeInfo(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...nodeInfo,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getSelection command (Category 7: Hierarchy & Query Tools)
+ * NOTE: This replaces the existing getInfo with type=selection
+ */
+async function handleGetSelectionCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const selection = await HierarchyHandlers.handleGetSelection(params);
+    sendWSResponse(requestId, {
+      success: true,
+      selection: selection,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setSelection command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleSetSelection(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await HierarchyHandlers.handleSetSelection(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set selection to ${params.nodeIds?.length ?? 0} nodes`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle findNodes command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleFindNodes(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const nodes = await HierarchyHandlers.handleFindNodes(params);
+    sendWSResponse(requestId, {
+      success: true,
+      nodes: nodes,
+      count: nodes.length,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getChildren command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleGetChildren(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const children = await HierarchyHandlers.handleGetChildren(params);
+    sendWSResponse(requestId, {
+      success: true,
+      children: children,
+      count: children.length,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getParent command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleGetParentCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const parent = await HierarchyHandlers.handleGetParent(params);
+    sendWSResponse(requestId, {
+      success: true,
+      parent: parent,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle moveNode command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleMoveNodeCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await HierarchyHandlers.handleMoveNode(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully moved node ${params.nodeId} to parent ${params.parentId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle cloneNode command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleCloneNodeCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const clone = await HierarchyHandlers.handleCloneNode(params);
+    sendWSResponse(requestId, {
+      success: true,
+      nodeId: clone.id,
+      message: `Successfully cloned node ${params.nodeId}`,
+      ...clone,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getCurrentPageNodes command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleGetCurrentPageNodes(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const nodes = await HierarchyHandlers.handleGetCurrentPageNodes(params);
+    sendWSResponse(requestId, {
+      success: true,
+      nodes: nodes,
+      count: nodes.length,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle searchNodes command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleSearchNodes(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const nodes = await HierarchyHandlers.handleSearchNodes(params);
+    sendWSResponse(requestId, {
+      success: true,
+      nodes: nodes,
+      count: nodes.length,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getAllPages command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleGetAllPages(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const pages = await HierarchyHandlers.handleGetAllPages(params);
+    sendWSResponse(requestId, {
+      success: true,
+      pages: pages,
+      count: pages.length,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle switchPage command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleSwitchPage(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await HierarchyHandlers.handleSwitchPage(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully switched to page ${params.pageId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createPage command (Category 7: Hierarchy & Query Tools)
+ */
+async function handleCreatePage(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const page = await HierarchyHandlers.handleCreatePage(params);
+    sendWSResponse(requestId, {
+      success: true,
+      pageId: page.id,
+      message: `Successfully created page: ${page.name}`,
+      ...page,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -416,6 +674,10 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.GET_INFO:
         await handleGetInfo(params, id);
+        break;
+
+      case PluginMethods.GET_SELECTION:
+        await handleGetSelectionCommand(params, id);
         break;
 
       case PluginMethods.SET_PROPERTIES:
@@ -456,6 +718,55 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.LOAD_FONT:
         await handleLoadFont(params, id);
+        break;
+
+      // Category 7: Hierarchy & Query Tools
+      case PluginMethods.GET_NODE_INFO:
+        await handleGetNodeInfo(params, id);
+        break;
+
+      case PluginMethods.SET_SELECTION:
+        await handleSetSelection(params, id);
+        break;
+
+      case PluginMethods.FIND_NODES:
+        await handleFindNodes(params, id);
+        break;
+
+      case PluginMethods.GET_CHILDREN:
+        await handleGetChildren(params, id);
+        break;
+
+      case PluginMethods.GET_PARENT:
+        await handleGetParentCommand(params, id);
+        break;
+
+      case PluginMethods.MOVE_NODE:
+        await handleMoveNodeCommand(params, id);
+        break;
+
+      case PluginMethods.CLONE_NODE:
+        await handleCloneNodeCommand(params, id);
+        break;
+
+      case PluginMethods.GET_CURRENT_PAGE_NODES:
+        await handleGetCurrentPageNodes(params, id);
+        break;
+
+      case PluginMethods.SEARCH_NODES:
+        await handleSearchNodes(params, id);
+        break;
+
+      case PluginMethods.GET_ALL_PAGES:
+        await handleGetAllPages(params, id);
+        break;
+
+      case PluginMethods.SWITCH_PAGE:
+        await handleSwitchPage(params, id);
+        break;
+
+      case PluginMethods.CREATE_PAGE:
+        await handleCreatePage(params, id);
         break;
 
       default:

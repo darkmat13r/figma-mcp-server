@@ -61,6 +61,21 @@ object FigmaConstants {
         const val SET_TEXT_TRUNCATION = "figma_set_text_truncation"
         const val LOAD_FONT = "figma_load_font"
 
+        // Category 7: Hierarchy & Query Tools
+        const val GET_NODE_INFO = "figma_get_node_info"
+        const val GET_SELECTION = "figma_get_selection"
+        const val SET_SELECTION = "figma_set_selection"
+        const val FIND_NODES = "figma_find_nodes"
+        const val GET_CHILDREN = "figma_get_children"
+        const val GET_PARENT = "figma_get_parent"
+        const val MOVE_NODE = "figma_move_node"
+        const val CLONE_NODE = "figma_clone_node"
+        const val GET_CURRENT_PAGE_NODES = "figma_get_current_page_nodes"
+        const val SEARCH_NODES = "figma_search_nodes"
+        const val GET_ALL_PAGES = "figma_get_all_pages"
+        const val SWITCH_PAGE = "figma_switch_page"
+        const val CREATE_PAGE = "figma_create_page"
+
         // Category 10: Utility Tools
         const val DELETE_NODE = "figma_delete_node"
         const val SHOW_NODE = "figma_show_node"
@@ -69,10 +84,8 @@ object FigmaConstants {
         const val SET_LOCKED = "figma_set_locked"
         const val NOTIFY = "figma_notify"
 
-        // Existing tools
-        const val GET_SELECTION = "figma_get_selection"
+        // Legacy/deprecated tools
         const val SET_PROPERTIES = "figma_set_properties"
-        const val GET_NODE_INFO = "figma_get_node_info"
     }
 
     // ========================================================================
@@ -97,6 +110,20 @@ object FigmaConstants {
         const val SET_TEXT_AUTO_RESIZE = "setTextAutoResize"
         const val SET_TEXT_TRUNCATION = "setTextTruncation"
         const val LOAD_FONT = "loadFont"
+
+        // Hierarchy & Query methods
+        const val GET_NODE_INFO = "getNodeInfo"
+        const val SET_SELECTION = "setSelection"
+        const val FIND_NODES = "findNodes"
+        const val GET_CHILDREN = "getChildren"
+        const val GET_PARENT = "getParent"
+        const val MOVE_NODE = "moveNode"
+        const val CLONE_NODE = "cloneNode"
+        const val GET_CURRENT_PAGE_NODES = "getCurrentPageNodes"
+        const val SEARCH_NODES = "searchNodes"
+        const val GET_ALL_PAGES = "getAllPages"
+        const val SWITCH_PAGE = "switchPage"
+        const val CREATE_PAGE = "createPage"
     }
 
     // ========================================================================
@@ -256,6 +283,19 @@ object FigmaConstants {
         const val MESSAGE = "message"
         const val TIMEOUT = "timeout"
         const val ERROR = "error"
+
+        // Hierarchy & Query Parameters
+        const val TYPE = "type"
+        const val PARENT_ID = "parentId"
+        const val NEW_PARENT_ID = "newParentId"
+        const val INDEX = "index"
+        const val DEEP = "deep"
+        const val RECURSIVE = "recursive"
+        const val SEARCH_TEXT = "searchText"
+        const val SEARCH_IN_CURRENT_PAGE_ONLY = "searchInCurrentPageOnly"
+        const val PAGE_ID = "pageId"
+        const val PAGE_NAME = "pageName"
+        const val SWITCH_TO_PAGE = "switchToPage"
     }
 
     // ========================================================================

@@ -50,6 +50,19 @@ export const PluginMethods = {
   SET_TEXT_AUTO_RESIZE: 'setTextAutoResize',
   SET_TEXT_TRUNCATION: 'setTextTruncation',
   LOAD_FONT: 'loadFont',
+  // Hierarchy & Query methods
+  GET_NODE_INFO: 'getNodeInfo',
+  SET_SELECTION: 'setSelection',
+  FIND_NODES: 'findNodes',
+  GET_CHILDREN: 'getChildren',
+  GET_PARENT: 'getParent',
+  MOVE_NODE: 'moveNode',
+  CLONE_NODE: 'cloneNode',
+  GET_CURRENT_PAGE_NODES: 'getCurrentPageNodes',
+  SEARCH_NODES: 'searchNodes',
+  GET_ALL_PAGES: 'getAllPages',
+  SWITCH_PAGE: 'switchPage',
+  CREATE_PAGE: 'createPage',
 } as const;
 
 // ============================================================================
@@ -185,6 +198,20 @@ export const ParamNames = {
   MESSAGE: 'message',
   TIMEOUT: 'timeout',
   ERROR: 'error',
+
+  // Hierarchy & Query Operations
+  NAME_REGEX: 'nameRegex',
+  TYPES: 'types',
+  PARENT_ID: 'parentId',
+  RECURSIVE: 'recursive',
+  INDEX: 'index',
+  DEEP: 'deep',
+  QUERY: 'query',
+  SEARCH_IN_TEXT: 'searchInText',
+  SEARCH_IN_NAMES: 'searchInNames',
+  CURRENT_PAGE_ONLY: 'currentPageOnly',
+  PAGE_ID: 'pageId',
+  SWITCH_TO: 'switchTo',
 } as const;
 
 // ============================================================================

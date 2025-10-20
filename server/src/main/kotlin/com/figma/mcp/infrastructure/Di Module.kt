@@ -10,6 +10,7 @@ import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.services.FigmaToolExecutor
 import com.figma.mcp.tools.FigmaToolRegistry
 import com.figma.mcp.tools.impl.*
+import com.figma.mcp.tools.impl.hierarchy.*
 import com.figma.mcp.transport.McpServer
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
@@ -122,6 +123,21 @@ val appModule = module {
             SetTextAutoResizeTool(get(), get()),
             SetTextTruncationTool(get(), get()),
             LoadFontTool(get(), get()),
+
+            // Category 7: Hierarchy & Query Tools (13 tools)
+            GetNodeInfoTool(get(), get()),
+            GetSelectionTool(get(), get()),
+            SetSelectionTool(get(), get()),
+            FindNodesTool(get(), get()),
+            GetChildrenTool(get(), get()),
+            GetParentTool(get(), get()),
+            MoveNodeTool(get(), get()),
+            CloneNodeTool(get(), get()),
+            GetCurrentPageNodesTool(get(), get()),
+            SearchNodesTool(get(), get()),
+            GetAllPagesTool(get(), get()),
+            SwitchPageTool(get(), get()),
+            CreatePageTool(get(), get()),
 
             // Category 10: Utility Tools (6 tools)
             DeleteNodeTool(get(), get()),

@@ -726,10 +726,10 @@ Parameters:
 
 ---
 
-## CATEGORY 7: HIERARCHY & QUERY TOOLS (8 tools)
+## CATEGORY 7: HIERARCHY & QUERY TOOLS (13 tools)
 
 ### Purpose
-Navigate, query, and manipulate node hierarchy.
+Navigate, query, and manipulate node hierarchy. Get page information, search across the document, and manage pages.
 
 ### Tools
 
@@ -805,6 +805,64 @@ Parameters:
 - nodeId: string (required)
 - deep?: boolean (include children)
 Returns: {clonedNodeId: string}
+```
+
+#### 7.9 `figma_get_current_page_nodes`
+**Purpose**: Get all top-level nodes on the currently open page
+```typescript
+Returns: {
+  pageId: string,
+  pageName: string,
+  nodes: NodeInfo[] (top-level children of current page)
+}
+```
+
+#### 7.10 `figma_search_nodes`
+**Purpose**: Advanced search for nodes by text, ID, or component instance
+```typescript
+Parameters:
+- searchText?: string (search in node names and text content)
+- nodeId?: string (find specific node by ID)
+- componentId?: string (find all instances of a component)
+- searchInCurrentPageOnly?: boolean (default: false, search entire document)
+Returns: {
+  nodes: NodeInfo[],
+  totalFound: number
+}
+```
+
+#### 7.11 `figma_get_all_pages`
+**Purpose**: Get list of all pages in the document
+```typescript
+Returns: {
+  pages: Array<{id: string, name: string, isCurrent: boolean}>
+}
+```
+
+#### 7.12 `figma_switch_page`
+**Purpose**: Switch to a different page
+```typescript
+Parameters:
+- pageId?: string (page ID to switch to)
+- pageName?: string (page name to switch to - alternative to pageId)
+Returns: {
+  pageId: string,
+  pageName: string,
+  message: string
+}
+```
+
+#### 7.13 `figma_create_page`
+**Purpose**: Create a new page in the document
+```typescript
+Parameters:
+- name?: string (page name, default: "Page N")
+- switchToPage?: boolean (switch to newly created page, default: true)
+Returns: {
+  pageId: string,
+  pageName: string,
+  message: string
+}
 ```
 
 ---
@@ -1008,9 +1066,9 @@ Parameters:
 - Category 6 (Variables): 6 tools
 - Category 8 (Styles): 5 tools
 
-### Phase 4: Utilities (14 tools)
+### Phase 4: Utilities (19 tools)
 **Goal**: Complete functionality
-- Remaining Category 7 tools: 6 tools
+- Remaining Category 7 tools: 11 tools
 - Category 9 (Images): 4 tools
 - Category 10 (Utilities): 6 tools
 
@@ -1048,16 +1106,16 @@ Implementation:
 
 ## TOTAL TOOL COUNT
 
-**74 MCP Tools** organized into 11 categories
+**79 MCP Tools** organized into 11 categories
 
-- **Category 0**: High-Level UI Generation (8 tools) - NEW!
+- **Category 0**: High-Level UI Generation (8 tools)
 - **Category 1**: Node Creation (12 tools)
 - **Category 2**: Layout Management (6 tools)
 - **Category 3**: Styling (8 tools)
 - **Category 4**: Typography (6 tools)
 - **Category 5**: Components & Variants (7 tools)
 - **Category 6**: Variables & Tokens (6 tools)
-- **Category 7**: Hierarchy & Query (8 tools)
+- **Category 7**: Hierarchy & Query (13 tools) - EXPANDED!
 - **Category 8**: Style Management (5 tools)
 - **Category 9**: Image & Media (4 tools)
 - **Category 10**: Utilities (6 tools)
