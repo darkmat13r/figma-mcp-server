@@ -76,6 +76,7 @@ const nodeCreationHandlers: Record<string, (params: Record<string, any>) => Prom
  */
 async function handleCreateNode(params: Record<string, any>, requestId?: string): Promise<void> {
   try {
+    console.log('[handleCreateNode] Starting with params:', params, 'requestId:', requestId);
     const nodeType = params.type;
     if (!nodeType) {
       throw new Error(ErrorMessages.missingParam('type'));
@@ -87,11 +88,14 @@ async function handleCreateNode(params: Record<string, any>, requestId?: string)
       throw new Error(`Unknown node type: ${nodeType}`);
     }
 
+    console.log('[handleCreateNode] Found handler for type:', nodeType);
     // Execute handler
     const node = await handler(params);
+    console.log('[handleCreateNode] Handler completed, node created:', node.id);
 
     // Send success response
     if (requestId) {
+      console.log('[handleCreateNode] Sending success response for requestId:', requestId);
       sendWSResponse(requestId, {
         success: true,
         nodeId: node.id,
@@ -103,9 +107,12 @@ async function handleCreateNode(params: Record<string, any>, requestId?: string)
         message: SuccessMessages.nodeCreated(nodeType),
       });
     }
+    console.log('[handleCreateNode] Response sent successfully');
   } catch (error) {
+    console.error('[handleCreateNode] Error occurred:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     if (requestId) {
+      console.log('[handleCreateNode] Sending error response for requestId:', requestId);
       sendWSResponse(requestId, {
         success: false,
         error: errorMessage,
@@ -983,8 +990,11 @@ async function handleGetImageFillsCommand(params: Record<string, any>, requestId
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
 async function handleWSCommand(command: any): Promise<void> {
+  let commandId: string | undefined;
   try {
     const { id, method, params } = command;
+    commandId = id;
+    console.log('[handleWSCommand] Received command:', method, 'id:', id, 'params:', params);
 
     switch (method) {
       case PluginMethods.CREATE_NODE:
@@ -1172,6 +1182,14 @@ async function handleWSCommand(command: any): Promise<void> {
     }
   } catch (error) {
     console.error('Error handling WS command:', error);
+    // CRITICAL FIX: Always send error response back to server to prevent hanging
+    if (commandId) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      sendWSResponse(commandId, {
+        success: false,
+        error: errorMessage,
+      });
+    }
   }
 }
 

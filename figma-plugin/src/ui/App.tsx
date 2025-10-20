@@ -43,7 +43,7 @@ export const App: React.FC = () => {
         {/* Main Content with Tabs */}
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="node-creation" className="h-full flex flex-col">
-            <TabsList className="w-full justify-start rounded-none border-b">
+            <TabsList className="w-full justify-start rounded-none border-b overflow-x-auto flex-nowrap">
               <TabsTrigger value="node-creation">Node Creation</TabsTrigger>
               <TabsTrigger value="styling">Styling</TabsTrigger>
               <TabsTrigger value="typography">Typography</TabsTrigger>
