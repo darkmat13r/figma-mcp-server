@@ -24,6 +24,7 @@
 import { PluginMessage, UIMessage } from './types';
 import { NodeTypes, PluginMethods, ErrorMessages, SuccessMessages } from './constants';
 import * as NodeHandlers from './nodeHandlers';
+import * as StyleHandlers from './styleHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -220,6 +221,44 @@ async function handleSetProperties(params: Record<string, any>, requestId: strin
 }
 
 /**
+ * Handle setStyle command (Category 3: Styling Tools)
+ */
+async function handleSetStyle(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await StyleHandlers.handleSetStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully applied style to node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle applyStyle command (Category 3: Styling Tools)
+ */
+async function handleApplyStyle(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await StyleHandlers.handleApplyStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully applied ${params.styleType} style to node: ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -246,6 +285,14 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.SET_PROPERTIES:
         await handleSetProperties(params, id);
+        break;
+
+      case PluginMethods.SET_STYLE:
+        await handleSetStyle(params, id);
+        break;
+
+      case PluginMethods.APPLY_STYLE:
+        await handleApplyStyle(params, id);
         break;
 
       default:

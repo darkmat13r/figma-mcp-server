@@ -40,6 +40,8 @@ export const PluginMethods = {
   GET_SELECTION: 'getSelection',
   GROUP_NODES: 'groupNodes',
   CREATE_BOOLEAN_OP: 'createBooleanOperation',
+  SET_STYLE: 'setStyle',
+  APPLY_STYLE: 'applyStyle',
 } as const;
 
 // ============================================================================
@@ -106,8 +108,21 @@ export const ParamNames = {
   FILLS: 'fills',
   STROKES: 'strokes',
   STROKE_WEIGHT: 'strokeWeight',
+  STROKE_ALIGN: 'strokeAlign',
+  STROKE_CAP: 'strokeCap',
+  STROKE_JOIN: 'strokeJoin',
   CORNER_RADIUS: 'cornerRadius',
+  TOP_LEFT_RADIUS: 'topLeftRadius',
+  TOP_RIGHT_RADIUS: 'topRightRadius',
+  BOTTOM_LEFT_RADIUS: 'bottomLeftRadius',
+  BOTTOM_RIGHT_RADIUS: 'bottomRightRadius',
+  CORNER_SMOOTHING: 'cornerSmoothing',
   FILL_COLOR: 'fillColor',
+  EFFECTS: 'effects',
+  OPACITY: 'opacity',
+  BLEND_MODE: 'blendMode',
+  STYLE_TYPE: 'styleType',
+  STYLE_ID: 'styleId',
 
   // Layout
   LAYOUT_MODE: 'layoutMode',
