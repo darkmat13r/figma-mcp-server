@@ -61,6 +61,23 @@ object FigmaConstants {
         const val SET_TEXT_TRUNCATION = "figma_set_text_truncation"
         const val LOAD_FONT = "figma_load_font"
 
+        // Category 5: Component & Variant Tools
+        const val CREATE_COMPONENT_FROM_NODE = "figma_create_component_from_node"
+        const val SET_COMPONENT_PROPERTIES = "figma_set_component_properties"
+        const val SET_INSTANCE_PROPERTIES = "figma_set_instance_properties"
+        const val DETACH_INSTANCE = "figma_detach_instance"
+        const val SWAP_INSTANCE = "figma_swap_instance"
+        const val CREATE_COMPONENT_SET = "figma_create_component_set"
+        const val ADD_VARIANT = "figma_add_variant"
+
+        // Category 6: Variable & Token Tools
+        const val CREATE_VARIABLE_COLLECTION = "figma_create_variable_collection"
+        const val CREATE_VARIABLE = "figma_create_variable"
+        const val BIND_VARIABLE = "figma_bind_variable"
+        const val GET_VARIABLES = "figma_get_variables"
+        const val SET_VARIABLE_VALUE = "figma_set_variable_value"
+        const val UNBIND_VARIABLE = "figma_unbind_variable"
+
         // Category 7: Hierarchy & Query Tools
         const val GET_NODE_INFO = "figma_get_node_info"
         const val GET_SELECTION = "figma_get_selection"
@@ -110,6 +127,23 @@ object FigmaConstants {
         const val SET_TEXT_AUTO_RESIZE = "setTextAutoResize"
         const val SET_TEXT_TRUNCATION = "setTextTruncation"
         const val LOAD_FONT = "loadFont"
+
+        // Component & Variant methods
+        const val CREATE_COMPONENT_FROM_NODE = "createComponentFromNode"
+        const val SET_COMPONENT_PROPERTIES = "setComponentProperties"
+        const val SET_INSTANCE_PROPERTIES = "setInstanceProperties"
+        const val DETACH_INSTANCE = "detachInstance"
+        const val SWAP_INSTANCE = "swapInstance"
+        const val CREATE_COMPONENT_SET = "createComponentSet"
+        const val ADD_VARIANT = "addVariant"
+
+        // Variable & Token methods
+        const val CREATE_VARIABLE_COLLECTION = "createVariableCollection"
+        const val CREATE_VARIABLE = "createVariable"
+        const val BIND_VARIABLE = "bindVariable"
+        const val GET_VARIABLES = "getVariables"
+        const val SET_VARIABLE_VALUE = "setVariableValue"
+        const val UNBIND_VARIABLE = "unbindVariable"
 
         // Hierarchy & Query methods
         const val GET_NODE_INFO = "getNodeInfo"
@@ -265,6 +299,23 @@ object FigmaConstants {
         // Components
         const val COMPONENT_ID = "componentId"
         const val DESCRIPTION = "description"
+        const val INSTANCE_ID = "instanceId"
+        const val NEW_COMPONENT_ID = "newComponentId"
+        const val COMPONENT_IDS = "componentIds"
+        const val COMPONENT_SET_ID = "componentSetId"
+
+        // Variables & Tokens
+        const val COLLECTION_ID = "collectionId"
+        const val MODES = "modes"
+        const val VARIABLE_ID = "variableId"
+        const val FIELD = "field"
+        const val VALUE = "value"
+        const val MODE_ID = "modeId"
+        const val VALUES = "values"
+
+        // Component Properties
+        const val DEFAULT_VALUE = "defaultValue"
+        const val VARIANT_OPTIONS = "variantOptions"
 
         // Groups
         const val NODE_IDS = "nodeIds"

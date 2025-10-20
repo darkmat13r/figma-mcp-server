@@ -63,6 +63,21 @@ export const PluginMethods = {
   GET_ALL_PAGES: 'getAllPages',
   SWITCH_PAGE: 'switchPage',
   CREATE_PAGE: 'createPage',
+  // Component & Variant methods
+  CREATE_COMPONENT_FROM_NODE: 'createComponentFromNode',
+  SET_COMPONENT_PROPERTIES: 'setComponentProperties',
+  SET_INSTANCE_PROPERTIES: 'setInstanceProperties',
+  DETACH_INSTANCE: 'detachInstance',
+  SWAP_INSTANCE: 'swapInstance',
+  CREATE_COMPONENT_SET: 'createComponentSet',
+  ADD_VARIANT: 'addVariant',
+  // Variable & Token methods
+  CREATE_VARIABLE_COLLECTION: 'createVariableCollection',
+  CREATE_VARIABLE: 'createVariable',
+  BIND_VARIABLE: 'bindVariable',
+  GET_VARIABLES: 'getVariables',
+  SET_VARIABLE_VALUE: 'setVariableValue',
+  UNBIND_VARIABLE: 'unbindVariable',
 } as const;
 
 // ============================================================================
@@ -180,6 +195,10 @@ export const ParamNames = {
   // Components
   COMPONENT_ID: 'componentId',
   DESCRIPTION: 'description',
+  INSTANCE_ID: 'instanceId',
+  NEW_COMPONENT_ID: 'newComponentId',
+  COMPONENT_IDS: 'componentIds',
+  COMPONENT_SET_ID: 'componentSetId',
 
   // Groups
   NODE_IDS: 'nodeIds',
@@ -212,6 +231,17 @@ export const ParamNames = {
   CURRENT_PAGE_ONLY: 'currentPageOnly',
   PAGE_ID: 'pageId',
   SWITCH_TO: 'switchTo',
+
+  // Variables & Tokens
+  COLLECTION_ID: 'collectionId',
+  MODES: 'modes',
+  VARIABLE_ID: 'variableId',
+  FIELD: 'field',
+  VALUE: 'value',
+  MODE_ID: 'modeId',
+  VALUES: 'values',
+  DEFAULT_VALUE: 'defaultValue',
+  VARIANT_OPTIONS: 'variantOptions',
 } as const;
 
 // ============================================================================

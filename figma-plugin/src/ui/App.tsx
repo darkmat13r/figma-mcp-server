@@ -6,6 +6,8 @@ import { TestPanel } from './components/TestPanel';
 import { StylingTestPanel } from './components/StylingTestPanel';
 import { TypographyTestPanel } from './components/TypographyTestPanel';
 import { HierarchyTestPanel } from './components/HierarchyTestPanel';
+import { ComponentsTestPanel } from './components/ComponentsTestPanel';
+import { VariablesTestPanel } from './components/VariablesTestPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 export const App: React.FC = () => {
@@ -45,6 +47,8 @@ export const App: React.FC = () => {
               <TabsTrigger value="styling">Styling</TabsTrigger>
               <TabsTrigger value="typography">Typography</TabsTrigger>
               <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
+              <TabsTrigger value="components">Components</TabsTrigger>
+              <TabsTrigger value="variables">Variables</TabsTrigger>
               <TabsTrigger value="console">Console</TabsTrigger>
             </TabsList>
 
@@ -71,6 +75,20 @@ export const App: React.FC = () => {
 
             <TabsContent value="hierarchy" className="flex-1 overflow-auto m-0">
               <HierarchyTestPanel
+                onSendCommand={sendRequest}
+                isConnected={connectionState === 'connected'}
+              />
+            </TabsContent>
+
+            <TabsContent value="components" className="flex-1 overflow-auto m-0">
+              <ComponentsTestPanel
+                onSendCommand={sendRequest}
+                isConnected={connectionState === 'connected'}
+              />
+            </TabsContent>
+
+            <TabsContent value="variables" className="flex-1 overflow-auto m-0">
+              <VariablesTestPanel
                 onSendCommand={sendRequest}
                 isConnected={connectionState === 'connected'}
               />

@@ -4,6 +4,13 @@
     "figma": {
       "url": "http://localhost:1234/sse",
       "transport": "sse"
+    },
+    "streamable-mcp-server": {
+      "command": "mcp-proxy",
+      "args" : [
+        "streamable-http",
+        "http://127.0.0.1:12306/mcp"
+      ]
     }
   }
 }

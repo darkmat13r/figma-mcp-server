@@ -11,6 +11,8 @@ import com.figma.mcp.services.FigmaToolExecutor
 import com.figma.mcp.tools.FigmaToolRegistry
 import com.figma.mcp.tools.impl.*
 import com.figma.mcp.tools.impl.hierarchy.*
+import com.figma.mcp.tools.impl.components.*
+import com.figma.mcp.tools.impl.variables.*
 import com.figma.mcp.transport.McpServer
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
@@ -123,6 +125,23 @@ val appModule = module {
             SetTextAutoResizeTool(get(), get()),
             SetTextTruncationTool(get(), get()),
             LoadFontTool(get(), get()),
+
+            // Category 5: Component & Variant Tools (7 tools)
+            CreateComponentFromNodeTool(get(), get()),
+            SetComponentPropertiesTool(get(), get()),
+            SetInstancePropertiesTool(get(), get()),
+            DetachInstanceTool(get(), get()),
+            SwapInstanceTool(get(), get()),
+            CreateComponentSetTool(get(), get()),
+            AddVariantTool(get(), get()),
+
+            // Category 6: Variable & Token Tools (6 tools)
+            CreateVariableCollectionTool(get(), get()),
+            CreateVariableTool(get(), get()),
+            BindVariableTool(get(), get()),
+            GetVariablesTool(get(), get()),
+            SetVariableValueTool(get(), get()),
+            UnbindVariableTool(get(), get()),
 
             // Category 7: Hierarchy & Query Tools (13 tools)
             GetNodeInfoTool(get(), get()),

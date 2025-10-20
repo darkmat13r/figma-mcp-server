@@ -28,6 +28,8 @@ import * as StyleHandlers from './styleHandlers';
 import * as UtilityHandlers from './utilityHandlers';
 import * as TypographyHandlers from './typographyHandlers';
 import * as HierarchyHandlers from './hierarchyHandlers';
+import * as ComponentHandlers from './componentHandlers';
+import * as VariableHandlers from './variableHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -652,6 +654,254 @@ async function handleCreatePage(params: Record<string, any>, requestId: string):
 }
 
 /**
+ * Handle createComponentFromNode command (Category 5: Component Tools)
+ */
+async function handleCreateComponentFromNode(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ComponentHandlers.handleCreateComponentFromNode(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setComponentProperties command (Category 5: Component Tools)
+ */
+async function handleSetComponentProperties(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await ComponentHandlers.handleSetComponentProperties(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set component properties for: ${params.componentId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setInstanceProperties command (Category 5: Component Tools)
+ */
+async function handleSetInstanceProperties(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await ComponentHandlers.handleSetInstanceProperties(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set instance properties for: ${params.instanceId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle detachInstance command (Category 5: Component Tools)
+ */
+async function handleDetachInstanceCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ComponentHandlers.handleDetachInstance(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+      message: `Successfully detached instance: ${params.instanceId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle swapInstance command (Category 5: Component Tools)
+ */
+async function handleSwapInstanceCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await ComponentHandlers.handleSwapInstance(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully swapped instance ${params.instanceId} to component ${params.newComponentId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createComponentSet command (Category 5: Component Tools)
+ */
+async function handleCreateComponentSet(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ComponentHandlers.handleCreateComponentSet(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle addVariant command (Category 5: Component Tools)
+ */
+async function handleAddVariant(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await ComponentHandlers.handleAddVariant(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createVariableCollection command (Category 6: Variable Tools)
+ */
+async function handleCreateVariableCollection(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await VariableHandlers.handleCreateVariableCollection(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createVariable command (Category 6: Variable Tools)
+ */
+async function handleCreateVariableCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await VariableHandlers.handleCreateVariable(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle bindVariable command (Category 6: Variable Tools)
+ */
+async function handleBindVariableCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await VariableHandlers.handleBindVariable(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully bound variable ${params.variableId} to field ${params.field} on node ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getVariables command (Category 6: Variable Tools)
+ */
+async function handleGetVariablesCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await VariableHandlers.handleGetVariables(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle setVariableValue command (Category 6: Variable Tools)
+ */
+async function handleSetVariableValue(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await VariableHandlers.handleSetVariableValue(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully set variable value for: ${params.variableId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle unbindVariable command (Category 6: Variable Tools)
+ */
+async function handleUnbindVariableCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await VariableHandlers.handleUnbindVariable(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully unbound variable from field ${params.field} on node ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -767,6 +1017,60 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.CREATE_PAGE:
         await handleCreatePage(params, id);
+        break;
+
+      // Category 5: Component & Variant Tools
+      case PluginMethods.CREATE_COMPONENT_FROM_NODE:
+        await handleCreateComponentFromNode(params, id);
+        break;
+
+      case PluginMethods.SET_COMPONENT_PROPERTIES:
+        await handleSetComponentProperties(params, id);
+        break;
+
+      case PluginMethods.SET_INSTANCE_PROPERTIES:
+        await handleSetInstanceProperties(params, id);
+        break;
+
+      case PluginMethods.DETACH_INSTANCE:
+        await handleDetachInstanceCommand(params, id);
+        break;
+
+      case PluginMethods.SWAP_INSTANCE:
+        await handleSwapInstanceCommand(params, id);
+        break;
+
+      case PluginMethods.CREATE_COMPONENT_SET:
+        await handleCreateComponentSet(params, id);
+        break;
+
+      case PluginMethods.ADD_VARIANT:
+        await handleAddVariant(params, id);
+        break;
+
+      // Category 6: Variable & Token Tools
+      case PluginMethods.CREATE_VARIABLE_COLLECTION:
+        await handleCreateVariableCollection(params, id);
+        break;
+
+      case PluginMethods.CREATE_VARIABLE:
+        await handleCreateVariableCommand(params, id);
+        break;
+
+      case PluginMethods.BIND_VARIABLE:
+        await handleBindVariableCommand(params, id);
+        break;
+
+      case PluginMethods.GET_VARIABLES:
+        await handleGetVariablesCommand(params, id);
+        break;
+
+      case PluginMethods.SET_VARIABLE_VALUE:
+        await handleSetVariableValue(params, id);
+        break;
+
+      case PluginMethods.UNBIND_VARIABLE:
+        await handleUnbindVariableCommand(params, id);
         break;
 
       default:
