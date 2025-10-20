@@ -113,7 +113,15 @@ val appModule = module {
             SetCornerRadiusTool(get(), get()),
             ApplyPaintStyleTool(get(), get()),
             ApplyEffectStyleTool(get(), get()),
-            ApplyTextStyleTool(get(), get())
+            ApplyTextStyleTool(get(), get()),
+
+            // Category 10: Utility Tools (6 tools)
+            DeleteNodeTool(get(), get()),
+            ShowNodeTool(get(), get()),
+            RenameNodeTool(get(), get()),
+            SetVisibleTool(get(), get()),
+            SetLockedTool(get(), get()),
+            NotifyTool(get(), get())
 
             // Future categories can be added here:
             // Category 2: Layout Management Tools

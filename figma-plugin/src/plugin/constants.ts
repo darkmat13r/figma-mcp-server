@@ -42,6 +42,7 @@ export const PluginMethods = {
   CREATE_BOOLEAN_OP: 'createBooleanOperation',
   SET_STYLE: 'setStyle',
   APPLY_STYLE: 'applyStyle',
+  UTILITY_OPERATION: 'utilityOperation',
 } as const;
 
 // ============================================================================
@@ -159,6 +160,14 @@ export const ParamNames = {
   // Node Info
   NODE_ID: 'nodeId',
   PROPERTIES: 'properties',
+
+  // Utility Operations
+  VISIBLE: 'visible',
+  LOCKED: 'locked',
+  ZOOM: 'zoom',
+  MESSAGE: 'message',
+  TIMEOUT: 'timeout',
+  ERROR: 'error',
 } as const;
 
 // ============================================================================

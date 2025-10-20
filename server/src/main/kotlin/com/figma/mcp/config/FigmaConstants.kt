@@ -53,6 +53,14 @@ object FigmaConstants {
         const val APPLY_EFFECT_STYLE = "figma_apply_effect_style"
         const val APPLY_TEXT_STYLE = "figma_apply_text_style"
 
+        // Category 10: Utility Tools
+        const val DELETE_NODE = "figma_delete_node"
+        const val SHOW_NODE = "figma_show_node"
+        const val RENAME_NODE = "figma_rename_node"
+        const val SET_VISIBLE = "figma_set_visible"
+        const val SET_LOCKED = "figma_set_locked"
+        const val NOTIFY = "figma_notify"
+
         // Existing tools
         const val GET_SELECTION = "figma_get_selection"
         const val SET_PROPERTIES = "figma_set_properties"
@@ -72,6 +80,7 @@ object FigmaConstants {
         const val CREATE_BOOLEAN_OP = "createBooleanOperation"
         const val SET_STYLE = "setStyle"
         const val APPLY_STYLE = "applyStyle"
+        const val UTILITY_OPERATION = "utilityOperation"
     }
 
     // ========================================================================
@@ -211,6 +220,14 @@ object FigmaConstants {
         // Node Info
         const val NODE_ID = "nodeId"
         const val PROPERTIES = "properties"
+
+        // Utility Operations
+        const val VISIBLE = "visible"
+        const val LOCKED = "locked"
+        const val ZOOM = "zoom"
+        const val MESSAGE = "message"
+        const val TIMEOUT = "timeout"
+        const val ERROR = "error"
     }
 
     // ========================================================================

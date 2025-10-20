@@ -25,6 +25,7 @@ import { PluginMessage, UIMessage } from './types';
 import { NodeTypes, PluginMethods, ErrorMessages, SuccessMessages } from './constants';
 import * as NodeHandlers from './nodeHandlers';
 import * as StyleHandlers from './styleHandlers';
+import * as UtilityHandlers from './utilityHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -259,6 +260,25 @@ async function handleApplyStyle(params: Record<string, any>, requestId: string):
 }
 
 /**
+ * Handle utilityOperation command (Category 10: Utility Tools)
+ */
+async function handleUtilityOperation(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await UtilityHandlers.handleUtilityOperation(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully completed utility operation: ${params.operation}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -293,6 +313,10 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.APPLY_STYLE:
         await handleApplyStyle(params, id);
+        break;
+
+      case PluginMethods.UTILITY_OPERATION:
+        await handleUtilityOperation(params, id);
         break;
 
       default:

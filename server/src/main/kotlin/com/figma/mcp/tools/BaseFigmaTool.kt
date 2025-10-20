@@ -321,6 +321,22 @@ abstract class BaseFigmaTool(
     }
 
     /**
+     * Get required boolean parameter
+     * @throws ParameterValidationException if missing
+     */
+    protected fun JsonObject.getRequiredBoolean(key: String): Boolean {
+        return this[key]?.jsonPrimitive?.booleanOrNull
+            ?: throw ParameterValidationException(FigmaConstants.ErrorMessages.missingParam(key))
+    }
+
+    /**
+     * Get optional boolean parameter
+     */
+    protected fun JsonObject.getBooleanOrNull(key: String): Boolean? {
+        return this[key]?.jsonPrimitive?.booleanOrNull
+    }
+
+    /**
      * Validate number is within range
      * @throws ParameterValidationException if out of range
      */
