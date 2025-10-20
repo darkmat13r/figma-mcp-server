@@ -88,13 +88,29 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
   const testSetFills = () => {
     const rgb = hexToRgb(fillColor);
+    const opacity = parseFloat(fillOpacity);
+
+    // Create proper Figma Paint object
+    const fill: any = {
+      type: 'SOLID',
+      color: {
+        r: rgb.r,
+        g: rgb.g,
+        b: rgb.b
+      },
+      visible: true
+    };
+
+    // Only add opacity if it's less than 1
+    if (opacity < 1) {
+      fill.opacity = opacity;
+    }
+
+    console.log('[StylingTestPanel] Sending fill:', fill);
+
     sendCommand('setStyle', {
       nodeId,
-      fills: [{
-        type: 'SOLID',
-        color: rgb,
-        opacity: parseFloat(fillOpacity)
-      }]
+      fills: [fill]
     });
   };
 

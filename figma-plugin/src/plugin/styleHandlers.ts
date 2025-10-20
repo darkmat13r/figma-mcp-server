@@ -20,8 +20,8 @@ import { ParamNames, ErrorMessages } from './constants';
 /**
  * Get node by ID with type checking
  */
-function getNode(nodeId: string): SceneNode {
-  const node = figma.getNodeById(nodeId);
+async function getNode(nodeId: string): Promise<SceneNode> {
+  const node = await figma.getNodeByIdAsync(nodeId);
   if (!node) {
     throw new Error(ErrorMessages.NODE_NOT_FOUND);
   }
@@ -79,14 +79,23 @@ export async function handleSetStyle(params: Record<string, any>): Promise<void>
 
   console.log('[StyleHandlers] handleSetStyle called with params:', JSON.stringify(params, null, 2));
 
-  const node = getNode(nodeId);
+  const node = await getNode(nodeId);
   console.log('[StyleHandlers] Found node:', node.name, 'Type:', node.type);
 
   // Apply fills
-  if (params[ParamNames.FILLS] !== undefined && supportsFills(node)) {
-    console.log('[StyleHandlers] Applying fills:', JSON.stringify(params[ParamNames.FILLS]));
-    (node as any).fills = params[ParamNames.FILLS];
-    console.log('[StyleHandlers] Fills applied successfully');
+  if (params[ParamNames.FILLS] !== undefined) {
+    const nodeSupportsFills = supportsFills(node);
+    console.log('[StyleHandlers] Node supports fills?', nodeSupportsFills);
+
+    if (nodeSupportsFills) {
+      console.log('[StyleHandlers] Applying fills:', JSON.stringify(params[ParamNames.FILLS]));
+      console.log('[StyleHandlers] Current fills before:', JSON.stringify((node as any).fills));
+      (node as any).fills = params[ParamNames.FILLS];
+      console.log('[StyleHandlers] Current fills after:', JSON.stringify((node as any).fills));
+      console.log('[StyleHandlers] Fills applied successfully');
+    } else {
+      console.warn('[StyleHandlers] Node does not support fills');
+    }
   }
 
   // Apply strokes
@@ -172,8 +181,8 @@ export async function handleApplyStyle(params: Record<string, any>): Promise<voi
     throw new Error(ErrorMessages.missingParam(ParamNames.STYLE_ID));
   }
 
-  const node = getNode(nodeId);
-  const style = figma.getStyleById(styleId);
+  const node = await getNode(nodeId);
+  const style = await figma.getStyleByIdAsync(styleId);
 
   if (!style) {
     throw new Error(`Style not found: ${styleId}`);
