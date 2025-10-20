@@ -73,7 +73,7 @@ class CreateEllipseTool(
             put(ParamNames.HEIGHT, params.getRequiredDouble(ParamNames.HEIGHT))
             put(ParamNames.X, params.getDoubleOrDefault(ParamNames.X, Defaults.DEFAULT_POSITION_X))
             put(ParamNames.Y, params.getDoubleOrDefault(ParamNames.Y, Defaults.DEFAULT_POSITION_Y))
-            params.getObjectOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
+            params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
         }
     }
 }

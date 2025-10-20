@@ -94,10 +94,10 @@ class CreateRectangleTool(
             put(ParamNames.Y, params.getDoubleOrDefault(ParamNames.Y, Defaults.DEFAULT_POSITION_Y))
 
             // Optional styling parameters
-            params.getObjectOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
+            params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
             params.getStringOrNull(ParamNames.FILL_COLOR)?.let { put(ParamNames.FILL_COLOR, it) }
             params.getDoubleOrNull(ParamNames.CORNER_RADIUS)?.let { put(ParamNames.CORNER_RADIUS, it) }
-            params.getObjectOrNull(ParamNames.STROKES)?.let { put(ParamNames.STROKES, it) }
+            params.getArrayOrNull(ParamNames.STROKES)?.let { put(ParamNames.STROKES, it) }
             params.getDoubleOrNull(ParamNames.STROKE_WEIGHT)?.let { put(ParamNames.STROKE_WEIGHT, it) }
         }
     }

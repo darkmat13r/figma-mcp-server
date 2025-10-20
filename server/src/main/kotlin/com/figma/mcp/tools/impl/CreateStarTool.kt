@@ -96,7 +96,7 @@ class CreateStarTool(
 
             // Optional parameters
             params.getDoubleOrNull(ParamNames.INNER_RADIUS)?.let { put(ParamNames.INNER_RADIUS, it) }
-            params.getObjectOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
+            params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
         }
     }
 

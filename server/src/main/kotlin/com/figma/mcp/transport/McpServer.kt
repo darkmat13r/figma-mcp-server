@@ -250,6 +250,7 @@ class McpServer(
                 isError = result.isError
             )
         } catch (e: Exception) {
+            e.printStackTrace()
             logger.error(
                 "Error executing tool",
                 e,

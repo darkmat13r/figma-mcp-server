@@ -93,7 +93,7 @@ class CreateTextTool(
 
             // Optional parameters
             params.getStringOrNull(ParamNames.TEXT_ALIGN_HORIZONTAL)?.let { put(ParamNames.TEXT_ALIGN_HORIZONTAL, it) }
-            params.getObjectOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
+            params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
         }
     }
 }

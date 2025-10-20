@@ -79,7 +79,7 @@ class CreateLineTool(
             put(ParamNames.Y2, params.getRequiredDouble(ParamNames.Y2))
 
             // Optional styling
-            params.getObjectOrNull(ParamNames.STROKES)?.let { put(ParamNames.STROKES, it) }
+            params.getArrayOrNull(ParamNames.STROKES)?.let { put(ParamNames.STROKES, it) }
             params.getDoubleOrNull(ParamNames.STROKE_WEIGHT)?.let { put(ParamNames.STROKE_WEIGHT, it) }
         }
     }

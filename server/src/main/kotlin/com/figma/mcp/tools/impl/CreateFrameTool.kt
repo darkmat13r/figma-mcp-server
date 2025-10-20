@@ -109,7 +109,7 @@ class CreateFrameTool(
             }
 
             // Fills (optional)
-            params.getObjectOrNull(ParamNames.FILLS)?.let {
+            params.getArrayOrNull(ParamNames.FILLS)?.let {
                 put(ParamNames.FILLS, it)
             }
         }

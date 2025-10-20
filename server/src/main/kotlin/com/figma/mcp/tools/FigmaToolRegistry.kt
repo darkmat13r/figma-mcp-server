@@ -190,6 +190,7 @@ class FigmaToolRegistry(
 
             result
         } catch (e: Exception) {
+            e.printStackTrace()
             logger.error("Tool execution failed", e, "toolName" to toolName)
             errorResult("Tool execution failed: ${e.message}")
         }

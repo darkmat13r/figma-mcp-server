@@ -314,6 +314,13 @@ abstract class BaseFigmaTool(
     }
 
     /**
+     * Get optional JSON array parameter
+     */
+    protected fun JsonObject.getArrayOrNull(key: String): JsonArray? {
+        return this[key]?.jsonArray
+    }
+
+    /**
      * Validate number is within range
      * @throws ParameterValidationException if out of range
      */
