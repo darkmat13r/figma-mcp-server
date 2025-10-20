@@ -3,6 +3,8 @@ import { useWebSocket } from './hooks/useWebSocket';
 import { ConnectionPanel } from './components/ConnectionPanel';
 import { ConsolePanel } from './components/ConsolePanel';
 import { TestPanel } from './components/TestPanel';
+import { StylingTestPanel } from './components/StylingTestPanel';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 export const App: React.FC = () => {
   console.log('App component rendering...');
@@ -33,14 +35,34 @@ export const App: React.FC = () => {
           onDisconnect={disconnect}
         />
 
-        {/* Test Panel */}
-        <TestPanel
-          connectionState={connectionState}
-          onSendMessage={sendRequest}
-        />
+        {/* Main Content with Tabs */}
+        <div className="flex-1 overflow-hidden">
+          <Tabs defaultValue="node-creation" className="h-full flex flex-col">
+            <TabsList className="w-full justify-start rounded-none border-b">
+              <TabsTrigger value="node-creation">Node Creation</TabsTrigger>
+              <TabsTrigger value="styling">Styling Tools</TabsTrigger>
+              <TabsTrigger value="console">Console</TabsTrigger>
+            </TabsList>
 
-        {/* Console Panel */}
-        <ConsolePanel logs={logs} onClear={clearLogs} />
+            <TabsContent value="node-creation" className="flex-1 overflow-auto m-0">
+              <TestPanel
+                connectionState={connectionState}
+                onSendMessage={sendRequest}
+              />
+            </TabsContent>
+
+            <TabsContent value="styling" className="flex-1 overflow-auto m-0">
+              <StylingTestPanel
+                onSendCommand={sendRequest}
+                isConnected={connectionState === 'connected'}
+              />
+            </TabsContent>
+
+            <TabsContent value="console" className="flex-1 overflow-auto m-0">
+              <ConsolePanel logs={logs} onClear={clearLogs} />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     );
   } catch (err) {

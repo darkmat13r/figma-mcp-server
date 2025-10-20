@@ -77,11 +77,16 @@ export async function handleSetStyle(params: Record<string, any>): Promise<void>
     throw new Error(ErrorMessages.missingParam(ParamNames.NODE_ID));
   }
 
+  console.log('[StyleHandlers] handleSetStyle called with params:', JSON.stringify(params, null, 2));
+
   const node = getNode(nodeId);
+  console.log('[StyleHandlers] Found node:', node.name, 'Type:', node.type);
 
   // Apply fills
   if (params[ParamNames.FILLS] !== undefined && supportsFills(node)) {
+    console.log('[StyleHandlers] Applying fills:', JSON.stringify(params[ParamNames.FILLS]));
     (node as any).fills = params[ParamNames.FILLS];
+    console.log('[StyleHandlers] Fills applied successfully');
   }
 
   // Apply strokes
