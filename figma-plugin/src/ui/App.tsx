@@ -5,6 +5,7 @@ import { ConsolePanel } from './components/ConsolePanel';
 import { TestPanel } from './components/TestPanel';
 import { StylingTestPanel } from './components/StylingTestPanel';
 import { TypographyTestPanel } from './components/TypographyTestPanel';
+import { HierarchyTestPanel } from './components/HierarchyTestPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 export const App: React.FC = () => {
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
               <TabsTrigger value="node-creation">Node Creation</TabsTrigger>
               <TabsTrigger value="styling">Styling</TabsTrigger>
               <TabsTrigger value="typography">Typography</TabsTrigger>
+              <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
               <TabsTrigger value="console">Console</TabsTrigger>
             </TabsList>
 
@@ -62,6 +64,13 @@ export const App: React.FC = () => {
 
             <TabsContent value="typography" className="flex-1 overflow-auto m-0">
               <TypographyTestPanel
+                onSendCommand={sendRequest}
+                isConnected={connectionState === 'connected'}
+              />
+            </TabsContent>
+
+            <TabsContent value="hierarchy" className="flex-1 overflow-auto m-0">
+              <HierarchyTestPanel
                 onSendCommand={sendRequest}
                 isConnected={connectionState === 'connected'}
               />
