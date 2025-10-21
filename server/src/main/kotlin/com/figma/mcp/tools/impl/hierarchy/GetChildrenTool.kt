@@ -76,7 +76,7 @@ class GetChildrenTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Found ${childCount} child node(s): ${childrenData.toString()}")
+                ToolContent.TextContent(text = "Found ${childCount} child node(s): ${childrenData.toJsonString()}")
             ),
             isError = false
         )

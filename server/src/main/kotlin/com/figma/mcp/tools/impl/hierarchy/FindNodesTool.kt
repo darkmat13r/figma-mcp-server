@@ -105,7 +105,7 @@ class FindNodesTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Found ${nodeCount} node(s): ${nodesData.toString()}")
+                ToolContent.TextContent(text = "Found ${nodeCount} node(s): ${nodesData.toJsonString()}")
             ),
             isError = false
         )

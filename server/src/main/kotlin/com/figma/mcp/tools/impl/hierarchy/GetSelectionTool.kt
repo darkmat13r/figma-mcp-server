@@ -65,7 +65,7 @@ class GetSelectionTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Selected nodes (${nodeCount}): ${selectionData.toString()}")
+                ToolContent.TextContent(text = "Selected nodes (${nodeCount}): ${selectionData.toJsonString()}")
             ),
             isError = false
         )

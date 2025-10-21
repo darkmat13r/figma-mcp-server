@@ -218,21 +218,29 @@ class McpServer(
         request: CallToolRequest
     ): CallToolResult {
         return try {
-            logger.debug(
-                "Handling tool execution request",
+            logger.info(
+                "→ MCP handleToolExecution() STARTED",
                 "toolName" to toolName,
                 "hasArguments" to (request.arguments.toString() != "{}")
             )
 
             // Execute the tool via registry
+            logger.info("  Calling toolRegistry.executeTool()...", "toolName" to toolName)
             val result = toolRegistry.executeTool(
                 toolName = toolName,
                 arguments = request.arguments,
                 validateArgs = true
             )
+            logger.info(
+                "  ✓ toolRegistry.executeTool() returned",
+                "toolName" to toolName,
+                "isError" to result.isError,
+                "contentCount" to result.content.size
+            )
 
             // Convert our CallToolResult to SDK's CallToolResult format
-            CallToolResult(
+            logger.info("  Converting result to SDK format...", "toolName" to toolName)
+            val sdkResult = CallToolResult(
                 content = result.content.map { content ->
                     when (content) {
                         is ToolContent.TextContent -> {
@@ -249,12 +257,21 @@ class McpServer(
                 },
                 isError = result.isError
             )
+            logger.info(
+                "  ✓ Conversion complete, returning result",
+                "toolName" to toolName,
+                "sdkContentCount" to sdkResult.content.size
+            )
+
+            logger.info("← MCP handleToolExecution() RETURNING", "toolName" to toolName)
+            sdkResult
         } catch (e: Exception) {
             e.printStackTrace()
             logger.error(
-                "Error executing tool",
+                "✗ ERROR in handleToolExecution",
                 e,
-                "toolName" to toolName
+                "toolName" to toolName,
+                "errorType" to e.javaClass.simpleName
             )
             CallToolResult(
                 content = listOf(

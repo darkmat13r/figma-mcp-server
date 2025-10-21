@@ -94,7 +94,7 @@ class SearchNodesTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Search results (${totalFound} found): ${searchData.toString()}")
+                ToolContent.TextContent(text = "Search results (${totalFound} found): ${searchData.toJsonString()}")
             ),
             isError = false
         )

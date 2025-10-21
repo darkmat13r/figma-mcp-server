@@ -137,18 +137,39 @@ class FigmaConnectionManager(
      * Handle a response from the Figma plugin
      */
     suspend fun handleResponse(requestId: String, result: JsonElement?) {
+        logger.info(
+            "→ handleResponse() CALLED",
+            "requestId" to requestId,
+            "hasResult" to (result != null),
+            "pendingRequestsCount" to pendingRequests.size,
+            "hasPendingChannel" to pendingRequests.containsKey(requestId)
+        )
+
         val channel = pendingRequests[requestId]
         if (channel != null) {
-            logger.debug(
-                "Received response from Figma plugin",
-                "requestId" to requestId,
-                "hasResult" to (result != null)
+            logger.info(
+                "  Found pending channel, sending result...",
+                "requestId" to requestId
             )
-            channel.send(result)
+            try {
+                channel.send(result)
+                logger.info(
+                    "  ✓ Successfully sent result to channel",
+                    "requestId" to requestId
+                )
+            } catch (e: Exception) {
+                logger.error(
+                    "  ✗ FAILED to send result to channel",
+                    e,
+                    "requestId" to requestId
+                )
+                throw e
+            }
         } else {
             logger.warn(
-                "Received response for unknown request (may have timed out)",
-                "requestId" to requestId
+                "  ✗ No pending channel found (may have timed out)",
+                "requestId" to requestId,
+                "allPendingIds" to pendingRequests.keys.joinToString(", ")
             )
         }
     }
@@ -208,14 +229,24 @@ class FigmaConnectionManager(
 
             // Wait for response with timeout
             return try {
-                logger.debug(
-                    "  ⏳ Waiting for response...",
+                logger.info(
+                    "  ⏳ START waiting for response...",
                     "requestId" to requestId,
                     "timeoutMs" to timeout
                 )
 
                 val result = withTimeout(timeout) {
-                    responseChannel.receive()
+                    logger.info(
+                        "    Inside withTimeout block, calling receive()...",
+                        "requestId" to requestId
+                    )
+                    val receivedResult = responseChannel.receive()
+                    logger.info(
+                        "    ✓ receive() returned!",
+                        "requestId" to requestId,
+                        "hasResult" to (receivedResult != null)
+                    )
+                    receivedResult
                 }
 
                 val totalTime = System.currentTimeMillis() - startTime

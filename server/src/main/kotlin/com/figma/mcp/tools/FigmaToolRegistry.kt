@@ -160,6 +160,8 @@ class FigmaToolRegistry(
         arguments: JsonObject,
         validateArgs: Boolean = true
     ): CallToolResult {
+        logger.info("→ FigmaToolRegistry.executeTool() STARTED", "toolName" to toolName)
+
         // Look up the tool
         val tool = tools[toolName]
             ?: return errorResult("Unknown tool: $toolName")
@@ -174,24 +176,26 @@ class FigmaToolRegistry(
 
         // Execute the tool
         return try {
-            logger.debug(
-                "Executing Figma tool",
+            logger.info(
+                "  Calling tool.execute()...",
                 "toolName" to toolName,
                 "hasArguments" to arguments.isNotEmpty()
             )
 
             val result = tool.execute(arguments)
 
-            logger.debug(
-                "Tool execution completed",
+            logger.info(
+                "  ✓ tool.execute() returned",
                 "toolName" to toolName,
-                "isError" to result.isError
+                "isError" to result.isError,
+                "contentSize" to result.content.size
             )
 
+            logger.info("← FigmaToolRegistry.executeTool() RETURNING", "toolName" to toolName)
             result
         } catch (e: Exception) {
             e.printStackTrace()
-            logger.error("Tool execution failed", e, "toolName" to toolName)
+            logger.error("✗ Tool execution failed", e, "toolName" to toolName)
             errorResult("Tool execution failed: ${e.message}")
         }
     }

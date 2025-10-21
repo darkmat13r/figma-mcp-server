@@ -73,7 +73,7 @@ class GetNodeInfoTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = nodeInfo.toString())
+                ToolContent.TextContent(text = nodeInfo.toJsonString())
             ),
             isError = false
         )

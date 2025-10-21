@@ -81,7 +81,7 @@ class GetImageFillsTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Image fills (${imageCount}): ${imagesData.toString()}")
+                ToolContent.TextContent(text = "Image fills (${imageCount}): ${imagesData.toJsonString()}")
             ),
             isError = false
         )

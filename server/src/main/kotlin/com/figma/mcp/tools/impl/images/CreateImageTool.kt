@@ -98,7 +98,7 @@ class CreateImageTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = responseData.toString())
+                ToolContent.TextContent(text = responseData.toJsonString())
             ),
             isError = false
         )

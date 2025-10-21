@@ -68,7 +68,7 @@ class GetAllPagesTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Document pages (${pageCount}): ${pagesData.toString()}")
+                ToolContent.TextContent(text = "Document pages (${pageCount}): ${pagesData.toJsonString()}")
             ),
             isError = false
         )

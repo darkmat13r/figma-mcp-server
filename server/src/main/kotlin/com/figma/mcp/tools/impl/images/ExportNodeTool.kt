@@ -104,7 +104,7 @@ class ExportNodeTool(
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = resultData.toString())
+                ToolContent.TextContent(text = resultData.toJsonString())
             ),
             isError = false
         )

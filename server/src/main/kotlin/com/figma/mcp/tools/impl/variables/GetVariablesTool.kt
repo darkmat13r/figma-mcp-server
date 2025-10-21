@@ -70,16 +70,25 @@ class GetVariablesTool(
         pluginResponse: JsonElement?,
         params: JsonObject
     ): CallToolResult {
+        logger.info("  [GetVariablesTool] formatSuccessResponse STARTED")
+
         // Return the variables array data as JSON
         val variablesData = pluginResponse?.jsonObject ?: buildJsonObject {
             put("variables", buildJsonArray {})
         }
+        logger.info("  [GetVariablesTool] Got variablesData")
 
         val variableCount = variablesData["variables"]?.jsonArray?.size ?: 0
+        logger.info("  [GetVariablesTool] Variable count: $variableCount")
+
+        // OPTIMIZATION: Use toJsonString() helper for efficient serialization
+        logger.info("  [GetVariablesTool] Starting JSON serialization...")
+        val jsonString = variablesData.toJsonString()
+        logger.info("  [GetVariablesTool] JSON serialization complete, length: ${jsonString.length}")
 
         return CallToolResult(
             content = listOf(
-                ToolContent.TextContent(text = "Variables (${variableCount}): ${variablesData.toString()}")
+                ToolContent.TextContent(text = "Variables (${variableCount}): $jsonString")
             ),
             isError = false
         )

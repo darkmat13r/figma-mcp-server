@@ -73,10 +73,10 @@ abstract class BaseFigmaTool(
      */
     override suspend fun execute(arguments: JsonObject): CallToolResult {
         return try {
-            logger.debug(
-                "Tool execution started",
+            logger.info(
+                "→ BaseFigmaTool.execute() STARTED",
                 "toolName" to toolName,
-                "arguments" to arguments.toString()
+                "argumentsLength" to arguments.toString().length
             )
 
             // Step 1: Extract parameters (overrideable)
@@ -89,10 +89,21 @@ abstract class BaseFigmaTool(
             val pluginMethod = getPluginMethod()
 
             // Step 4: Send command to Figma plugin
+            logger.info("  Calling sendCommand()...", "toolName" to toolName, "method" to pluginMethod)
             val pluginResponse = sendCommand(pluginMethod, commandParams)
+            logger.info("  ✓ sendCommand() returned", "toolName" to toolName, "hasResponse" to (pluginResponse != null))
 
             // Step 5: Format and return success response
-            formatSuccessResponse(pluginResponse, extractedParams)
+            logger.info("  Calling formatSuccessResponse()...", "toolName" to toolName)
+            val result = formatSuccessResponse(pluginResponse, extractedParams)
+            logger.info(
+                "  ✓ formatSuccessResponse() returned",
+                "toolName" to toolName,
+                "isError" to result.isError
+            )
+
+            logger.info("← BaseFigmaTool.execute() RETURNING", "toolName" to toolName)
+            result
 
         } catch (e: ParameterValidationException) {
             logger.warn("Parameter validation failed", "toolName" to toolName, "error" to e.message)
@@ -357,6 +368,21 @@ abstract class BaseFigmaTool(
                 ToolContent.TextContent(text = message)
             ),
             isError = true
+        )
+    }
+
+    /**
+     * Efficiently serialize JsonElement to string
+     *
+     * PERFORMANCE NOTE: This uses Json.encodeToString which is much faster than
+     * JsonElement.toString() for large objects. The default toString() can take
+     * 7+ seconds for objects with 60+ nested elements, while encodeToString
+     * completes in milliseconds.
+     */
+    protected fun JsonElement.toJsonString(): String {
+        return kotlinx.serialization.json.Json.encodeToString(
+            JsonElement.serializer(),
+            this
         )
     }
 }
