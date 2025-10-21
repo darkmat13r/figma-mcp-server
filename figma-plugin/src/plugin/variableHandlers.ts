@@ -136,16 +136,46 @@ export async function handleCreateVariableCollection(
   const collection = figma.variables.createVariableCollection(name);
 
   // Add additional modes if specified
-  if (modes && Array.isArray(modes)) {
-    for (const modeName of modes) {
-      if (typeof modeName === 'string' && modeName !== collection.modes[0].name) {
-        // Skip the default mode (already exists)
-        collection.addMode(modeName);
+  const addedModes: string[] = [];
+  const skippedModes: string[] = [];
+
+  if (modes && Array.isArray(modes) && modes.length > 0) {
+    // First, rename the default mode to the first mode name
+    const firstMode = collection.modes[0];
+    if (firstMode && modes[0] && typeof modes[0] === 'string') {
+      collection.renameMode(firstMode.modeId, modes[0]);
+      addedModes.push(modes[0]);
+    }
+
+    // Then add the remaining modes (starting from index 1)
+    for (let i = 1; i < modes.length; i++) {
+      const modeName = modes[i];
+      if (typeof modeName === 'string' && modeName.trim().length > 0) {
+        try {
+          collection.addMode(modeName);
+          addedModes.push(modeName);
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          // If it's a pricing tier limitation, log warning and continue
+          if (errorMsg.includes('Limited to')) {
+            console.warn(`[VariableHandlers] Skipped mode "${modeName}": ${errorMsg}`);
+            skippedModes.push(modeName);
+            // Stop trying to add more modes since we hit the limit
+            break;
+          }
+          // For other errors, throw
+          throw error;
+        }
       }
     }
   }
 
   console.log('[VariableHandlers] Created variable collection:', collection.id);
+  if (skippedModes.length > 0) {
+    console.warn(
+      `[VariableHandlers] Could not add ${skippedModes.length} mode(s) due to pricing tier limits: ${skippedModes.join(', ')}`
+    );
+  }
 
   return serializeVariableCollection(collection);
 }

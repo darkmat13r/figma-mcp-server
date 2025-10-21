@@ -189,3 +189,65 @@ async function handleNotify(params: Record<string, any>): Promise<void> {
 
   console.log('[UtilityHandlers] Notification shown:', message);
 }
+
+/**
+ * Get current user and file information
+ * Returns user details and file metadata
+ */
+export async function handleGetUserInfo(): Promise<{
+  user: {
+    id: string | null;
+    name: string;
+    photoUrl: string | null;
+    color: string;
+    sessionId: number;
+  } | null;
+  file: {
+    name: string;
+    editorType: string;
+  };
+  viewport: {
+    center: { x: number; y: number };
+    zoom: number;
+  };
+  capabilities: {
+    canEditFile: boolean;
+  };
+}> {
+  const user = figma.currentUser;
+
+  // Get user information
+  const userInfo = user ? {
+    id: user.id,
+    name: user.name,
+    photoUrl: user.photoUrl,
+    color: user.color,
+    sessionId: user.sessionId,
+  } : null;
+
+  // Get file information
+  const fileInfo = {
+    name: figma.root.name,
+    editorType: figma.editorType,
+  };
+
+  // Get viewport information
+  const viewportInfo = {
+    center: figma.viewport.center,
+    zoom: figma.viewport.zoom,
+  };
+
+  // Get capabilities (what the user can do in this file)
+  const capabilities = {
+    canEditFile: figma.mode === 'default', // In 'default' mode user can edit
+  };
+
+  console.log('[UtilityHandlers] Retrieved user info:', userInfo);
+
+  return {
+    user: userInfo,
+    file: fileInfo,
+    viewport: viewportInfo,
+    capabilities: capabilities,
+  };
+}

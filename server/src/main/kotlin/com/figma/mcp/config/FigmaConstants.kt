@@ -106,6 +106,7 @@ object FigmaConstants {
         const val SET_VISIBLE = "figma_set_visible"
         const val SET_LOCKED = "figma_set_locked"
         const val NOTIFY = "figma_notify"
+        const val GET_USER_INFO = "figma_get_user_info"
 
         // Legacy/deprecated tools
         const val SET_PROPERTIES = "figma_set_properties"
@@ -170,6 +171,9 @@ object FigmaConstants {
         const val SET_IMAGE_FILL = "setImageFill"
         const val EXPORT_NODE = "exportNode"
         const val GET_IMAGE_FILLS = "getImageFills"
+
+        // User & File Info methods
+        const val GET_USER_INFO = "getUserInfo"
     }
 
     // ========================================================================

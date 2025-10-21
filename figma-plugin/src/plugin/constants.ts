@@ -83,6 +83,8 @@ export const PluginMethods = {
   SET_IMAGE_FILL: 'setImageFill',
   EXPORT_NODE: 'exportNode',
   GET_IMAGE_FILLS: 'getImageFills',
+  // User & File Info methods
+  GET_USER_INFO: 'getUserInfo',
 } as const;
 
 // ============================================================================

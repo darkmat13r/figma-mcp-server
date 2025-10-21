@@ -986,6 +986,25 @@ async function handleGetImageFillsCommand(params: Record<string, any>, requestId
 }
 
 /**
+ * Handle getUserInfo command (User & File Information)
+ */
+async function handleGetUserInfoCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await UtilityHandlers.handleGetUserInfo();
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -1175,6 +1194,11 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.GET_IMAGE_FILLS:
         await handleGetImageFillsCommand(params, id);
+        break;
+
+      // User & File Information
+      case PluginMethods.GET_USER_INFO:
+        await handleGetUserInfoCommand(params, id);
         break;
 
       default:

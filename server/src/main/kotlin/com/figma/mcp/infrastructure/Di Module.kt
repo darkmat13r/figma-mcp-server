@@ -165,13 +165,14 @@ val appModule = module {
             ExportNodeTool(get(), get()),
             GetImageFillsTool(get(), get()),
 
-            // Category 10: Utility Tools (6 tools)
+            // Category 10: Utility Tools (7 tools)
             DeleteNodeTool(get(), get()),
             ShowNodeTool(get(), get()),
             RenameNodeTool(get(), get()),
             SetVisibleTool(get(), get()),
             SetLockedTool(get(), get()),
-            NotifyTool(get(), get())
+            NotifyTool(get(), get()),
+            GetUserInfoTool(get(), get())
 
             // Future categories can be added here:
             // Category 2: Layout Management Tools
