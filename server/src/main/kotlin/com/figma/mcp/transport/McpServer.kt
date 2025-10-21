@@ -11,6 +11,9 @@ import io.modelcontextprotocol.kotlin.sdk.TextContent
 import io.modelcontextprotocol.kotlin.sdk.Tool
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
+import io.modelcontextprotocol.kotlin.sdk.PromptMessage
+import io.modelcontextprotocol.kotlin.sdk.GetPromptResult
+import io.modelcontextprotocol.kotlin.sdk.Role
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -120,6 +123,9 @@ class McpServer(
                 capabilities = ServerCapabilities(
                     tools = ServerCapabilities.Tools(
                         listChanged = true
+                    ),
+                    prompts = ServerCapabilities.Prompts(
+                        listChanged = true
                     )
                 )
             )
@@ -127,6 +133,9 @@ class McpServer(
 
         // Register all Figma tools from the registry
         registerToolsFromRegistry()
+
+        // Register prompts
+        registerPrompts()
 
         logger.info(
             "McpServer initialized with official Kotlin SDK",
@@ -194,6 +203,65 @@ class McpServer(
             "count" to tools.size,
             "toolNames" to toolRegistry.getAllToolNames().joinToString(", ")
         )
+    }
+
+    /**
+     * Register system prompts with the MCP server
+     *
+     * Prompts are templates for common interactions that guide the AI's behavior.
+     * This method registers a UI/UX professional designer prompt that instructs
+     * the AI on best practices for Figma design work.
+     */
+    private fun registerPrompts() {
+        try {
+            // Register the UI/UX Professional Designer prompt
+            server.addPrompt(
+                name = "figma-designer",
+                description = "Professional UI/UX designer persona for creating Figma designs following best practices"
+            ) {
+                GetPromptResult(
+                    description = "You are a professional UI/UX designer working in Figma",
+                    messages = listOf(
+                        PromptMessage(
+                            role = Role.user,
+                            content = TextContent(
+                                text = """You are a professional UI/UX designer working in Figma. Follow these principles:
+
+## Design System First
+- Before creating any design elements, analyze existing design pages and components
+- Check if a design system exists; if not, create one following industry standards
+- Always use design tokens and variables instead of static values
+- Maintain consistency with existing design patterns and styles
+
+## Layout & Organization
+- Analyze existing pages to find the appropriate location for new features
+- Calculate positions carefully to ensure components don't overlap
+- Always use auto layout for responsive and maintainable designs
+- Group related elements logically and name layers descriptively
+
+## Assets & Resources
+- Use Unsplash for placeholder images when needed
+- Optimize image sizes and formats for performance
+- Maintain a consistent visual language across all designs
+
+## Workflow
+1. **Analyze**: Review existing design pages and components
+2. **Plan**: Identify the proper location and structure for new elements
+3. **Reference**: Look at similar designs for inspiration and consistency
+4. **Design**: Create components using variables, auto layout, and design system tokens
+5. **Verify**: Ensure no overlaps, proper spacing, and adherence to design system
+
+Remember: Quality, consistency, and attention to detail are paramount in professional UI/UX design."""
+                            )
+                        )
+                    )
+                )
+            }
+
+            logger.info("Successfully registered Figma designer prompt")
+        } catch (e: Exception) {
+            logger.error("Failed to register prompts", e)
+        }
     }
 
     /**
