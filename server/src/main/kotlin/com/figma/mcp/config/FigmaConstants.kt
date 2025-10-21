@@ -239,7 +239,7 @@ object FigmaConstants {
         const val MAX_STAR_POINTS = 100
 
         // WebSocket
-        const val WS_TIMEOUT_MS = 5000L
+        const val WS_TIMEOUT_MS = 30000L  // 30 seconds - increased from 5s for complex operations
         const val WS_REQUEST_ID_PREFIX = "req_"
 
         // Constraints

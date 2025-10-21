@@ -43,7 +43,14 @@ class SetVariableValueTool(
                     ),
                     ParamNames.VALUE to mapOf(
                         "description" to "New value for the variable (required). " +
-                                "Type must match variable type: boolean, number, string, or color object {r,g,b,a}."
+                                "Type must match variable type:\n" +
+                                "  - BOOLEAN: true/false\n" +
+                                "  - FLOAT: number\n" +
+                                "  - STRING: text\n" +
+                                "  - COLOR: Supports multiple formats:\n" +
+                                "    * Object: {r: 0-1, g: 0-1, b: 0-1, a?: 0-1}\n" +
+                                "    * Hex string: \"#RRGGBB\" or \"#RGB\"\n" +
+                                "    * Array: [r, g, b] where values are 0-255 or 0-1"
                     ),
                     ParamNames.MODE_ID to mapOf(
                         "type" to "string",

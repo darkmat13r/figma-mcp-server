@@ -103,15 +103,102 @@ function serializeVariableCollection(collection: VariableCollection): VariableCo
 
 /**
  * Convert color value to RGBA format if needed
+ * Supports multiple color formats:
+ * - Object: {r: 0-1, g: 0-1, b: 0-1, a?: 0-1}
+ * - Hex string: "#RRGGBB" or "#RGB"
+ * - RGB array: [r, g, b] where values are 0-255 or 0-1
  */
 function normalizeColorValue(value: any): RGB | RGBA {
-  if (typeof value === 'object' && value !== null) {
+  // Handle object format {r, g, b, a?}
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
     // Check if it's already in RGB/RGBA format
     if ('r' in value && 'g' in value && 'b' in value) {
-      return value;
+      const r = value.r;
+      const g = value.g;
+      const b = value.b;
+
+      // Check if values are in 0-1 range (normalized) or 0-255 range
+      const isNormalized = r <= 1 && g <= 1 && b <= 1;
+
+      if (isNormalized) {
+        // Already normalized
+        return value;
+      } else {
+        // Convert from 0-255 to 0-1
+        if ('a' in value) {
+          const normalized: RGBA = {
+            r: r / 255,
+            g: g / 255,
+            b: b / 255,
+            a: value.a > 1 ? value.a / 255 : value.a,
+          };
+          return normalized;
+        } else {
+          const normalized: RGB = {
+            r: r / 255,
+            g: g / 255,
+            b: b / 255,
+          };
+          return normalized;
+        }
+      }
     }
   }
-  throw new Error('Invalid color value format. Expected {r, g, b, a?}');
+
+  // Handle hex string format "#RRGGBB" or "#RGB"
+  if (typeof value === 'string' && value.startsWith('#')) {
+    let hex = value.substring(1);
+
+    // Expand shorthand form (e.g., "03F") to full form (e.g., "0033FF")
+    if (hex.length === 3) {
+      hex = hex.split('').map(char => char + char).join('');
+    }
+
+    if (hex.length === 6) {
+      const r = parseInt(hex.substring(0, 2), 16) / 255;
+      const g = parseInt(hex.substring(2, 4), 16) / 255;
+      const b = parseInt(hex.substring(4, 6), 16) / 255;
+      return { r, g, b };
+    }
+  }
+
+  // Handle array format [r, g, b] or [r, g, b, a]
+  if (Array.isArray(value) && (value.length === 3 || value.length === 4)) {
+    const [r, g, b, a] = value;
+
+    // Check if values are in 0-1 range (normalized) or 0-255 range
+    const isNormalized = r <= 1 && g <= 1 && b <= 1;
+
+    if (isNormalized) {
+      if (a !== undefined) {
+        return { r, g, b, a } as RGBA;
+      } else {
+        return { r, g, b } as RGB;
+      }
+    } else {
+      if (a !== undefined) {
+        return {
+          r: r / 255,
+          g: g / 255,
+          b: b / 255,
+          a: a > 1 ? a / 255 : a,
+        } as RGBA;
+      } else {
+        return {
+          r: r / 255,
+          g: g / 255,
+          b: b / 255,
+        } as RGB;
+      }
+    }
+  }
+
+  throw new Error(
+    'Invalid color value format. Expected one of:\n' +
+    '  - Object: {r: 0-1, g: 0-1, b: 0-1, a?: 0-1}\n' +
+    '  - Hex string: "#RRGGBB" or "#RGB"\n' +
+    '  - Array: [r, g, b] or [r, g, b, a] where values are 0-255 or 0-1'
+  );
 }
 
 // ============================================================================
@@ -336,20 +423,27 @@ export async function handleGetVariables(
  */
 export async function handleSetVariableValue(params: Record<string, any>): Promise<void> {
   const variableId = params[ParamNames.VARIABLE_ID];
-  const modeId = params[ParamNames.MODE_ID];
+  let modeId = params[ParamNames.MODE_ID];
   const value = params[ParamNames.VALUE];
 
   if (!variableId) {
     throw new Error(ErrorMessages.missingParam(ParamNames.VARIABLE_ID));
-  }
-  if (!modeId) {
-    throw new Error(ErrorMessages.missingParam(ParamNames.MODE_ID));
   }
   if (value === undefined) {
     throw new Error(ErrorMessages.missingParam(ParamNames.VALUE));
   }
 
   const variable = await getVariable(variableId);
+
+  // If modeId not provided, use the first mode from the collection
+  if (!modeId) {
+    const collection = await figma.variables.getVariableCollectionByIdAsync(variable.variableCollectionId);
+    if (!collection || collection.modes.length === 0) {
+      throw new Error('Variable collection has no modes');
+    }
+    modeId = collection.modes[0].modeId;
+    console.log('[VariableHandlers] No modeId provided, using first mode:', modeId);
+  }
 
   // Normalize value based on variable type
   let normalizedValue = value;

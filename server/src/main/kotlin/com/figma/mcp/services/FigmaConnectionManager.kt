@@ -5,6 +5,7 @@ import io.ktor.websocket.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.serialization.json.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -70,13 +71,13 @@ class FigmaConnectionManager(
      *
      * @param method The method to call (e.g., "createNode", "getInfo")
      * @param params The parameters for the method
-     * @param timeout Timeout in milliseconds (default 5000ms)
+     * @param timeout Timeout in milliseconds (default 30000ms)
      * @return The result from the plugin, or null if timeout/error
      */
     suspend fun sendCommand(
         method: String,
         params: JsonObject,
-        timeout: Long = 5000
+        timeout: Long = 30000
     ): JsonElement? {
         // Get the first available connection (in production, you might want smarter routing)
         val connection = connections.values.firstOrNull()
@@ -103,11 +104,30 @@ class FigmaConnectionManager(
             )
 
             // Wait for response with timeout
-            return withTimeout(timeout) {
-                responseChannel.receive()
+            return try {
+                withTimeout(timeout) {
+                    responseChannel.receive()
+                }
+            } catch (e: TimeoutCancellationException) {
+                logger.error(
+                    "Timeout waiting for Figma plugin response",
+                    e,
+                    "requestId" to requestId,
+                    "method" to method,
+                    "timeoutMs" to timeout
+                )
+                throw IllegalStateException(
+                    "Figma plugin did not respond within ${timeout}ms. " +
+                    "The plugin may be busy or disconnected. RequestId: $requestId"
+                )
             }
         } catch (e: Exception) {
-            logger.error("Failed to send command to Figma plugin", e, "method" to method)
+            logger.error(
+                "Failed to send command to Figma plugin",
+                e,
+                "requestId" to requestId,
+                "method" to method
+            )
             throw e
         } finally {
             pendingRequests.remove(requestId)

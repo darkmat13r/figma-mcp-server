@@ -91,9 +91,10 @@ class WebSocketRoutes(
                 return
             }
 
-            // Check if this is a response to a tool command (has 'id' and 'result')
+            // Check if this is a response to a tool command (has 'id' or 'requestId' and 'result')
             if (jsonElement is kotlinx.serialization.json.JsonObject) {
-                val idElement = jsonElement["id"]
+                // Try both "id" and "requestId" fields for backward compatibility
+                val idElement = jsonElement["id"] ?: jsonElement["requestId"]
                 if (idElement is kotlinx.serialization.json.JsonPrimitive && idElement.isString) {
                     val id = idElement.content
                     if (id.startsWith("req_")) {

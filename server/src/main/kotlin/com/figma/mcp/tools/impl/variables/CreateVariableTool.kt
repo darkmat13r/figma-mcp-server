@@ -57,7 +57,11 @@ class CreateVariableTool(
                     ParamNames.VALUES to mapOf(
                         "type" to "object",
                         "description" to "Record<string, any> - Values per mode (optional). " +
-                                "Keys are mode IDs, values are the variable value for that mode."
+                                "Keys are mode IDs, values are the variable value for that mode. " +
+                                "For COLOR variables, values support multiple formats:\n" +
+                                "  * Object: {r: 0-1, g: 0-1, b: 0-1, a?: 0-1}\n" +
+                                "  * Hex string: \"#RRGGBB\" or \"#RGB\"\n" +
+                                "  * Array: [r, g, b] where values are 0-255 or 0-1"
                     )
                 ),
                 required = listOf(ParamNames.NAME, ParamNames.COLLECTION_ID, ParamNames.TYPE)
