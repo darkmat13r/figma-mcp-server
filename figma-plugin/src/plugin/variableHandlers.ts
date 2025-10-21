@@ -272,6 +272,8 @@ export async function handleCreateVariableCollection(
  * Create a variable in a collection
  */
 export async function handleCreateVariable(params: Record<string, any>): Promise<VariableInfo> {
+  console.log('[VariableHandlers] handleCreateVariable called with params:', JSON.stringify(params));
+
   const collectionId = params[ParamNames.COLLECTION_ID];
   const name = params[ParamNames.NAME];
   const type = params[ParamNames.TYPE];
@@ -289,6 +291,7 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
   }
 
   const collection = await getVariableCollection(collectionId);
+  console.log('[VariableHandlers] Collection retrieved:', collection.id, 'with modes:', collection.modes.map(m => ({ id: m.modeId, name: m.name })));
 
   // Variable types: BOOLEAN, FLOAT, STRING, COLOR
   let variableType: VariableResolvedDataType;
@@ -309,20 +312,38 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
       throw new Error(`Unknown variable type: ${type}. Must be BOOLEAN, FLOAT, STRING, or COLOR`);
   }
 
+  console.log('[VariableHandlers] Creating variable with type:', variableType);
+
   // Create the variable
   const variable = figma.variables.createVariable(name, collection, variableType);
+  console.log('[VariableHandlers] Variable created:', variable.id);
 
   // Set values for each mode
   if (values && typeof values === 'object') {
+    console.log('[VariableHandlers] Setting values for modes:', Object.keys(values));
+
     for (const [modeId, value] of Object.entries(values)) {
-      let normalizedValue: VariableValue = value as VariableValue;
+      try {
+        console.log(`[VariableHandlers] Processing mode ${modeId} with value:`, value);
 
-      // Normalize color values
-      if (variableType === 'COLOR') {
-        normalizedValue = normalizeColorValue(value) as VariableValue;
+        let normalizedValue: VariableValue = value as VariableValue;
+
+        // Normalize color values
+        if (variableType === 'COLOR') {
+          console.log('[VariableHandlers] Normalizing color value:', value);
+          normalizedValue = normalizeColorValue(value) as VariableValue;
+          console.log('[VariableHandlers] Normalized color value:', normalizedValue);
+        }
+
+        console.log(`[VariableHandlers] Setting value for mode ${modeId}:`, normalizedValue);
+        variable.setValueForMode(modeId, normalizedValue);
+        console.log(`[VariableHandlers] Successfully set value for mode ${modeId}`);
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error(`[VariableHandlers] Failed to set value for mode ${modeId}:`, errorMsg);
+        // Don't throw - continue setting other values
+        console.warn(`[VariableHandlers] Skipping mode ${modeId} due to error: ${errorMsg}`);
       }
-
-      variable.setValueForMode(modeId, normalizedValue);
     }
   } else if (defaultValue !== undefined) {
     // Set default value for all modes
@@ -333,6 +354,7 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
       normalizedValue = normalizeColorValue(defaultValue);
     }
 
+    console.log('[VariableHandlers] Setting default value for mode:', defaultModeId);
     variable.setValueForMode(defaultModeId, normalizedValue);
   }
 
@@ -422,6 +444,8 @@ export async function handleGetVariables(
  * Update a variable's value for a specific mode
  */
 export async function handleSetVariableValue(params: Record<string, any>): Promise<void> {
+  console.log('[VariableHandlers] handleSetVariableValue called with params:', JSON.stringify(params));
+
   const variableId = params[ParamNames.VARIABLE_ID];
   let modeId = params[ParamNames.MODE_ID];
   const value = params[ParamNames.VALUE];
@@ -433,28 +457,36 @@ export async function handleSetVariableValue(params: Record<string, any>): Promi
     throw new Error(ErrorMessages.missingParam(ParamNames.VALUE));
   }
 
+  console.log('[VariableHandlers] Getting variable:', variableId);
   const variable = await getVariable(variableId);
+  console.log('[VariableHandlers] Variable retrieved:', variable.id, 'type:', variable.resolvedType, 'collectionId:', variable.variableCollectionId);
 
   // If modeId not provided, use the first mode from the collection
   if (!modeId) {
+    console.log('[VariableHandlers] No modeId provided, fetching collection to get first mode');
     const collection = await figma.variables.getVariableCollectionByIdAsync(variable.variableCollectionId);
     if (!collection || collection.modes.length === 0) {
       throw new Error('Variable collection has no modes');
     }
     modeId = collection.modes[0].modeId;
-    console.log('[VariableHandlers] No modeId provided, using first mode:', modeId);
+    console.log('[VariableHandlers] Using first mode:', modeId, 'from modes:', collection.modes.map(m => ({ id: m.modeId, name: m.name })));
+  } else {
+    console.log('[VariableHandlers] Using provided modeId:', modeId);
   }
 
   // Normalize value based on variable type
   let normalizedValue = value;
   if (variable.resolvedType === 'COLOR') {
+    console.log('[VariableHandlers] Normalizing color value:', value);
     normalizedValue = normalizeColorValue(value);
+    console.log('[VariableHandlers] Normalized color value:', normalizedValue);
   }
 
   // Set the value for the mode
+  console.log('[VariableHandlers] Setting value for mode:', modeId, 'value:', normalizedValue);
   variable.setValueForMode(modeId, normalizedValue);
 
-  console.log('[VariableHandlers] Set variable value for:', variableId, 'mode:', modeId);
+  console.log('[VariableHandlers] Successfully set variable value for:', variableId, 'mode:', modeId);
 }
 
 /**

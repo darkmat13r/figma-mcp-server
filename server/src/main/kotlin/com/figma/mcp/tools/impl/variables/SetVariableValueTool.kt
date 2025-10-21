@@ -86,8 +86,20 @@ class SetVariableValueTool(
                                     put(ParamNames.VALUE, value)
                                 }
                             } else {
-                                // Regular string value
-                                put(ParamNames.VALUE, value)
+                                // Try to parse as number first
+                                val numericValue = stringValue.toDoubleOrNull()
+                                if (numericValue != null) {
+                                    put(ParamNames.VALUE, JsonPrimitive(numericValue))
+                                } else {
+                                    // Try to parse as boolean
+                                    val boolValue = stringValue.toBooleanStrictOrNull()
+                                    if (boolValue != null) {
+                                        put(ParamNames.VALUE, JsonPrimitive(boolValue))
+                                    } else {
+                                        // Regular string value
+                                        put(ParamNames.VALUE, value)
+                                    }
+                                }
                             }
                         } else {
                             // Number or boolean

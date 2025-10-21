@@ -11,6 +11,36 @@ import com.figma.mcp.tools.BaseFigmaTool
 import kotlinx.serialization.json.*
 
 /**
+ * Normalize a variable value - convert string numbers to actual numbers
+ */
+private fun normalizeVariableValue(value: JsonElement): JsonElement {
+    return when (value) {
+        is JsonPrimitive -> {
+            if (value.isString) {
+                val stringValue = value.content
+                // Try to parse as number
+                val numericValue = stringValue.toDoubleOrNull()
+                if (numericValue != null) {
+                    JsonPrimitive(numericValue)
+                } else {
+                    // Try to parse as boolean
+                    val boolValue = stringValue.toBooleanStrictOrNull()
+                    if (boolValue != null) {
+                        JsonPrimitive(boolValue)
+                    } else {
+                        // Keep as string (might be hex color, etc.)
+                        value
+                    }
+                }
+            } else {
+                value
+            }
+        }
+        else -> value
+    }
+}
+
+/**
  * Create Variable Tool
  *
  * ## Purpose
@@ -79,7 +109,7 @@ class CreateVariableTool(
             put(ParamNames.COLLECTION_ID, params.getRequiredString(ParamNames.COLLECTION_ID))
             put(ParamNames.TYPE, params.getRequiredString(ParamNames.TYPE))
 
-            // Handle values - parse if it's a JSON string
+            // Handle values - parse if it's a JSON string and normalize values
             params[ParamNames.VALUES]?.let { values ->
                 when (values) {
                     is JsonPrimitive -> {
@@ -87,8 +117,16 @@ class CreateVariableTool(
                             val stringValue = values.content
                             if (stringValue.trim().startsWith("{")) {
                                 try {
-                                    val parsedValue = Json.parseToJsonElement(stringValue)
-                                    put(ParamNames.VALUES, parsedValue)
+                                    val parsedValue = Json.parseToJsonElement(stringValue) as? JsonObject
+                                    if (parsedValue != null) {
+                                        // Normalize the values in the object
+                                        val normalizedValues = buildJsonObject {
+                                            parsedValue.forEach { (key, value) ->
+                                                put(key, normalizeVariableValue(value))
+                                            }
+                                        }
+                                        put(ParamNames.VALUES, normalizedValues)
+                                    }
                                 } catch (e: Exception) {
                                     // If parsing fails, skip it
                                     logger.warn("Failed to parse values JSON string: ${e.message}")
@@ -97,8 +135,13 @@ class CreateVariableTool(
                         }
                     }
                     is JsonObject -> {
-                        // Already an object, use as-is
-                        put(ParamNames.VALUES, values)
+                        // Normalize the values in the object
+                        val normalizedValues = buildJsonObject {
+                            values.forEach { (key, value) ->
+                                put(key, normalizeVariableValue(value))
+                            }
+                        }
+                        put(ParamNames.VALUES, normalizedValues)
                     }
                     else -> {
                         // Unexpected type, log warning
