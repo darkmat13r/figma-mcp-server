@@ -12,6 +12,7 @@
  */
 
 import { ParamNames, ErrorMessages } from './constants';
+import { validateAndSanitizeFills } from './styleUtils';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -90,7 +91,12 @@ export async function handleSetStyle(params: Record<string, any>): Promise<void>
     if (nodeSupportsFills) {
       console.log('[StyleHandlers] Applying fills:', JSON.stringify(params[ParamNames.FILLS]));
       console.log('[StyleHandlers] Current fills before:', JSON.stringify((node as any).fills));
-      (node as any).fills = params[ParamNames.FILLS];
+
+      // Validate and sanitize fills before applying
+      const sanitizedFills = validateAndSanitizeFills(params[ParamNames.FILLS]);
+      console.log('[StyleHandlers] Sanitized fills:', JSON.stringify(sanitizedFills));
+
+      (node as any).fills = sanitizedFills;
       console.log('[StyleHandlers] Current fills after:', JSON.stringify((node as any).fills));
       console.log('[StyleHandlers] Fills applied successfully');
     } else {

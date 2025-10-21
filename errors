@@ -1,0 +1,15 @@
+{
+  "id": "req_27_1760991176120",
+  "result": {
+    "success": false,
+    "error": "in set_fills: Property \"fills\" failed validation: Unrecognized key(s) in object: 'a' at [0].color"
+  }
+}
+
+{
+  "id": "req_6_1760991066204",
+  "result": {
+    "success": false,
+    "error": "in set_fills: Property \"fills\" failed validation: Expected [0].gradientTransform to be one of the following, but none matched:\n  Required value missing at [0].gradientTransform"
+  }
+}

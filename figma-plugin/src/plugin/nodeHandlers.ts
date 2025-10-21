@@ -12,6 +12,7 @@
  */
 
 import { NodeTypes, Defaults, ParamNames, ErrorMessages, BooleanOperations } from './constants';
+import { validateAndSanitizeFills } from './styleUtils';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -62,7 +63,9 @@ function applyCommonProperties(node: SceneNode, params: Record<string, any>): vo
     const rgb = hexToRgb(params[ParamNames.FILL_COLOR]);
     (node as GeometryMixin).fills = [{ type: 'SOLID', color: rgb }];
   } else if (params[ParamNames.FILLS] && 'fills' in node) {
-    (node as GeometryMixin).fills = params[ParamNames.FILLS];
+    // Validate and sanitize fills before applying
+    const sanitizedFills = validateAndSanitizeFills(params[ParamNames.FILLS]);
+    (node as GeometryMixin).fills = sanitizedFills;
   }
 
   // Strokes
