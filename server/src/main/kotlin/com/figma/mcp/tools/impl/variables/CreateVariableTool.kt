@@ -153,12 +153,41 @@ class CreateVariableTool(
     }
 
     override fun buildSuccessMessage(pluginResponse: JsonElement?, params: JsonObject): String {
-        val variableId = pluginResponse?.jsonObject?.get("variableId")
-            ?.jsonPrimitive?.content
-        return if (variableId != null) {
-            "Successfully created variable with ID: $variableId"
+        val responseObj = pluginResponse?.jsonObject
+        val variableId = responseObj?.get("variableId")?.jsonPrimitive?.content
+        val valuesSet = responseObj?.get("valuesSet")?.jsonObject
+        val errors = responseObj?.get("errors")?.jsonArray
+
+        val message = StringBuilder()
+
+        if (variableId != null) {
+            message.append("Successfully created variable with ID: $variableId")
         } else {
-            "Successfully created variable"
+            message.append("Successfully created variable")
         }
+
+        // Add information about values that were set
+        if (valuesSet != null && valuesSet.isNotEmpty()) {
+            val successfulModes = valuesSet.entries.count { it.value.jsonPrimitive.boolean }
+            val totalModes = valuesSet.size
+
+            message.append("\nValues set: $successfulModes/$totalModes modes")
+
+            // List which modes succeeded/failed
+            valuesSet.entries.forEach { (modeId, success) ->
+                val status = if (success.jsonPrimitive.boolean) "✓" else "✗"
+                message.append("\n  $status Mode $modeId")
+            }
+        }
+
+        // Add any errors encountered
+        if (errors != null && errors.isNotEmpty()) {
+            message.append("\n\nWarnings/Errors:")
+            errors.forEach { error ->
+                message.append("\n  • ${error.jsonPrimitive.content}")
+            }
+        }
+
+        return message.toString()
     }
 }

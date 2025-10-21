@@ -271,7 +271,7 @@ export async function handleCreateVariableCollection(
  * Handle createVariable command (6.2)
  * Create a variable in a collection
  */
-export async function handleCreateVariable(params: Record<string, any>): Promise<VariableInfo> {
+export async function handleCreateVariable(params: Record<string, any>): Promise<VariableInfo & { valuesSet?: Record<string, boolean>; errors?: string[] }> {
   console.log('[VariableHandlers] handleCreateVariable called with params:', JSON.stringify(params));
 
   const collectionId = params[ParamNames.COLLECTION_ID];
@@ -318,6 +318,13 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
   const variable = figma.variables.createVariable(name, collection, variableType);
   console.log('[VariableHandlers] Variable created:', variable.id);
 
+  // Track which values were set and any errors
+  const valuesSet: Record<string, boolean> = {};
+  const errors: string[] = [];
+
+  // Validate mode IDs before setting values
+  const validModeIds = new Set(collection.modes.map(m => m.modeId));
+
   // Set values for each mode
   if (values && typeof values === 'object') {
     console.log('[VariableHandlers] Setting values for modes:', Object.keys(values));
@@ -325,6 +332,15 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
     for (const [modeId, value] of Object.entries(values)) {
       try {
         console.log(`[VariableHandlers] Processing mode ${modeId} with value:`, value);
+
+        // Validate mode ID
+        if (!validModeIds.has(modeId)) {
+          const errorMsg = `Invalid mode ID: ${modeId}. Valid mode IDs for this collection are: ${Array.from(validModeIds).join(', ')}`;
+          console.error('[VariableHandlers]', errorMsg);
+          errors.push(errorMsg);
+          valuesSet[modeId] = false;
+          continue;
+        }
 
         let normalizedValue: VariableValue = value as VariableValue;
 
@@ -338,11 +354,12 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
         console.log(`[VariableHandlers] Setting value for mode ${modeId}:`, normalizedValue);
         variable.setValueForMode(modeId, normalizedValue);
         console.log(`[VariableHandlers] Successfully set value for mode ${modeId}`);
+        valuesSet[modeId] = true;
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.error(`[VariableHandlers] Failed to set value for mode ${modeId}:`, errorMsg);
-        // Don't throw - continue setting other values
-        console.warn(`[VariableHandlers] Skipping mode ${modeId} due to error: ${errorMsg}`);
+        errors.push(`Mode ${modeId}: ${errorMsg}`);
+        valuesSet[modeId] = false;
       }
     }
   } else if (defaultValue !== undefined) {
@@ -355,12 +372,29 @@ export async function handleCreateVariable(params: Record<string, any>): Promise
     }
 
     console.log('[VariableHandlers] Setting default value for mode:', defaultModeId);
-    variable.setValueForMode(defaultModeId, normalizedValue);
+    try {
+      variable.setValueForMode(defaultModeId, normalizedValue);
+      valuesSet[defaultModeId] = true;
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      errors.push(`Failed to set default value: ${errorMsg}`);
+      valuesSet[defaultModeId] = false;
+    }
   }
 
   console.log('[VariableHandlers] Created variable:', variable.id);
+  console.log('[VariableHandlers] Values set status:', valuesSet);
+  if (errors.length > 0) {
+    console.warn('[VariableHandlers] Errors encountered:', errors);
+  }
 
-  return serializeVariable(variable);
+  const result = {
+    ...serializeVariable(variable),
+    valuesSet: Object.keys(valuesSet).length > 0 ? valuesSet : undefined,
+    errors: errors.length > 0 ? errors : undefined
+  };
+
+  return result;
 }
 
 /**

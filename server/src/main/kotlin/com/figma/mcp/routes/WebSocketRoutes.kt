@@ -99,8 +99,15 @@ class WebSocketRoutes(
                     val id = idElement.content
                     if (id.startsWith("req_")) {
                         // This is a response to a tool command from FigmaConnectionManager
-                        logger.debug("Received tool response", "requestId" to id)
-                        figmaConnectionManager.handleResponse(id, jsonElement["result"])
+                        val result = jsonElement["result"]
+                        logger.info(
+                            "← WebSocket received tool response",
+                            "requestId" to id,
+                            "clientId" to clientId,
+                            "hasResult" to (result != null),
+                            "hasError" to (jsonElement["error"] != null)
+                        )
+                        figmaConnectionManager.handleResponse(id, result)
                         return
                     }
                 }
