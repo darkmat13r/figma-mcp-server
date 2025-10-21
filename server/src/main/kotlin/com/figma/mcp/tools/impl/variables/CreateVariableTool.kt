@@ -78,7 +78,34 @@ class CreateVariableTool(
             put(ParamNames.NAME, params.getRequiredString(ParamNames.NAME))
             put(ParamNames.COLLECTION_ID, params.getRequiredString(ParamNames.COLLECTION_ID))
             put(ParamNames.TYPE, params.getRequiredString(ParamNames.TYPE))
-            params.getObjectOrNull(ParamNames.VALUES)?.let { put(ParamNames.VALUES, it) }
+
+            // Handle values - parse if it's a JSON string
+            params[ParamNames.VALUES]?.let { values ->
+                when (values) {
+                    is JsonPrimitive -> {
+                        if (values.isString) {
+                            val stringValue = values.content
+                            if (stringValue.trim().startsWith("{")) {
+                                try {
+                                    val parsedValue = Json.parseToJsonElement(stringValue)
+                                    put(ParamNames.VALUES, parsedValue)
+                                } catch (e: Exception) {
+                                    // If parsing fails, skip it
+                                    logger.warn("Failed to parse values JSON string: ${e.message}")
+                                }
+                            }
+                        }
+                    }
+                    is JsonObject -> {
+                        // Already an object, use as-is
+                        put(ParamNames.VALUES, values)
+                    }
+                    else -> {
+                        // Unexpected type, log warning
+                        logger.warn("Unexpected values type: ${values::class.simpleName}")
+                    }
+                }
+            }
         }
     }
 

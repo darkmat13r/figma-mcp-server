@@ -69,8 +69,38 @@ class SetVariableValueTool(
     override fun buildCommandParams(params: JsonObject): JsonObject {
         return buildJsonObject {
             put(ParamNames.VARIABLE_ID, params.getRequiredString(ParamNames.VARIABLE_ID))
-            // Pass value as-is (can be any JSON type)
-            params[ParamNames.VALUE]?.let { put(ParamNames.VALUE, it) }
+
+            // Handle value - if it's a JSON string, parse it to actual JSON
+            params[ParamNames.VALUE]?.let { value ->
+                when (value) {
+                    is JsonPrimitive -> {
+                        if (value.isString) {
+                            // Try to parse as JSON if it looks like a JSON object/array
+                            val stringValue = value.content
+                            if (stringValue.trim().startsWith("{") || stringValue.trim().startsWith("[")) {
+                                try {
+                                    val parsedValue = Json.parseToJsonElement(stringValue)
+                                    put(ParamNames.VALUE, parsedValue)
+                                } catch (e: Exception) {
+                                    // If parsing fails, use as-is (might be a string variable)
+                                    put(ParamNames.VALUE, value)
+                                }
+                            } else {
+                                // Regular string value
+                                put(ParamNames.VALUE, value)
+                            }
+                        } else {
+                            // Number or boolean
+                            put(ParamNames.VALUE, value)
+                        }
+                    }
+                    else -> {
+                        // Already a JsonObject or JsonArray
+                        put(ParamNames.VALUE, value)
+                    }
+                }
+            }
+
             params.getStringOrNull(ParamNames.MODE_ID)?.let { put(ParamNames.MODE_ID, it) }
         }
     }
