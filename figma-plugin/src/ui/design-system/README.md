@@ -173,7 +173,7 @@ import { FormField } from '@/ui/components/composed';
   id="server-url"
   value={url}
   onChange={setUrl}
-  placeholder="ws://localhost:8080"
+  placeholder="ws://localhost:8081"
   error={errorMessage}
   required
 />

@@ -197,7 +197,7 @@ cd server
 npm run dev
 
 # Terminal 2: Connect with wscat
-wscat -c ws://localhost:8080
+wscat -c ws://localhost:8081
 
 # Send commands:
 {"id":"1","method":"ping"}

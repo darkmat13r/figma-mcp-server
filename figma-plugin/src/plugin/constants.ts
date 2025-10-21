@@ -169,6 +169,15 @@ export const ParamNames = {
 
   // Layout
   LAYOUT_MODE: 'layoutMode',
+  PADDING_LEFT: 'paddingLeft',
+  PADDING_RIGHT: 'paddingRight',
+  PADDING_TOP: 'paddingTop',
+  PADDING_BOTTOM: 'paddingBottom',
+  ITEM_SPACING: 'itemSpacing',
+  PRIMARY_AXIS_ALIGN_ITEMS: 'primaryAxisAlignItems',
+  COUNTER_AXIS_ALIGN_ITEMS: 'counterAxisAlignItems',
+  PRIMARY_AXIS_SIZING_MODE: 'primaryAxisSizingMode',
+  COUNTER_AXIS_SIZING_MODE: 'counterAxisSizingMode',
 
   // Text
   TEXT: 'text',

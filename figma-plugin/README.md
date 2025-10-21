@@ -49,7 +49,7 @@ npm run typecheck
 
 ## Usage
 
-1. Ensure MCP server is running on `ws://localhost:8080/mcp`
+1. Ensure MCP server is running on `ws://localhost:8081/mcp`
 2. Open the plugin in Figma
 3. Click "Connect" to establish WebSocket connection
 4. Use the Design System panel to create styles
@@ -95,7 +95,7 @@ Edit `manifest.json` to allow your MCP server domain:
 {
   "networkAccess": {
     "allowedDomains": [
-      "ws://localhost:8080",
+      "ws://localhost:8081",
       "wss://your-server.com"
     ]
   }
@@ -104,7 +104,7 @@ Edit `manifest.json` to allow your MCP server domain:
 
 ### Server URL
 
-Default: `ws://localhost:8080/mcp`
+Default: `ws://localhost:8081/mcp`
 
 Change in the ConnectionPanel component or store in plugin data.
 

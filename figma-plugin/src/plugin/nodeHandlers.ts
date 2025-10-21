@@ -115,6 +115,44 @@ export async function createFrame(params: Record<string, any>): Promise<FrameNod
     frame.layoutMode = params[ParamNames.LAYOUT_MODE];
   }
 
+  // Auto layout properties (only apply if layoutMode is set)
+  if (params[ParamNames.LAYOUT_MODE] && params[ParamNames.LAYOUT_MODE] !== 'NONE') {
+    // Padding
+    if (params[ParamNames.PADDING_LEFT] !== undefined) {
+      frame.paddingLeft = params[ParamNames.PADDING_LEFT];
+    }
+    if (params[ParamNames.PADDING_RIGHT] !== undefined) {
+      frame.paddingRight = params[ParamNames.PADDING_RIGHT];
+    }
+    if (params[ParamNames.PADDING_TOP] !== undefined) {
+      frame.paddingTop = params[ParamNames.PADDING_TOP];
+    }
+    if (params[ParamNames.PADDING_BOTTOM] !== undefined) {
+      frame.paddingBottom = params[ParamNames.PADDING_BOTTOM];
+    }
+
+    // Item spacing
+    if (params[ParamNames.ITEM_SPACING] !== undefined) {
+      frame.itemSpacing = params[ParamNames.ITEM_SPACING];
+    }
+
+    // Alignment
+    if (params[ParamNames.PRIMARY_AXIS_ALIGN_ITEMS]) {
+      frame.primaryAxisAlignItems = params[ParamNames.PRIMARY_AXIS_ALIGN_ITEMS];
+    }
+    if (params[ParamNames.COUNTER_AXIS_ALIGN_ITEMS]) {
+      frame.counterAxisAlignItems = params[ParamNames.COUNTER_AXIS_ALIGN_ITEMS];
+    }
+
+    // Sizing modes
+    if (params[ParamNames.PRIMARY_AXIS_SIZING_MODE]) {
+      frame.primaryAxisSizingMode = params[ParamNames.PRIMARY_AXIS_SIZING_MODE];
+    }
+    if (params[ParamNames.COUNTER_AXIS_SIZING_MODE]) {
+      frame.counterAxisSizingMode = params[ParamNames.COUNTER_AXIS_SIZING_MODE];
+    }
+  }
+
   addToPage(frame);
   return frame;
 }

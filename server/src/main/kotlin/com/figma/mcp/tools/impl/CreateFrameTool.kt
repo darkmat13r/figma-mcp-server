@@ -85,6 +85,46 @@ class CreateFrameTool(
                     ParamNames.FILLS to mapOf(
                         "type" to "array",
                         "description" to "Array of Paint objects for fill colors (optional)"
+                    ),
+                    "paddingLeft" to mapOf(
+                        "type" to "number",
+                        "description" to "Left padding in pixels (optional, requires layoutMode HORIZONTAL or VERTICAL)"
+                    ),
+                    "paddingRight" to mapOf(
+                        "type" to "number",
+                        "description" to "Right padding in pixels (optional, requires layoutMode HORIZONTAL or VERTICAL)"
+                    ),
+                    "paddingTop" to mapOf(
+                        "type" to "number",
+                        "description" to "Top padding in pixels (optional, requires layoutMode HORIZONTAL or VERTICAL)"
+                    ),
+                    "paddingBottom" to mapOf(
+                        "type" to "number",
+                        "description" to "Bottom padding in pixels (optional, requires layoutMode HORIZONTAL or VERTICAL)"
+                    ),
+                    "itemSpacing" to mapOf(
+                        "type" to "number",
+                        "description" to "Spacing between items in pixels (optional, requires layoutMode HORIZONTAL or VERTICAL)"
+                    ),
+                    "primaryAxisAlignItems" to mapOf(
+                        "type" to "string",
+                        "enum" to listOf("MIN", "CENTER", "MAX", "SPACE_BETWEEN"),
+                        "description" to "Alignment along main axis (optional). For HORIZONTAL: MIN=left, CENTER=center, MAX=right. For VERTICAL: MIN=top, CENTER=center, MAX=bottom"
+                    ),
+                    "counterAxisAlignItems" to mapOf(
+                        "type" to "string",
+                        "enum" to listOf("MIN", "CENTER", "MAX"),
+                        "description" to "Alignment along cross axis (optional). Perpendicular to main axis alignment"
+                    ),
+                    "primaryAxisSizingMode" to mapOf(
+                        "type" to "string",
+                        "enum" to listOf("FIXED", "AUTO"),
+                        "description" to "Sizing mode along main axis (optional). FIXED=fixed size, AUTO=hug contents"
+                    ),
+                    "counterAxisSizingMode" to mapOf(
+                        "type" to "string",
+                        "enum" to listOf("FIXED", "AUTO"),
+                        "description" to "Sizing mode along cross axis (optional). FIXED=fixed size, AUTO=hug contents"
                     )
                 ),
                 required = emptyList() // All parameters are optional
@@ -112,6 +152,23 @@ class CreateFrameTool(
             params.getArrayOrNull(ParamNames.FILLS)?.let {
                 put(ParamNames.FILLS, it)
             }
+
+            // Auto layout padding properties
+            params.getDoubleOrNull("paddingLeft")?.let { put("paddingLeft", it) }
+            params.getDoubleOrNull("paddingRight")?.let { put("paddingRight", it) }
+            params.getDoubleOrNull("paddingTop")?.let { put("paddingTop", it) }
+            params.getDoubleOrNull("paddingBottom")?.let { put("paddingBottom", it) }
+
+            // Item spacing
+            params.getDoubleOrNull("itemSpacing")?.let { put("itemSpacing", it) }
+
+            // Alignment properties
+            params.getStringOrNull("primaryAxisAlignItems")?.let { put("primaryAxisAlignItems", it) }
+            params.getStringOrNull("counterAxisAlignItems")?.let { put("counterAxisAlignItems", it) }
+
+            // Sizing mode properties
+            params.getStringOrNull("primaryAxisSizingMode")?.let { put("primaryAxisSizingMode", it) }
+            params.getStringOrNull("counterAxisSizingMode")?.let { put("counterAxisSizingMode", it) }
         }
     }
 }

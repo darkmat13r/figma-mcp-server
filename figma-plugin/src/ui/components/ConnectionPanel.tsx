@@ -26,7 +26,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   onConnect,
   onDisconnect,
 }) => {
-  const [serverUrl, setServerUrl] = useState('ws://localhost:8080');
+  const [serverUrl, setServerUrl] = useState('ws://localhost:8081');
 
   const handleConnect = () => {
     if (serverUrl.trim()) {
@@ -80,7 +80,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                 type="text"
                 value={serverUrl}
                 onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="ws://localhost:8080/mcp"
+                placeholder="ws://localhost:8081/mcp"
                 disabled={connectionState === ConnectionState.CONNECTED}
               />
             </div>

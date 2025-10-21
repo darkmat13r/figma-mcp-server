@@ -34,9 +34,9 @@ dependencies {
 }
 
 
-tasks.register("killPort8080") {
+tasks.register("killPort8081") {
     group = "devops"
-    description = "Kills any process listening on TCP port 8080 (macOS/Linux/Windows)"
+    description = "Kills any process listening on TCP port 8081 (macOS/Linux/Windows)"
     doLast {
         val os = System.getProperty("os.name").lowercase()
         if (os.contains("win")) {
@@ -46,7 +46,7 @@ tasks.register("killPort8080") {
                     "powershell",
                     "-NoProfile",
                     "-Command",
-                    "${'$'}p=(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue).OwningProcess; if(${'$'}p){ Stop-Process -Id ${'$'}p -Force; Write-Host 'Killed PID ' ${'$'}p } else { Write-Host 'No listener on 8080' }"
+                    "${'$'}p=(Get-NetTCPConnection -LocalPort 8081 -State Listen -ErrorAction SilentlyContinue).OwningProcess; if(${'$'}p){ Stop-Process -Id ${'$'}p -Force; Write-Host 'Killed PID ' ${'$'}p } else { Write-Host 'No listener on 8081' }"
                 )
                 isIgnoreExitValue = true
             }
@@ -55,7 +55,7 @@ tasks.register("killPort8080") {
             exec {
                 commandLine(
                     "bash", "-lc",
-                    "pids=$(lsof -ti tcp:8080 2>/dev/null || true); if [ -z \"${'$'}pids\" ]; then pids=$(fuser -n tcp 8080 2>/dev/null | tr ' ' '\n' || true); fi; if [ -n \"${'$'}pids\" ]; then kill -9 ${'$'}pids && echo Killed: ${'$'}pids; else echo 'No listener on 8080'; fi"
+                    "pids=$(lsof -ti tcp:8081 2>/dev/null || true); if [ -z \"${'$'}pids\" ]; then pids=$(fuser -n tcp 8081 2>/dev/null | tr ' ' '\n' || true); fi; if [ -n \"${'$'}pids\" ]; then kill -9 ${'$'}pids && echo Killed: ${'$'}pids; else echo 'No listener on 8081'; fi"
                 )
                 isIgnoreExitValue = true
             }
