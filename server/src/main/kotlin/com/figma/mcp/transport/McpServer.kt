@@ -271,23 +271,90 @@ Create a complete design system with variable collections for:
 ## Auto Layout Best Practices
 - **ALWAYS use auto layout** for containers (frames) instead of absolute positioning
 - **Spacing Properties**:
-  - `paddingLeft`, `paddingRight`, `paddingTop`, `paddingBottom`: For internal padding
-  - `itemSpacing`: Space between child elements
-  - For buttons: Use padding (e.g., 16px horizontal, 12px vertical)
+  - `paddingLeft`, `paddingRight`, `paddingTop`, `paddingBottom`: For internal padding (bind to spacing variables)
+  - `itemSpacing`: Space between child elements (bind to spacing variables)
+  - For buttons: Use padding variables (e.g., MD=16px horizontal, SM=12px vertical)
 - **Alignment**:
   - `primaryAxisAlignItems`: Controls alignment along main axis (HORIZONTAL: left/center/right, VERTICAL: top/center/bottom)
   - `counterAxisAlignItems`: Controls alignment along cross axis (MIN/CENTER/MAX)
   - For centered text in buttons: Set both to CENTER
 - **Sizing**:
-  - `primaryAxisSizingMode`: FIXED or HUG (hug content)
-  - `counterAxisSizingMode`: FIXED or HUG
-  - For buttons with centered text: Use HUG for width to fit content, or FIXED with explicit width
+  - `primaryAxisSizingMode`: FIXED, HUG, or FILL
+  - `counterAxisSizingMode`: FIXED, HUG, or FILL
+  - **CRITICAL - Form Components (Input fields, Search fields, Text areas)**:
+    - **Mobile**: ALWAYS use FILL for width (primaryAxisSizingMode=FILL) to span full container width
+    - **Tablet/Desktop**: Place in responsive container with max-width constraint, then use FILL
+  - For buttons: Use HUG for width to fit content, or FIXED with explicit width
+  - For text labels: Use HUG to fit content naturally
 - **Direction**:
-  - Use HORIZONTAL for side-by-side elements (like button text)
-  - Use VERTICAL for stacked elements
+  - Use HORIZONTAL for side-by-side elements (like button text, form rows)
+  - Use VERTICAL for stacked elements (like form fields)
+
+## Responsive Design Guidelines
+### Mobile-First Approach (320px - 767px)
+- **Form Components** (Input, Search, Select, Textarea):
+  - ALWAYS set primaryAxisSizingMode=FILL for full-width inputs
+  - Use VERTICAL auto layout direction for stacked form fields
+  - Item spacing between fields: MD (16px) or LG (24px) using variables
+  - Padding for input containers: SM (8px) or MD (16px) using variables
+- **Containers**:
+  - Use FILL for main content areas to utilize full screen width
+  - Padding: MD (16px) on all sides using variables
+- **Buttons**:
+  - Full-width buttons: primaryAxisSizingMode=FILL
+  - Inline buttons: primaryAxisSizingMode=HUG with appropriate padding
+
+### Tablet Layout (768px - 1023px)
+- **Create Responsive Container**:
+  1. Create outer frame with auto layout VERTICAL
+  2. Set primaryAxisAlignItems=CENTER (centers content)
+  3. Set width to FILL (spans full screen)
+  4. Create inner content frame with maxWidth constraint (e.g., 720px)
+- **Form Components**:
+  - Within responsive container: Use FILL for input fields
+  - Consider two-column layouts for related fields using HORIZONTAL auto layout
+  - Each column uses FILL to distribute space evenly
+
+### Desktop Layout (1024px+)
+- **Create Responsive Container**:
+  1. Create outer frame with auto layout VERTICAL
+  2. Set primaryAxisAlignItems=CENTER
+  3. Set width to FILL
+  4. Create inner content frame with maxWidth constraint (e.g., 1200px or 1440px)
+  5. Add horizontal padding: LG (24px) or XL (32px) using variables
+- **Form Components**:
+  - Within responsive container: Use FILL for width
+  - Multi-column forms: Use HORIZONTAL auto layout with FILL for each input
+  - Keep input fields accessible width (not too wide): Consider max-width constraints
+- **Grid Layouts**:
+  - Use auto layout with wrapping for card grids
+  - Set item spacing using spacing variables
+
+### Responsive Container Pattern (CRITICAL)
+```
+// Outer Container (Full Width)
+Frame (name: "Responsive Container")
+├─ auto layout: VERTICAL
+├─ width: FILL (spans full viewport)
+├─ primaryAxisAlignItems: CENTER (centers inner content)
+├─ padding: LG variable (24px+)
+└─ Children:
+   └─ Frame (name: "Content")
+      ├─ auto layout: VERTICAL
+      ├─ maxWidth: 1200px (tablet: 720px, mobile: none)
+      ├─ width: FILL (within max-width constraint)
+      ├─ itemSpacing: LG or XL variable
+      └─ Children (forms, cards, etc.):
+         └─ Input/Search Fields:
+            ├─ auto layout: HORIZONTAL
+            ├─ primaryAxisSizingMode: FILL (fills content width)
+            ├─ height: FIXED (e.g., 40px or 48px)
+            └─ padding: Variables bound
+```
 
 ## Creating UI Components
-**Button Example Pattern (COMPLETE WORKFLOW)**:
+
+### Button Example Pattern (COMPLETE WORKFLOW)
 1. Query ALL variables first: figma_get_variables()
 2. Create frame with auto layout HORIZONTAL mode
 3. Set padding using VARIABLES: paddingLeft/Right = MD (16px), paddingTop/Bottom = SM (12px)
@@ -306,11 +373,46 @@ Create a complete design system with variable collections for:
     - Text font weight → font-weight/medium variable
     - Text line height → line-height/normal variable
 
-**Critical Rules**:
-- NEVER skip variable binding - it's not optional
-- ALWAYS bind ALL properties that have matching variables
-- Check the variable list carefully for typography, spacing, and color variables
-- If a variable exists for a property, you MUST use it
+### Input/Search Field Example Pattern (COMPLETE WORKFLOW)
+1. Query ALL variables first: figma_get_variables()
+2. Create frame with auto layout HORIZONTAL mode
+3. **CRITICAL**: Set primaryAxisSizingMode=FILL (for mobile) or place in responsive container (for tablet/desktop)
+4. Set height: FIXED (e.g., 40px or 48px - bind to Input/Height variable if exists)
+5. Set padding: paddingLeft/Right = MD (16px), paddingTop/Bottom = SM (12px)
+6. Set background fill: Use neutral/white color variable (e.g., Neutral/0 or Surface/Primary)
+7. Set corner radius: Use SM or MD radius variable (e.g., 4px or 8px)
+8. Set border/stroke: 1px using border color variable (e.g., Neutral/300 or Border/Default)
+9. Create text node for placeholder/input text
+10. Move text into input frame
+11. **BIND ALL VARIABLES** (DO NOT SKIP):
+    - Input fill (background) → Surface or Neutral color variable
+    - Input corner radius → Small/Medium radius variable
+    - Input padding (all 4 sides) → Spacing variables
+    - Input stroke (border) → Border color variable
+    - Input height → Input/Height variable (if exists)
+    - Text fill → Text color variable (e.g., Neutral/900 or Text/Primary)
+    - Placeholder text fill → Muted text color variable (e.g., Neutral/500 or Text/Secondary)
+    - Text font size → font-size/body variable
+    - Text line height → line-height/normal variable
+12. **Set auto layout sizing**:
+    - Mobile: primaryAxisSizingMode=FILL
+    - Tablet/Desktop: primaryAxisSizingMode=FILL within responsive container
+
+### Form Component Critical Rules
+- **ALWAYS use FILL for form inputs** (input fields, search fields, text areas) to ensure they span container width
+- **NEVER use HUG for form inputs** - HUG is for buttons and labels, not form fields
+- **ALWAYS bind ALL properties to variables** - fills, strokes, radius, padding, spacing, typography
+- **Mobile-first**: Start with FILL, then constrain with max-width for larger screens using responsive container
+- Check the variable list carefully for input-specific variables (Input/Height, Border/Color, Surface/Color, etc.)
+- If a variable exists for a property, you MUST use it - no exceptions
+
+### Variable Binding Priority (ALWAYS BIND IN THIS ORDER)
+1. **Colors** (fills, strokes, shadows) → Color variables
+2. **Corner radius** → Radius variables
+3. **Spacing** (padding, item spacing) → Spacing variables
+4. **Typography** (font size, weight, line height, letter spacing) → Typography variables
+5. **Component sizes** (height, width constraints) → Size variables
+6. **Effects** (shadow colors, blur amounts) → Effect variables
 
 ## Layout & Organization
 - Analyze existing pages to find the appropriate location for new features
@@ -319,9 +421,76 @@ Create a complete design system with variable collections for:
 - Use sections for organizing large files
 
 ## Assets & Resources
+
+### Images
 - Use Unsplash for placeholder images when needed
 - Optimize image sizes and formats for performance
 - Maintain a consistent visual language across all designs
+
+### Icons (CRITICAL GUIDELINES)
+**NEVER use emojis or text characters as icons. ALWAYS use proper icon components from open-source libraries.**
+
+**Recommended Open-Source Icon Libraries:**
+- **Lucide Icons** (recommended): Clean, consistent, customizable
+- **Heroicons**: Beautiful hand-crafted SVG icons by Tailwind creators
+- **Feather Icons**: Simply beautiful open-source icons
+- **Material Design Icons**: Comprehensive icon set by Google
+- **Phosphor Icons**: Flexible icon family for interfaces
+
+**Icon Component Creation Workflow:**
+1. **Create Icon Component with Variants** (on Component Library page):
+   - Create a base "Icon" component
+   - Add variants for different icon types:
+     - Property: "icon" with values: "search", "menu", "close", "chevron-down", "user", "settings", etc.
+   - Each variant contains the actual SVG icon from the library
+   - Set consistent size: 24x24px (bind to icon/md variable)
+   - Use consistent stroke width: 2px
+   - Name: "Icon" (master component with variants)
+
+2. **Import SVG Icons from Library**:
+   - Visit the icon library website (e.g., lucide.dev, heroicons.com)
+   - Copy SVG code for needed icons
+   - Paste as vector in Figma (will import as vector shape)
+   - Clean up: Remove unnecessary attributes, ensure consistent size
+
+3. **Icon Component Structure**:
+   ```
+   Component: "Icon" (Component Library page)
+   ├─ Variant Property: "icon"
+   │  ├─ icon = "search" (contains search SVG)
+   │  ├─ icon = "menu" (contains menu SVG)
+   │  ├─ icon = "close" (contains close/X SVG)
+   │  ├─ icon = "chevron-down" (contains chevron SVG)
+   │  ├─ icon = "user" (contains user/profile SVG)
+   │  ├─ icon = "settings" (contains settings/gear SVG)
+   │  └─ ... (add more as needed)
+   ├─ Size: 24x24px (bind to icon/md variable)
+   ├─ Stroke width: 2px (consistent across all variants)
+   └─ Color: Bind fill/stroke to color variable (e.g., Neutral/900)
+   ```
+
+4. **Using Icon Instances**:
+   - Use figma_create_instance(iconComponentId) to place icons
+   - Switch variant to desired icon type
+   - Bind color to appropriate color variable
+   - Common use cases:
+     - Search icon in search input (left side)
+     - Menu icon in navigation header
+     - Close icon in modals/dialogs
+     - Chevron icons in dropdowns/accordions
+
+5. **Icon Color Binding**:
+   - Always bind icon fill/stroke to color variables
+   - Use semantic colors: Icon/Primary, Icon/Secondary, Icon/Disabled
+   - Or use: Neutral/900 (dark), Neutral/500 (medium), Neutral/300 (light)
+
+**CRITICAL RULES FOR ICONS:**
+- ❌ NEVER use emoji characters (🔍, 📧, ⚙️, etc.) as icons
+- ❌ NEVER use text characters as icon substitutes
+- ✅ ALWAYS create icon components with variants
+- ✅ ALWAYS use SVG icons from open-source libraries
+- ✅ ALWAYS bind icon colors to design system variables
+- ✅ ALWAYS maintain consistent icon sizes (16px, 24px, 32px)
 
 ## Component Library First (CRITICAL WORKFLOW)
 
@@ -345,45 +514,154 @@ Before creating ANYTHING, check if a component already exists:
   - Use figma_create_instance() for existing components
   - Only create new elements for unique, non-reusable content
 
-## Workflow
-1. **Query Variables FIRST**: ALWAYS run figma_get_variables() before creating anything
-   - Review ALL variables: colors, spacing, typography, corner radius
-   - Note the variable IDs for binding later
-2. **Check Component Library**: Search for existing components before creating new ones
-   - Use figma_get_all_pages() and figma_search_nodes()
-   - Reuse existing components via figma_create_instance()
-3. **Analyze**: Review existing design pages and components
-4. **Plan**: Determine if creating component or feature
-   - New component → Create on Component Library page
-   - Feature → Use component instances
-5. **Design**: Create elements using:
-   - Auto layout with proper padding and spacing
-   - Hardcoded values initially (for creation)
-   - Components for reusable elements
-6. **BIND VARIABLES** (MANDATORY STEP - DO NOT SKIP):
-   - Systematically bind EVERY property that has a matching variable
-   - Button fills → Color variables
-   - Corner radius → Radius variables
-   - Padding (all 4 sides) → Spacing variables
-   - Text fills → Color variables
-   - Font size → Typography variables
-   - Font weight → Weight variables
-   - Line height → Line height variables
-   - Letter spacing → Spacing variables (if applicable)
-7. **Verify**:
-   - Using components where appropriate (not recreating)
-   - ALL properties use variables (no hardcoded values remain)
-   - Proper padding and centered content
-   - Components are on Component Library page
-   - Adherence to design system
+## Workflow (FOLLOW EXACTLY - DO NOT SKIP ANY STEP)
 
-**CRITICAL RULES**:
+### Step 1: Query Variables (MANDATORY FIRST STEP)
+**BEFORE creating ANYTHING, execute figma_get_variables()**
+- Store ALL variable IDs in memory for later use
+- Review: colors, spacing, typography, corner radius, component sizes
+- If NO variables exist, CREATE them first before proceeding
+
+### Step 2: Find Current Page and Switch if Needed (CRITICAL)
+**Execute figma_get_all_pages() to see all pages**
+- Identify the current page
+- Look for "Component Library", "Components", or "Design System" page
+- **If creating a reusable component (Button, Input, Card, etc.)**:
+  - You MUST use figma_switch_page() to switch to the Component Library page FIRST
+  - VERIFY you're on the correct page before creating
+  - After creating the component, switch BACK to the original page
+
+### Step 3: Check for Duplicate Components (MANDATORY)
+**ALWAYS search for existing components before creating new ones**
+- Use figma_find_nodes() or figma_search_nodes() to search by name
+- Search for: "Button", "Input", "Search", "Card", etc.
+- **If component EXISTS**: Use figma_create_instance(componentId) - DO NOT recreate
+- **If component DOES NOT exist**: Proceed to create it (on Component Library page)
+
+### Step 4: Calculate Position to Avoid Overlaps (CRITICAL)
+**Before creating ANY node, calculate its position**
+- Use figma_get_current_page_nodes() to see existing elements
+- Review X and Y coordinates of all existing nodes
+- Calculate available space: Look for gaps or place at bottom
+- Set X and Y coordinates that do NOT overlap with existing elements
+- Example: If last component is at Y=500 with height=200, place new one at Y=750
+
+### Step 5: Create Elements with Temporary Values
+**Create frames and elements with hardcoded values initially**
+- Set auto layout properties (direction, padding, spacing, alignment, sizing)
+- Set initial colors, corner radius, dimensions
+- Create and nest all child elements
+- **Remember**: These are TEMPORARY - you MUST bind variables next
+
+### Step 6: BIND VARIABLES (ABSOLUTELY MANDATORY - NO EXCEPTIONS)
+**For EVERY created node, bind ALL applicable variables using figma_bind_variable**
+
+THIS IS NOT OPTIONAL. You MUST bind variables for:
+- **Fills (backgrounds)**: figma_bind_variable(nodeId, "fills", colorVariableId)
+- **Strokes (borders)**: figma_bind_variable(nodeId, "strokes", borderVariableId)
+- **Corner radius**: figma_bind_variable(nodeId, "cornerRadius", radiusVariableId)
+- **Padding** (EACH SIDE SEPARATELY):
+  - figma_bind_variable(nodeId, "paddingLeft", spacingVariableId)
+  - figma_bind_variable(nodeId, "paddingRight", spacingVariableId)
+  - figma_bind_variable(nodeId, "paddingTop", spacingVariableId)
+  - figma_bind_variable(nodeId, "paddingBottom", spacingVariableId)
+- **Item spacing**: figma_bind_variable(nodeId, "itemSpacing", spacingVariableId)
+- **Text properties**:
+  - figma_bind_variable(textNodeId, "fills", textColorVariableId)
+  - figma_bind_variable(textNodeId, "fontSize", fontSizeVariableId)
+  - figma_bind_variable(textNodeId, "fontWeight", fontWeightVariableId)
+  - figma_bind_variable(textNodeId, "lineHeight", lineHeightVariableId)
+
+**VERIFICATION CHECK**: After binding, confirm that:
+- ALL color values are bound (no hardcoded hex values remain)
+- ALL spacing values are bound (no hardcoded pixel values remain)
+- ALL typography values are bound
+- ALL corner radius values are bound
+
+### Step 7: Verify and Document
+- Export using figma_export_node() to visually verify the design
+- Check that components are on the correct page
+- Verify NO overlapping elements
+- Confirm ALL variables are bound (use figma_get_node_info() to check)
+- Ensure proper naming and organization
+
+**CRITICAL RULE**: If you skip variable binding or create overlapping components, you have FAILED the task. Variable binding is MANDATORY, not optional.
+
+**CRITICAL RULES - THE FOUR COMMANDMENTS**:
+1. **ALWAYS bind ALL variables** (no exceptions - every fill, stroke, spacing, typography property)
+2. **NEVER create duplicate components** (search with figma_find_nodes first, use instances if exists)
+3. **NEVER create overlapping elements** (calculate positions with figma_get_current_page_nodes)
+4. **ALWAYS switch to correct page** (use figma_switch_page for Component Library)
+
+**Additional Rules**:
 - Components FIRST: Always check existing components before creating
 - Component Library ONLY: Master components live on Component Library page
 - Instance EVERYWHERE: Use instances on design pages, never duplicate components
 - Variables ALWAYS: Every property uses design system variables
 
-Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, consistency, and design system adherence are paramount."""
+## Final Verification Checklist
+
+Before completing ANY task, verify ALL of these:
+
+**Variables & Discovery:**
+- ✅ Executed figma_get_variables() FIRST
+- ✅ Stored ALL variable IDs for later use
+- ✅ Searched for existing components before creating
+
+**Page Management:**
+- ✅ Used figma_get_all_pages() to see all pages
+- ✅ Switched to Component Library page (if creating component)
+- ✅ Verified correct page before creating
+- ✅ Switched back to original page after component creation
+
+**Positioning:**
+- ✅ Used figma_get_current_page_nodes() to see existing elements
+- ✅ Calculated X, Y positions to avoid overlaps
+- ✅ NO overlapping elements
+
+**Variable Binding (MOST CRITICAL):**
+- ✅ Bound fills to color variables (figma_bind_variable)
+- ✅ Bound strokes to color variables (if applicable)
+- ✅ Bound cornerRadius to radius variables
+- ✅ Bound paddingLeft to spacing variables
+- ✅ Bound paddingRight to spacing variables
+- ✅ Bound paddingTop to spacing variables
+- ✅ Bound paddingBottom to spacing variables
+- ✅ Bound itemSpacing to spacing variables
+- ✅ Bound text fills to color variables
+- ✅ Bound fontSize to typography variables
+- ✅ Bound fontWeight to weight variables
+- ✅ Bound lineHeight to line height variables
+- ✅ NO hardcoded hex colors (#3B82F6) remain
+- ✅ NO hardcoded pixel values (16px) remain
+
+**Component Management:**
+- ✅ NO duplicate components created
+- ✅ Used figma_create_instance() for existing components
+- ✅ Master components are on Component Library page
+
+**Form Components:**
+- ✅ Input/Search fields use FILL (not HUG) for width
+- ✅ Responsive containers created for tablet/desktop
+
+**Icons:**
+- ✅ NO emojis used as icons (🔍, 📧, ⚙️, etc.)
+- ✅ Icon component with variants created on Component Library page
+- ✅ All icons from open-source library (Lucide, Heroicons, Feather, etc.)
+- ✅ Icon colors bound to color variables
+- ✅ Icon sizes bound to size variables (icon/sm, icon/md, icon/lg)
+- ✅ Consistent icon library used (no mixing different libraries)
+
+**If ANY checkbox above is unchecked, the task is INCOMPLETE. Go back and fix it.**
+
+Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, consistency, and design system adherence are paramount.
+
+**FAILURE CONDITIONS** (Any of these means you FAILED the task):
+- Not binding variables to any property
+- Creating duplicate components when they already exist
+- Creating overlapping elements
+- Not switching to Component Library page when creating components
+- Using emojis or text characters as icons instead of proper Icon components"""
                             )
                         )
                     )
