@@ -8,12 +8,16 @@ import io.modelcontextprotocol.kotlin.sdk.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.Implementation
 import io.modelcontextprotocol.kotlin.sdk.ServerCapabilities
 import io.modelcontextprotocol.kotlin.sdk.TextContent
+import io.modelcontextprotocol.kotlin.sdk.ImageContent
 import io.modelcontextprotocol.kotlin.sdk.Tool
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
 import io.modelcontextprotocol.kotlin.sdk.PromptMessage
 import io.modelcontextprotocol.kotlin.sdk.GetPromptResult
 import io.modelcontextprotocol.kotlin.sdk.Role
+import io.modelcontextprotocol.kotlin.sdk.Resource
+import io.modelcontextprotocol.kotlin.sdk.ReadResourceResult
+import io.modelcontextprotocol.kotlin.sdk.TextResourceContents
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -104,6 +108,23 @@ import kotlinx.coroutines.Dispatchers
  * - figma_get_selection - Get current selection
  * - figma_set_properties - Set node properties
  * - figma_get_node_info - Get node information
+ *
+ * ## Content Types Supported
+ * The server now properly handles all MCP content types:
+ * - **TextContent**: Plain text responses from tools
+ * - **ImageContent**: Base64-encoded images (PNG, SVG, JPG, PDF) with proper MIME types
+ * - **EmbeddedResource**: Resource references in tool responses
+ *
+ * ## Resources Provided
+ * The server exposes MCP resources for read-only access to Figma design data:
+ * - **figma://design-system/overview**: Overview of design system capabilities
+ * - **figma://exports/info**: Information about available export formats
+ *
+ * Future resource enhancements:
+ * - Dynamic node exports as resources
+ * - Real-time design system documentation
+ * - Component library catalog
+ * - Variable collections as structured data
  */
 class McpServer(
     private val logger: ILogger,
@@ -126,6 +147,10 @@ class McpServer(
                     ),
                     prompts = ServerCapabilities.Prompts(
                         listChanged = true
+                    ),
+                    resources = ServerCapabilities.Resources(
+                        subscribe = false,
+                        listChanged = true
                     )
                 )
             )
@@ -136,6 +161,9 @@ class McpServer(
 
         // Register prompts
         registerPrompts()
+
+        // Register resources
+        registerResources()
 
         logger.info(
             "McpServer initialized with official Kotlin SDK",
@@ -675,6 +703,140 @@ Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, con
     }
 
     /**
+     * Register Figma resources with the MCP server
+     *
+     * Resources provide read-only access to Figma design data that can be used
+     * as context by the AI. This includes:
+     * - Exported node images (PNG, SVG, PDF)
+     * - Design system documentation
+     * - Component specifications
+     *
+     * ## Resources vs Tools
+     * - **Tools**: Actions that modify or query Figma (create, update, delete)
+     * - **Resources**: Read-only data that provides context (exported designs, specs)
+     *
+     * ## Example Resources:
+     * - `figma://export/[nodeId].png` - PNG export of a node
+     * - `figma://export/[nodeId].svg` - SVG export of a node
+     * - `figma://design-system/colors` - Color palette documentation
+     * - `figma://design-system/typography` - Typography scale documentation
+     *
+     * ## Implementation Note:
+     * Currently, resources are registered as static examples. In a production system,
+     * these would be dynamically generated based on the current Figma document state.
+     * Future enhancements could include:
+     * - Dynamic resource discovery from Figma document
+     * - Real-time export generation
+     * - Caching layer for frequently accessed resources
+     * - Resource templates for parameterized access
+     */
+    private fun registerResources() {
+        try {
+            // Example resource: Figma node export as PNG
+            // In production, this would dynamically list available exports
+            server.addResource(
+                uri = "figma://design-system/overview",
+                name = "Design System Overview",
+                description = "Overview of the Figma design system including colors, typography, spacing, and components",
+                mimeType = "text/plain"
+            ) { request ->
+                logger.info("Resource requested", "uri" to request.uri)
+
+                // Return design system overview
+                ReadResourceResult(
+                    contents = listOf(
+                        TextResourceContents(
+                            uri = request.uri,
+                            mimeType = "text/plain",
+                            text = """
+                                # Figma Design System Overview
+
+                                This MCP server provides access to Figma design operations and resources.
+
+                                ## Available Operations
+                                - Node creation (frames, rectangles, text, etc.)
+                                - Style management (fills, strokes, effects)
+                                - Auto layout configuration
+                                - Variable binding (design tokens)
+                                - Component management
+                                - Export operations
+
+                                ## Design Tokens
+                                Use figma_get_variables to retrieve all design system variables including:
+                                - Colors (primary, secondary, semantic)
+                                - Spacing (XS, SM, MD, LG, XL, XXL)
+                                - Typography (font sizes, weights, line heights)
+                                - Corner radius (small, medium, large, full)
+                                - Component sizes (button heights, input heights, icon sizes)
+
+                                ## Best Practices
+                                1. Always query variables first before creating components
+                                2. Bind all properties to design system variables
+                                3. Use auto layout for responsive designs
+                                4. Check for existing components before creating new ones
+                                5. Calculate positions to avoid overlapping elements
+
+                                For detailed usage, see the figma-designer prompt.
+                            """.trimIndent()
+                        )
+                    )
+                )
+            }
+
+            // Example resource template for node exports
+            // This demonstrates how resources can provide dynamic content based on parameters
+            server.addResource(
+                uri = "figma://exports/info",
+                name = "Export Information",
+                description = "Information about available export formats and options",
+                mimeType = "text/plain"
+            ) { request ->
+                logger.info("Export info resource requested", "uri" to request.uri)
+
+                ReadResourceResult(
+                    contents = listOf(
+                        TextResourceContents(
+                            uri = request.uri,
+                            mimeType = "text/plain",
+                            text = """
+                                # Figma Export Information
+
+                                ## Available Export Formats
+                                - PNG: Raster format, supports transparency
+                                - SVG: Vector format, scalable
+                                - PDF: Document format, vector-based
+                                - JPG: Raster format, compressed (no transparency)
+
+                                ## Export Tool
+                                Use figma_export_node to export any node in the current document:
+                                - nodeId: ID of the node to export
+                                - format: PNG, SVG, PDF, or JPG
+                                - scale: Optional scale factor (1x, 2x, 3x, etc.)
+
+                                ## Export Returns
+                                The export tool returns base64-encoded image data that can be:
+                                - Saved to disk
+                                - Displayed in the UI
+                                - Sent to other services
+                                - Used as ImageContent in tool responses
+
+                                ## Example Usage
+                                1. Get node ID using figma_get_selection or figma_find_nodes
+                                2. Call figma_export_node with the node ID and desired format
+                                3. Receive base64-encoded image data in the response
+                            """.trimIndent()
+                        )
+                    )
+                )
+            }
+
+            logger.info("Successfully registered Figma resources", "count" to 2)
+        } catch (e: Exception) {
+            logger.error("Failed to register resources", e)
+        }
+    }
+
+    /**
      * Generic tool execution handler
      *
      * This single handler replaces 5+ hardcoded handlers in the legacy version.
@@ -725,10 +887,14 @@ Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, con
                             TextContent(text = content.text)
                         }
                         is ToolContent.ImageContent -> {
-                            // SDK supports images too, but we'll use text for now
-                            TextContent(text = "[Image: ${content.mimeType}]")
+                            // Properly return ImageContent with base64 encoded data
+                            ImageContent(
+                                data = content.data,
+                                mimeType = content.mimeType
+                            )
                         }
                         is ToolContent.EmbeddedResource -> {
+                            // Convert embedded resource to text representation for now
                             TextContent(text = "[Resource: ${content.resource.uri}]")
                         }
                     }

@@ -953,9 +953,13 @@ async function handleSetImageFillCommand(params: Record<string, any>, requestId:
 async function handleExportNodeCommand(params: Record<string, any>, requestId: string): Promise<void> {
   try {
     const result = await ImageHandlers.handleExportNode(params);
+    // Convert Uint8Array to regular array for JSON serialization
     sendWSResponse(requestId, {
       success: true,
-      ...result,
+      imageData: Array.from(result.imageData),
+      format: result.format,
+      width: result.width,
+      height: result.height,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

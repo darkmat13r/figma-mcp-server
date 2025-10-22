@@ -28,7 +28,7 @@ interface ImageNodeResult {
 }
 
 interface ExportResult {
-  imageData: string;
+  imageData: Uint8Array;
   format: string;
   width: number;
   height: number;
@@ -112,17 +112,6 @@ async function loadImageData(imageData: string): Promise<Uint8Array> {
   } else {
     return decodeBase64(imageData);
   }
-}
-
-/**
- * Convert Uint8Array to base64 string
- */
-function encodeBase64(bytes: Uint8Array): string {
-  let binaryString = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binaryString += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binaryString);
 }
 
 /**
@@ -311,9 +300,6 @@ export async function handleExportNode(params: Record<string, any>): Promise<Exp
   // Export node
   const bytes = await node.exportAsync(exportSettings);
 
-  // Convert to base64
-  const base64 = encodeBase64(bytes);
-
   // Get node dimensions
   const width = 'width' in node ? (node as any).width : 0;
   const height = 'height' in node ? (node as any).height : 0;
@@ -321,7 +307,7 @@ export async function handleExportNode(params: Record<string, any>): Promise<Exp
   console.log('[ImageHandlers] Exported node:', nodeId, 'as', exportFormat);
 
   return {
-    imageData: base64,
+    imageData: bytes,
     format: exportFormat,
     width: Math.round(width * scale),
     height: Math.round(height * scale),
