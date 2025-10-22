@@ -13,3 +13,12 @@
     "error": "in set_fills: Property \"fills\" failed validation: Expected [0].gradientTransform to be one of the following, but none matched:\n  Required value missing at [0].gradientTransform"
   }
 }
+
+
+{
+  "id": "req_49_1761125484016",
+  "result": {
+    "success": false,
+    "error": "in set_currentPage: Cannot call with documentAccess: dynamic-page. Use figma.setCurrentPageAsync instead."
+  }
+}

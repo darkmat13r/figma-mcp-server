@@ -6,6 +6,9 @@
   "ui": "dist/ui.html",
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
+  "permissions" : [
+    "currentuser"
+  ],
   "networkAccess": {
     "allowedDomains": [
       "*"

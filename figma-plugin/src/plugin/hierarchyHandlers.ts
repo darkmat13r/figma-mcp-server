@@ -583,7 +583,7 @@ export async function handleSwitchPage(params: Record<string, any>): Promise<voi
     throw new Error('Node is not a page');
   }
 
-  figma.currentPage = page as PageNode;
+  await figma.setCurrentPageAsync(page as PageNode);
   console.log('[HierarchyHandlers] Switched to page:', page.name);
 }
 
@@ -602,7 +602,7 @@ export async function handleCreatePage(params: Record<string, any>): Promise<Pag
   }
 
   if (switchTo) {
-    figma.currentPage = page;
+    await figma.setCurrentPageAsync(page);
   }
 
   console.log('[HierarchyHandlers] Created page:', page.name);
