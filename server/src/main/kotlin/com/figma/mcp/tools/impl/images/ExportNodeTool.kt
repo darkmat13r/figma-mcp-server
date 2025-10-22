@@ -9,6 +9,7 @@ import com.figma.mcp.protocol.JSONSchema
 import com.figma.mcp.protocol.Tool
 import com.figma.mcp.protocol.ToolContent
 import com.figma.mcp.services.FigmaConnectionManager
+import com.figma.mcp.services.ExportedImageResourceManager
 import com.figma.mcp.tools.BaseFigmaTool
 import kotlinx.serialization.json.*
 import java.util.Base64
@@ -17,8 +18,13 @@ import java.util.Base64
  * Export Node Tool
  *
  * ## Purpose
- * Exports a node as an image in the specified format.
- * Returns the image as ImageContent (binary blob) to avoid token consumption.
+ * Exports a node as an image in the specified format and saves it to a temporary file.
+ *
+ * ## Workflow
+ * 1. Export node from Figma as image bytes
+ * 2. Save to temporary file via ExportedImageResourceManager
+ * 3. Register as MCP resource (accessible via resources/read)
+ * 4. Return file path, metadata, and image content
  *
  * ## Parameters
  * - nodeId: string (required) - Node to export
@@ -29,21 +35,28 @@ import java.util.Base64
  *   - value: number
  *
  * ## Returns
- * ImageContent with base64 encoded image data and proper MIME type
- * Plus a text summary with dimensions and format
+ * - Text with file path and metadata (dimensions, format, size)
+ * - ImageContent with the exported image
+ * - Resource URI for MCP resource access
+ *
+ * The exported file can be used for any purpose:
+ * - View with Read tool
+ * - Copy to project directories
+ * - Use in documentation
+ * - Share with team
  */
 class ExportNodeTool(
     logger: ILogger,
-    connectionManager: FigmaConnectionManager
+    connectionManager: FigmaConnectionManager,
+    private val resourceManager: ExportedImageResourceManager
 ) : BaseFigmaTool(logger, connectionManager, ToolNames.EXPORT_NODE) {
 
     override fun getDefinition(): Tool {
         return Tool(
             name = toolName,
             description = "Export a node as an image in PNG, JPG, SVG, or PDF format. " +
-                    "Returns the image as ImageContent (binary blob) which doesn't consume tokens. " +
-                    "Supports custom scale and size constraints. " +
-                    "Perfect for saving images to files or analyzing visual content.",
+                    "Saves the image to a temporary file and returns the file path, metadata, and image content. " +
+                    "The exported file can be viewed with the Read tool or copied to your project.",
             inputSchema = JSONSchema.createObjectSchema(
                 properties = mapOf(
                     ParamNames.NODE_ID to mapOf(
@@ -95,18 +108,18 @@ class ExportNodeTool(
         // Extract the binary image data from the response (comes as array of bytes)
         val responseObj = pluginResponse?.jsonObject ?: buildJsonObject {}
         val imageDataArray = responseObj["imageData"]?.jsonArray
+        val nodeId = params[ParamNames.NODE_ID]?.jsonPrimitive?.contentOrNull ?: "unknown"
         val format = params[ParamNames.FORMAT]?.jsonPrimitive?.contentOrNull ?: "PNG"
         val width = responseObj["width"]?.jsonPrimitive?.intOrNull ?: 0
         val height = responseObj["height"]?.jsonPrimitive?.intOrNull ?: 0
 
-        // Convert array of bytes to base64
-        val base64ImageData = if (imageDataArray != null) {
-            val byteArray = ByteArray(imageDataArray.size) { i ->
+        // Convert array of bytes to ByteArray
+        val imageBytes = if (imageDataArray != null) {
+            ByteArray(imageDataArray.size) { i ->
                 imageDataArray[i].jsonPrimitive.int.toByte()
             }
-            Base64.getEncoder().encodeToString(byteArray)
         } else {
-            ""
+            ByteArray(0)
         }
 
         // Determine MIME type based on format
@@ -118,25 +131,41 @@ class ExportNodeTool(
             else -> "image/png"
         }
 
-        // Return as ImageContent to avoid token consumption when Claude views it
-        // The base64 data is still accessible in the ImageContent.data field for programmatic use
-        // Also include a small JSON with metadata for easier programmatic access
-        val metadata = buildJsonObject {
-            put("width", width)
-            put("height", height)
-            put("format", format)
-            put("mimeType", mimeType)
-            put("sizeBytes", imageDataArray?.size ?: 0)
-        }
+        // Save to file via resource manager
+        val exportedImage = resourceManager.saveExport(
+            nodeId = nodeId,
+            imageData = imageBytes,
+            format = format,
+            mimeType = mimeType,
+            width = width,
+            height = height
+        )
 
+        // Convert to base64 for ImageContent
+        val base64ImageData = Base64.getEncoder().encodeToString(imageBytes)
+
+        // Return file path, metadata, and image content
         return CallToolResult(
             content = listOf(
+                ToolContent.TextContent(
+                    text = """
+                        Export successful!
+
+                        File path: ${exportedImage.filePath.toAbsolutePath()}
+                        Resource URI: ${exportedImage.uri}
+                        Dimensions: ${width}x${height}
+                        Format: $format
+                        Size: ${String.format("%.2f", imageBytes.size / 1024.0)} KB
+
+                        The exported file is saved to the path above. You can:
+                        - Use Read tool to view the image
+                        - Copy to your project using Bash tool
+                        - Access via MCP resource URI
+                    """.trimIndent()
+                ),
                 ToolContent.ImageContent(
                     data = base64ImageData,
                     mimeType = mimeType
-                ),
-                ToolContent.TextContent(
-                    text = "Image exported successfully. Metadata: ${metadata.toString()}"
                 )
             ),
             isError = false

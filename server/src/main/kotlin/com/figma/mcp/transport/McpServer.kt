@@ -2,6 +2,7 @@ package com.figma.mcp.transport
 
 import com.figma.mcp.core.ILogger
 import com.figma.mcp.protocol.ToolContent
+import com.figma.mcp.services.ExportedImageResourceManager
 import com.figma.mcp.tools.FigmaToolRegistry
 import io.modelcontextprotocol.kotlin.sdk.CallToolRequest
 import io.modelcontextprotocol.kotlin.sdk.CallToolResult
@@ -9,6 +10,7 @@ import io.modelcontextprotocol.kotlin.sdk.Implementation
 import io.modelcontextprotocol.kotlin.sdk.ServerCapabilities
 import io.modelcontextprotocol.kotlin.sdk.TextContent
 import io.modelcontextprotocol.kotlin.sdk.ImageContent
+import io.modelcontextprotocol.kotlin.sdk.BlobResourceContents
 import io.modelcontextprotocol.kotlin.sdk.Tool
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.server.ServerOptions
@@ -128,7 +130,8 @@ import kotlinx.coroutines.Dispatchers
  */
 class McpServer(
     private val logger: ILogger,
-    private val toolRegistry: FigmaToolRegistry
+    private val toolRegistry: FigmaToolRegistry,
+    private val resourceManager: ExportedImageResourceManager
 ) {
     private val server: Server
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -705,35 +708,29 @@ Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, con
     /**
      * Register Figma resources with the MCP server
      *
-     * Resources provide read-only access to Figma design data that can be used
-     * as context by the AI. This includes:
-     * - Exported node images (PNG, SVG, PDF)
+     * Resources provide read-only access to Figma design data:
+     * - Exported node images (PNG, SVG, PDF) - Dynamically registered
      * - Design system documentation
-     * - Component specifications
+     * - Export information
      *
      * ## Resources vs Tools
      * - **Tools**: Actions that modify or query Figma (create, update, delete)
-     * - **Resources**: Read-only data that provides context (exported designs, specs)
+     * - **Resources**: Read-only data that provides context
      *
-     * ## Example Resources:
-     * - `figma://export/[nodeId].png` - PNG export of a node
-     * - `figma://export/[nodeId].svg` - SVG export of a node
-     * - `figma://design-system/colors` - Color palette documentation
-     * - `figma://design-system/typography` - Typography scale documentation
+     * ## Dynamic Resources:
+     * - `figma://exports/[filename]` - Created from figma_export_node
      *
-     * ## Implementation Note:
-     * Currently, resources are registered as static examples. In a production system,
-     * these would be dynamically generated based on the current Figma document state.
-     * Future enhancements could include:
-     * - Dynamic resource discovery from Figma document
-     * - Real-time export generation
-     * - Caching layer for frequently accessed resources
-     * - Resource templates for parameterized access
+     * ## Static Resources:
+     * - `figma://design-system/overview` - Design system overview
+     * - `figma://exports/info` - Export information
      */
     private fun registerResources() {
         try {
-            // Example resource: Figma node export as PNG
-            // In production, this would dynamically list available exports
+            // Register dynamic exported image resources
+            // These are created when figma_export_node is called
+            registerDynamicExportResources()
+
+            // Static resource: Design system overview
             server.addResource(
                 uri = "figma://design-system/overview",
                 name = "Design System Overview",
@@ -783,8 +780,7 @@ Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, con
                 )
             }
 
-            // Example resource template for node exports
-            // This demonstrates how resources can provide dynamic content based on parameters
+            // Static resource: Export information
             server.addResource(
                 uri = "figma://exports/info",
                 name = "Export Information",
@@ -813,17 +809,17 @@ Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, con
                                 - format: PNG, SVG, PDF, or JPG
                                 - scale: Optional scale factor (1x, 2x, 3x, etc.)
 
-                                ## Export Returns
-                                The export tool returns base64-encoded image data that can be:
-                                - Saved to disk
-                                - Displayed in the UI
-                                - Sent to other services
-                                - Used as ImageContent in tool responses
+                                ## How It Works
+                                1. Call figma_export_node with node ID and format
+                                2. Tool returns file path, resource URI, and metadata
+                                3. The exported file is saved to a temporary location
+                                4. You can view it with Read tool or copy it to your project
 
                                 ## Example Usage
-                                1. Get node ID using figma_get_selection or figma_find_nodes
-                                2. Call figma_export_node with the node ID and desired format
-                                3. Receive base64-encoded image data in the response
+                                1. Get node ID: figma_get_selection or figma_find_nodes
+                                2. Export: figma_export_node(nodeId, "PNG")
+                                3. Returns: File path, dimensions, format, size
+                                4. Use the file as needed (view, copy, share, etc.)
                             """.trimIndent()
                         )
                     )
@@ -834,6 +830,57 @@ Remember: Components FIRST, Variables ALWAYS, Instances EVERYWHERE. Quality, con
         } catch (e: Exception) {
             logger.error("Failed to register resources", e)
         }
+    }
+
+    /**
+     * Register dynamic export resources
+     *
+     * These resources are created when figma_export_node is called.
+     * The ExportedImageResourceManager maintains a registry of exported images
+     * that can be accessed via the MCP resources/read protocol.
+     */
+    private fun registerDynamicExportResources() {
+        // Get all exported images from resource manager
+        val exports = resourceManager.listResources()
+
+        exports.forEach { export ->
+            server.addResource(
+                uri = export.uri,
+                name = export.name,
+                description = export.description ?: "Exported Figma node",
+                mimeType = export.mimeType ?: "image/png"
+            ) { request ->
+                logger.info("Exported image resource requested", "uri" to request.uri)
+
+                // Read the resource from the manager
+                val resourceContents = resourceManager.readResource(request.uri)
+
+                if (resourceContents != null) {
+                    ReadResourceResult(
+                        contents = listOf(
+                            BlobResourceContents(
+                                uri = request.uri,
+                                mimeType = resourceContents.mimeType ?: "image/png",
+                                blob = resourceContents.blob ?: ""
+                            )
+                        )
+                    )
+                } else {
+                    // Resource not found or expired
+                    ReadResourceResult(
+                        contents = listOf(
+                            TextResourceContents(
+                                uri = request.uri,
+                                mimeType = "text/plain",
+                                text = "Export not found or expired. Use figma_export_node to create a new export."
+                            )
+                        )
+                    )
+                }
+            }
+        }
+
+        logger.info("Registered dynamic export resources", "count" to exports.size)
     }
 
     /**

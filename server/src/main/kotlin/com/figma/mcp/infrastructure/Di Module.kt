@@ -8,6 +8,7 @@ import com.figma.mcp.routes.McpRoutes
 import com.figma.mcp.routes.WebSocketRoutes
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.services.FigmaToolExecutor
+import com.figma.mcp.services.ExportedImageResourceManager
 import com.figma.mcp.tools.FigmaToolRegistry
 import com.figma.mcp.tools.impl.*
 import com.figma.mcp.tools.impl.hierarchy.*
@@ -79,6 +80,16 @@ val appModule = module {
     // Manages WebSocket connections to Figma plugins
     single {
         FigmaConnectionManager(get())
+    }
+
+    // ========================================
+    // Exported Image Resource Manager
+    // ========================================
+
+    // Exported Image Resource Manager (Singleton)
+    // Manages exported images as temporary file resources
+    single {
+        ExportedImageResourceManager()
     }
 
     // ========================================
@@ -162,7 +173,7 @@ val appModule = module {
             // Category 9: Image & Media Tools (4 tools)
             CreateImageTool(get(), get()),
             SetImageFillTool(get(), get()),
-            ExportNodeTool(get(), get()),
+            ExportNodeTool(get(), get(), get()),  // Now includes ExportedImageResourceManager
             GetImageFillsTool(get(), get()),
 
             // Category 10: Utility Tools (7 tools)
@@ -256,7 +267,8 @@ val appModule = module {
     single {
         McpServer(
             logger = get(),
-            toolRegistry = get()
+            toolRegistry = get(),
+            resourceManager = get()
         )
     }
 }
