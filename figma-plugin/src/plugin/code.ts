@@ -1527,9 +1527,21 @@ figma.ui.onmessage = async (msg: UIMessage) => {
 
     case 'get-file-info':
       // Send file ID to UI for MCP URL generation
+      // Note: figma.fileKey is only available for cloud-saved files
+      // For local files, we generate a unique ID based on the file name and timestamp
+      let fileKey = figma.fileKey;
+
+      if (!fileKey) {
+        // For local/unsaved files, create a deterministic ID from file name
+        const fileName = figma.root.name;
+        const sanitized = fileName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        fileKey = `local-${sanitized}`;
+        console.warn('File not saved to Figma cloud. Using generated fileKey:', fileKey);
+      }
+
       sendMessage({
         type: 'file-info',
-        fileKey: figma.fileKey || 'unknown',
+        fileKey: fileKey,
         fileName: figma.root.name,
       });
       break;

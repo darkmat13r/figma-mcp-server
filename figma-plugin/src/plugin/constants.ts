@@ -151,7 +151,7 @@ export const Defaults = {
 
 export const ConnectionConfig = {
   // WebSocket endpoints
-  WS_BASE_URL: 'ws://localhost:8080',
+  WS_BASE_URL: 'ws://localhost:8081',
   WS_FIGMA_PATH: '/figma',
 
   // SSE endpoints (for Claude Code)

@@ -220,18 +220,22 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
       )}
 
       <Section title="Node Selection">
-        <div className="space-y-2">
-          <Label>Node ID <span className="text-destructive">*</span></Label>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Node ID <span className="text-destructive">*</span></Label>
           <div className="flex gap-2">
             <Input
               value={nodeId}
               onChange={(e) => setNodeId(e.target.value)}
               placeholder="Enter node ID or use selection"
+              className="text-xs h-9"
             />
-            <Button onClick={getSelectedNode} size="sm">
+            <Button onClick={getSelectedNode} size="sm" className="h-9">
               Get Selected
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Select a node in Figma to auto-fill the Node ID
+          </p>
         </div>
       </Section>
 
@@ -239,22 +243,25 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
       <Section title="1. Set Fills" description="Apply solid colors to nodes">
         <div className="space-y-3">
-          <div className="space-y-2"><Label>Fill Color</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Fill Color</Label>
             <div className="flex gap-2">
               <Input
                 type="color"
                 value={fillColor}
                 onChange={(e) => setFillColor(e.target.value)}
-                className="w-20"
+                className="w-20 h-9 p-1"
               />
               <Input
                 value={fillColor}
                 onChange={(e) => setFillColor(e.target.value)}
                 placeholder="#FF0000"
+                className="flex-1 text-xs h-9"
               />
             </div>
           </div>
-          <div className="space-y-2"><Label>Opacity</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Opacity</Label>
             <Input
               type="number"
               min="0"
@@ -262,6 +269,7 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
               step="0.1"
               value={fillOpacity}
               onChange={(e) => setFillOpacity(e.target.value)}
+              className="text-xs h-9"
             />
           </div>
           <Button onClick={testSetFills} disabled={!nodeId} className="w-full">
@@ -274,33 +282,38 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
       <Section title="2. Set Strokes" description="Apply borders to nodes">
         <div className="space-y-3">
-          <div className="space-y-2"><Label>Stroke Color</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Stroke Color</Label>
             <div className="flex gap-2">
               <Input
                 type="color"
                 value={strokeColor}
                 onChange={(e) => setStrokeColor(e.target.value)}
-                className="w-20"
+                className="w-20 h-9 p-1"
               />
               <Input
                 value={strokeColor}
                 onChange={(e) => setStrokeColor(e.target.value)}
                 placeholder="#000000"
+                className="flex-1 text-xs h-9"
               />
             </div>
           </div>
-          <div className="space-y-2"><Label>Stroke Weight</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Stroke Weight</Label>
             <Input
               type="number"
               min="0"
               step="0.5"
               value={strokeWeight}
               onChange={(e) => setStrokeWeight(e.target.value)}
+              className="text-xs h-9"
             />
           </div>
-          <div className="space-y-2"><Label>Stroke Align</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Stroke Align</Label>
             <Select value={strokeAlign} onValueChange={setStrokeAlign}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -320,54 +333,66 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
       <Section title="3. Set Effects" description="Apply drop shadows">
         <div className="space-y-3">
-          <div className="space-y-2"><Label>Shadow Color</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Shadow Color</Label>
             <div className="flex gap-2">
               <Input
                 type="color"
                 value={shadowColor}
                 onChange={(e) => setShadowColor(e.target.value)}
-                className="w-20"
+                className="w-20 h-9 p-1"
               />
               <Input
                 value={shadowColor}
                 onChange={(e) => setShadowColor(e.target.value)}
                 placeholder="#000000"
+                className="flex-1 text-xs h-9"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-2"><Label>X Offset</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">X Offset</Label>
               <Input
                 type="number"
                 value={shadowX}
                 onChange={(e) => setShadowX(e.target.value)}
+                className="text-xs h-9"
               />
             </div>
-            <div className="space-y-2"><Label>Y Offset</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Y Offset</Label>
               <Input
                 type="number"
                 value={shadowY}
                 onChange={(e) => setShadowY(e.target.value)}
+                className="text-xs h-9"
               />
             </div>
           </div>
-          <div className="space-y-2"><Label>Blur Radius</Label>
-            <Input
-              type="number"
-              min="0"
-              value={shadowBlur}
-              onChange={(e) => setShadowBlur(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2"><Label>Opacity</Label>
-            <Input
-              type="number"
-              min="0"
-              max="1"
-              step="0.05"
-              value={shadowOpacity}
-              onChange={(e) => setShadowOpacity(e.target.value)}
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Blur Radius</Label>
+              <Input
+                type="number"
+                min="0"
+                value={shadowBlur}
+                onChange={(e) => setShadowBlur(e.target.value)}
+                className="text-xs h-9"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Opacity</Label>
+              <Input
+                type="number"
+                min="0"
+                max="1"
+                step="0.05"
+                value={shadowOpacity}
+                onChange={(e) => setShadowOpacity(e.target.value)}
+                className="text-xs h-9"
+              />
+            </div>
           </div>
           <Button onClick={testSetEffects} disabled={!nodeId} className="w-full">
             Apply Effects
@@ -379,7 +404,8 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
       <Section title="4. Set Opacity" description="Control transparency">
         <div className="space-y-3">
-          <div className="space-y-2"><Label>Opacity</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Opacity</Label>
             <Input
               type="number"
               min="0"
@@ -387,11 +413,13 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
               step="0.1"
               value={opacity}
               onChange={(e) => setOpacity(e.target.value)}
+              className="text-xs h-9"
             />
           </div>
-          <div className="space-y-2"><Label>Blend Mode</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Blend Mode</Label>
             <Select value={blendMode} onValueChange={setBlendMode}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -414,51 +442,61 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
       <Section title="5. Set Corner Radius" description="Round corners">
         <div className="space-y-3">
-          <div className="space-y-2"><Label>All Corners (Uniform)</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">All Corners (Uniform)</Label>
             <Input
               type="number"
               min="0"
               value={cornerRadius}
               onChange={(e) => setCornerRadius(e.target.value)}
               placeholder="8"
+              className="text-xs h-9"
             />
           </div>
-          <div className="text-sm text-muted-foreground">Or set individual corners:</div>
+          <div className="text-xs text-muted-foreground">Or set individual corners:</div>
           <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-2"><Label>Top Left</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Top Left</Label>
               <Input
                 type="number"
                 min="0"
                 value={topLeftRadius}
                 onChange={(e) => setTopLeftRadius(e.target.value)}
                 placeholder="Auto"
+                className="text-xs h-9"
               />
             </div>
-            <div className="space-y-2"><Label>Top Right</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Top Right</Label>
               <Input
                 type="number"
                 min="0"
                 value={topRightRadius}
                 onChange={(e) => setTopRightRadius(e.target.value)}
                 placeholder="Auto"
+                className="text-xs h-9"
               />
             </div>
-            <div className="space-y-2"><Label>Bottom Left</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Bottom Left</Label>
               <Input
                 type="number"
                 min="0"
                 value={bottomLeftRadius}
                 onChange={(e) => setBottomLeftRadius(e.target.value)}
                 placeholder="Auto"
+                className="text-xs h-9"
               />
             </div>
-            <div className="space-y-2"><Label>Bottom Right</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Bottom Right</Label>
               <Input
                 type="number"
                 min="0"
                 value={bottomRightRadius}
                 onChange={(e) => setBottomRightRadius(e.target.value)}
                 placeholder="Auto"
+                className="text-xs h-9"
               />
             </div>
           </div>
@@ -472,9 +510,10 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
 
       <Section title="6-8. Apply Styles" description="Apply existing style references">
         <div className="space-y-3">
-          <div className="space-y-2"><Label>Style Type</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Style Type</Label>
             <Select value={styleType} onValueChange={setStyleType}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -485,11 +524,13 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2"><Label>Style ID</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-medium">Style ID</Label>
             <Input
               value={styleId}
               onChange={(e) => setStyleId(e.target.value)}
               placeholder="Enter style ID from Figma"
+              className="text-xs h-9"
             />
           </div>
           <Button onClick={testApplyStyle} disabled={!nodeId || !styleId} className="w-full">
@@ -499,7 +540,7 @@ export const StylingTestPanel: React.FC<StylingTestPanelProps> = ({ onSendComman
       </Section>
 
       <div className="text-xs text-muted-foreground mt-4">
-        <p>💡 Tip: Create or select a node in Figma, then click "Get Selected" to auto-fill the Node ID.</p>
+        <p>Tip: Create or select a node in Figma, then click "Get Selected" to auto-fill the Node ID.</p>
       </div>
     </div>
   );

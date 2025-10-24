@@ -11,8 +11,8 @@
  * - Dependency Inversion: Functions depend on Figma API abstractions
  */
 
-import { NodeTypes, Defaults, ParamNames, ErrorMessages, BooleanOperations } from './constants';
-import { validateAndSanitizeFills } from './styleUtils';
+import {BooleanOperations, Defaults, ErrorMessages, ParamNames} from './constants';
+import {validateAndSanitizeFills} from './styleUtils';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -36,61 +36,60 @@ function hexToRgb(hex: string): RGB {
 /**
  * Apply common properties to a node
  */
-function applyCommonProperties(node: SceneNode, params: Record<string, any>): void {
-  // Position
-  if (params[ParamNames.X] !== undefined && 'x' in node) {
-    (node as LayoutMixin).x = params[ParamNames.X];
-  }
-  if (params[ParamNames.Y] !== undefined && 'y' in node) {
-    (node as LayoutMixin).y = params[ParamNames.Y];
-  }
+async function applyCommonProperties(node: SceneNode, params: Record<string, any>): Promise<void> {
+    // Position
+    if (params[ParamNames.X] !== undefined && 'x' in node) {
+        (node as LayoutMixin).x = params[ParamNames.X];
+    }
+    if (params[ParamNames.Y] !== undefined && 'y' in node) {
+        (node as LayoutMixin).y = params[ParamNames.Y];
+    }
 
-  // Dimensions
-  if (params[ParamNames.WIDTH] !== undefined && 'resize' in node) {
-    (node as SceneNode & LayoutMixin).resize(params[ParamNames.WIDTH], node.height);
-  }
-  if (params[ParamNames.HEIGHT] !== undefined && 'resize' in node) {
-    (node as SceneNode & LayoutMixin).resize(node.width, params[ParamNames.HEIGHT]);
-  }
+    // Dimensions
+    if (params[ParamNames.WIDTH] !== undefined && 'resize' in node) {
+        (node as SceneNode & LayoutMixin).resize(params[ParamNames.WIDTH], node.height);
+    }
+    if (params[ParamNames.HEIGHT] !== undefined && 'resize' in node) {
+        (node as SceneNode & LayoutMixin).resize(node.width, params[ParamNames.HEIGHT]);
+    }
 
-  // Name
-  if (params[ParamNames.NAME]) {
-    node.name = params[ParamNames.NAME];
-  }
+    // Name
+    if (params[ParamNames.NAME]) {
+        node.name = params[ParamNames.NAME];
+    }
 
-  // Fills (with fillColor shorthand support)
-  if (params[ParamNames.FILL_COLOR] && 'fills' in node) {
-    const rgb = hexToRgb(params[ParamNames.FILL_COLOR]);
-    (node as GeometryMixin).fills = [{ type: 'SOLID', color: rgb }];
-  } else if (params[ParamNames.FILLS] && 'fills' in node) {
-    // Validate and sanitize fills before applying
-    const sanitizedFills = validateAndSanitizeFills(params[ParamNames.FILLS]);
-    (node as GeometryMixin).fills = sanitizedFills;
-  }
+    // Fills (with fillColor shorthand support)
+    if (params[ParamNames.FILL_COLOR] && 'fills' in node) {
+        const rgb = hexToRgb(params[ParamNames.FILL_COLOR]);
+        (node as GeometryMixin).fills = [{type: 'SOLID', color: rgb}];
+    } else if (params[ParamNames.FILLS] && 'fills' in node) {
+        // Validate and sanitize fills before applying
+        (node as GeometryMixin).fills = validateAndSanitizeFills(params[ParamNames.FILLS]);
+    }
 
-  // Strokes
-  if (params[ParamNames.STROKES] && 'strokes' in node) {
-    (node as GeometryMixin).strokes = params[ParamNames.STROKES];
-  }
-  if (params[ParamNames.STROKE_WEIGHT] !== undefined && 'strokeWeight' in node) {
-    (node as GeometryMixin).strokeWeight = params[ParamNames.STROKE_WEIGHT];
-  }
+    // Strokes
+    if (params[ParamNames.STROKES] && 'strokes' in node) {
+        (node as GeometryMixin).strokes = params[ParamNames.STROKES];
+    }
+    if (params[ParamNames.STROKE_WEIGHT] !== undefined && 'strokeWeight' in node) {
+        (node as GeometryMixin).strokeWeight = params[ParamNames.STROKE_WEIGHT];
+    }
 
-  // Corner radius (for rectangles/frames)
-  if (params[ParamNames.CORNER_RADIUS] !== undefined && 'cornerRadius' in node) {
-    (node as RectangleNode | FrameNode).cornerRadius = params[ParamNames.CORNER_RADIUS];
-  }
+    // Corner radius (for rectangles/frames)
+    if (params[ParamNames.CORNER_RADIUS] !== undefined && 'cornerRadius' in node) {
+        (node as RectangleNode | FrameNode).cornerRadius = params[ParamNames.CORNER_RADIUS];
+    }
 
-  // Style IDs - Apply styles after other properties
-  if (params.fillStyleId && 'fillStyleId' in node) {
-    (node as MinimalFillsMixin).fillStyleId = params.fillStyleId;
-  }
-  if (params.strokeStyleId && 'strokeStyleId' in node) {
-    (node as MinimalStrokesMixin).strokeStyleId = params.strokeStyleId;
-  }
-  if (params.effectStyleId && 'effectStyleId' in node) {
-    (node as BlendMixin).effectStyleId = params.effectStyleId;
-  }
+    // Style IDs - Apply styles after other properties
+    if (params.fillStyleId && 'fillStyleId' in node) {
+        await  (node as MinimalFillsMixin).setFillStyleIdAsync(params.fillStyleId);
+    }
+    if (params.strokeStyleId && 'strokeStyleId' in node) {
+        await (node as MinimalStrokesMixin).setStrokeStyleIdAsync(params.strokeStyleId);
+    }
+    if (params.effectStyleId && 'effectStyleId' in node) {
+        await  (node as BlendMixin).setEffectStyleIdAsync(params.effectStyleId);
+    }
 }
 
 /**
@@ -119,7 +118,7 @@ export async function createFrame(params: Record<string, any>): Promise<FrameNod
   );
 
   // Apply common properties
-  applyCommonProperties(frame, params);
+  await applyCommonProperties(frame, params);
 
   // Layout mode
   if (params[ParamNames.LAYOUT_MODE]) {
@@ -190,7 +189,7 @@ export async function createComponent(params: Record<string, any>): Promise<Comp
     component.description = params[ParamNames.DESCRIPTION];
   }
 
-  applyCommonProperties(component, params);
+  await applyCommonProperties(component, params);
   addToPage(component);
   return component;
 }
@@ -210,7 +209,7 @@ export async function createInstance(params: Record<string, any>): Promise<Insta
   }
 
   const instance = component.createInstance();
-  applyCommonProperties(instance, params);
+  await applyCommonProperties(instance, params);
   addToPage(instance);
   return instance;
 }
@@ -226,7 +225,7 @@ export async function createRectangle(params: Record<string, any>): Promise<Rect
     params[ParamNames.HEIGHT] !== undefined ? params[ParamNames.HEIGHT] : Defaults.DEFAULT_HEIGHT
   );
 
-  applyCommonProperties(rectangle, params);
+  await applyCommonProperties(rectangle, params);
   addToPage(rectangle);
   return rectangle;
 }
@@ -242,7 +241,7 @@ export async function createEllipse(params: Record<string, any>): Promise<Ellips
     params[ParamNames.HEIGHT] !== undefined ? params[ParamNames.HEIGHT] : Defaults.DEFAULT_HEIGHT
   );
 
-  applyCommonProperties(ellipse, params);
+  await applyCommonProperties(ellipse, params);
   addToPage(ellipse);
   return ellipse;
 }
@@ -283,10 +282,10 @@ export async function createText(params: Record<string, any>): Promise<TextNode>
 
   // Apply text style ID if provided
   if (params.textStyleId) {
-    textNode.textStyleId = params.textStyleId;
+    await textNode.setTextStyleIdAsync(params.textStyleId);
   }
 
-  applyCommonProperties(textNode, params);
+  await applyCommonProperties(textNode, params);
   addToPage(textNode);
   return textNode;
 }
@@ -306,7 +305,7 @@ export async function createPolygon(params: Record<string, any>): Promise<Polygo
   const radius = params[ParamNames.RADIUS] !== undefined ? params[ParamNames.RADIUS] : Defaults.DEFAULT_WIDTH / 2;
   polygon.resize(radius * 2, radius * 2);
 
-  applyCommonProperties(polygon, params);
+  await applyCommonProperties(polygon, params);
   addToPage(polygon);
   return polygon;
 }
@@ -331,7 +330,7 @@ export async function createStar(params: Record<string, any>): Promise<StarNode>
     star.innerRadius = params[ParamNames.INNER_RADIUS] / radius;
   }
 
-  applyCommonProperties(star, params);
+  await applyCommonProperties(star, params);
   addToPage(star);
   return star;
 }
@@ -359,7 +358,7 @@ export async function createLine(params: Record<string, any>): Promise<LineNode>
   line.resize(Math.abs(x2 - x1), 0);
   line.rotation = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
 
-  applyCommonProperties(line, params);
+  await applyCommonProperties(line, params);
   addToPage(line);
   return line;
 }

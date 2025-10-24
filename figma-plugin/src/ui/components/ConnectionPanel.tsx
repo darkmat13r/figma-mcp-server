@@ -22,6 +22,8 @@ import { Alert, AlertDescription } from '@/ui/components/ui/alert';
 import { Section } from '@/ui/components/composed/Section';
 import { StatusBadge, StatusType } from '@/ui/components/composed/StatusBadge';
 import { Label } from '@/ui/components/ui/label';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/ui/components/ui/collapsible';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ConnectionPanelProps {
   connectionState: ConnectionState;
@@ -36,10 +38,11 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   onConnect,
   onDisconnect,
 }) => {
-  const [serverUrl, setServerUrl] = useState('ws://localhost:8080/figma');
+  const [serverUrl, setServerUrl] = useState('ws://localhost:8081/figma');
   const [fileId, setFileId] = useState<string>('');
   const [mcpUrl, setMcpUrl] = useState<string>('');
   const [copySuccess, setCopySuccess] = useState<string>('');
+  const [isOpen, setIsOpen] = useState(false);
 
   // Get file ID from Figma on mount and when file changes
   useEffect(() => {
@@ -116,18 +119,26 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   };
 
   return (
-    <div className="border-b border-border bg-card p-4">
-      <Section
-        title="Connection"
-        action={
-          <StatusBadge
-            status={getStatusType()}
-            label={getStatusLabel()}
-          />
-        }
-        className="space-y-3"
-      >
-        <div className="space-y-3">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border-b border-border bg-card">
+      <div className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-medium">Connection</h3>
+            <StatusBadge
+              status={getStatusType()}
+              label={getStatusLabel()}
+            />
+          </div>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
+        </div>
+      </div>
+
+      <CollapsibleContent>
+        <div className="px-4 pb-4 space-y-3">
           {/* File ID Display */}
           <div className="space-y-1">
             <Label className="text-xs font-medium text-muted-foreground">
@@ -188,7 +199,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
                   type="text"
                   value={serverUrl}
                   onChange={(e) => setServerUrl(e.target.value)}
-                  placeholder="ws://localhost:8080/figma"
+                  placeholder="ws://localhost:8081/figma"
                   disabled={connectionState === ConnectionState.CONNECTED}
                   className="text-xs"
                 />
@@ -231,7 +242,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
             </Alert>
           )}
         </div>
-      </Section>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };

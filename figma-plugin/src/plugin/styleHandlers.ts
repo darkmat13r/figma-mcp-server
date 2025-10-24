@@ -198,7 +198,7 @@ export async function handleApplyStyle(params: Record<string, any>): Promise<voi
   switch (styleType) {
     case 'FILL':
       if ('fillStyleId' in node) {
-        (node as any).fillStyleId = styleId;
+        await (node).setFillStyleIdAsync(styleId);
       } else {
         throw new Error('Node does not support fill styles');
       }
@@ -206,7 +206,7 @@ export async function handleApplyStyle(params: Record<string, any>): Promise<voi
 
     case 'STROKE':
       if ('strokeStyleId' in node) {
-        (node as any).strokeStyleId = styleId;
+        await (node).setStrokeStyleIdAsync(styleId);
       } else {
         throw new Error('Node does not support stroke styles');
       }
@@ -214,7 +214,7 @@ export async function handleApplyStyle(params: Record<string, any>): Promise<voi
 
     case 'EFFECT':
       if ('effectStyleId' in node) {
-        (node as any).effectStyleId = styleId;
+        await node.setEffectStyleIdAsync(styleId);
       } else {
         throw new Error('Node does not support effect styles');
       }
@@ -222,7 +222,7 @@ export async function handleApplyStyle(params: Record<string, any>): Promise<voi
 
     case 'TEXT':
       if (node.type === 'TEXT') {
-        (node as TextNode).textStyleId = styleId;
+        await (node as TextNode).setTextStyleIdAsync(styleId);
       } else {
         throw new Error('Node must be a text node to apply text styles');
       }
@@ -475,7 +475,7 @@ export async function handleSetFillStyleId(params: Record<string, any>): Promise
   }
 
   if ('fillStyleId' in node) {
-    (node as MinimalFillsMixin).fillStyleId = styleId;
+    await (node as MinimalFillsMixin).setFillStyleIdAsync(styleId);
   } else {
     throw new Error('Node does not support fill styles');
   }

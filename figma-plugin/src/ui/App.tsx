@@ -9,6 +9,7 @@ import { HierarchyTestPanel } from './components/HierarchyTestPanel';
 import { ComponentsTestPanel } from './components/ComponentsTestPanel';
 import { VariablesTestPanel } from './components/VariablesTestPanel';
 import { ImageTestPanel } from './components/ImageTestPanel';
+import { StyleTestPanel } from './components/StyleTestPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 export const App: React.FC = () => {
@@ -46,6 +47,7 @@ export const App: React.FC = () => {
             <TabsList className="w-full justify-start rounded-none border-b overflow-x-auto flex-nowrap">
               <TabsTrigger value="node-creation">Node Creation</TabsTrigger>
               <TabsTrigger value="styling">Styling</TabsTrigger>
+              <TabsTrigger value="style-management">Style Management</TabsTrigger>
               <TabsTrigger value="typography">Typography</TabsTrigger>
               <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
               <TabsTrigger value="components">Components</TabsTrigger>
@@ -66,6 +68,12 @@ export const App: React.FC = () => {
                 onSendCommand={sendRequest}
                 isConnected={connectionState === 'connected'}
               />
+            </TabsContent>
+
+            <TabsContent value="style-management" className="flex-1 overflow-auto m-0">
+              <div className="p-4">
+                <StyleTestPanel onSendMessage={sendRequest} />
+              </div>
             </TabsContent>
 
             <TabsContent value="typography" className="flex-1 overflow-auto m-0">
