@@ -1008,6 +1008,181 @@ async function handleGetUserInfoCommand(params: Record<string, any>, requestId: 
   }
 }
 
+// ============================================================================
+// STYLE MANAGEMENT HANDLERS (Category 11)
+// ============================================================================
+
+/**
+ * Handle getStyleById command
+ */
+async function handleGetStyleByIdCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleGetStyleById(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getLocalPaintStyles command
+ */
+async function handleGetLocalPaintStylesCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleGetLocalPaintStyles(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getLocalTextStyles command
+ */
+async function handleGetLocalTextStylesCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleGetLocalTextStyles(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getLocalEffectStyles command
+ */
+async function handleGetLocalEffectStylesCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleGetLocalEffectStyles(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle getLocalGridStyles command
+ */
+async function handleGetLocalGridStylesCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleGetLocalGridStyles(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createPaintStyle command
+ */
+async function handleCreatePaintStyleCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleCreatePaintStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createTextStyle command
+ */
+async function handleCreateTextStyleCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleCreateTextStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createEffectStyle command
+ */
+async function handleCreateEffectStyleCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleCreateEffectStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
+ * Handle createGridStyle command
+ */
+async function handleCreateGridStyleCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await StyleHandlers.handleCreateGridStyle(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
 /**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
@@ -1203,6 +1378,43 @@ async function handleWSCommand(command: any): Promise<void> {
       // User & File Information
       case PluginMethods.GET_USER_INFO:
         await handleGetUserInfoCommand(params, id);
+        break;
+
+      // Category 11: Style Management Tools
+      case PluginMethods.GET_STYLE_BY_ID:
+        await handleGetStyleByIdCommand(params, id);
+        break;
+
+      case PluginMethods.GET_LOCAL_PAINT_STYLES:
+        await handleGetLocalPaintStylesCommand(params, id);
+        break;
+
+      case PluginMethods.GET_LOCAL_TEXT_STYLES:
+        await handleGetLocalTextStylesCommand(params, id);
+        break;
+
+      case PluginMethods.GET_LOCAL_EFFECT_STYLES:
+        await handleGetLocalEffectStylesCommand(params, id);
+        break;
+
+      case PluginMethods.GET_LOCAL_GRID_STYLES:
+        await handleGetLocalGridStylesCommand(params, id);
+        break;
+
+      case PluginMethods.CREATE_PAINT_STYLE:
+        await handleCreatePaintStyleCommand(params, id);
+        break;
+
+      case PluginMethods.CREATE_TEXT_STYLE:
+        await handleCreateTextStyleCommand(params, id);
+        break;
+
+      case PluginMethods.CREATE_EFFECT_STYLE:
+        await handleCreateEffectStyleCommand(params, id);
+        break;
+
+      case PluginMethods.CREATE_GRID_STYLE:
+        await handleCreateGridStyleCommand(params, id);
         break;
 
       default:

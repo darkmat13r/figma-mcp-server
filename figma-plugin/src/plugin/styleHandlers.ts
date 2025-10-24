@@ -232,3 +232,220 @@ export async function handleApplyStyle(params: Record<string, any>): Promise<voi
       throw new Error(`Unknown style type: ${styleType}`);
   }
 }
+
+// ============================================================================
+// STYLE RETRIEVAL HANDLERS (Category 11: Style Management)
+// ============================================================================
+
+/**
+ * Handle getStyleById command
+ * Retrieves a style by its ID
+ */
+export async function handleGetStyleById(params: Record<string, any>): Promise<Record<string, any>> {
+  const styleId = params.styleId;
+  if (!styleId) {
+    throw new Error(ErrorMessages.missingParam('styleId'));
+  }
+
+  const style = await figma.getStyleByIdAsync(styleId);
+  if (!style) {
+    throw new Error(`Style not found: ${styleId}`);
+  }
+
+  return {
+    id: style.id,
+    name: style.name,
+    type: style.type,
+    description: style.description,
+    key: style.key,
+    remote: style.remote,
+  };
+}
+
+/**
+ * Handle getLocalPaintStyles command
+ * Returns all local paint styles
+ */
+export async function handleGetLocalPaintStyles(params: Record<string, any>): Promise<Record<string, any>> {
+  const styles = await figma.getLocalPaintStylesAsync();
+
+  return {
+    styles: styles.map(style => ({
+      id: style.id,
+      name: style.name,
+      description: style.description,
+      key: style.key,
+      paints: style.paints,
+    })),
+  };
+}
+
+/**
+ * Handle getLocalTextStyles command
+ * Returns all local text styles
+ */
+export async function handleGetLocalTextStyles(params: Record<string, any>): Promise<Record<string, any>> {
+  const styles = await figma.getLocalTextStylesAsync();
+
+  return {
+    styles: styles.map(style => ({
+      id: style.id,
+      name: style.name,
+      description: style.description,
+      key: style.key,
+      fontSize: style.fontSize,
+      fontName: style.fontName,
+      letterSpacing: style.letterSpacing,
+      lineHeight: style.lineHeight,
+      paragraphIndent: style.paragraphIndent,
+      paragraphSpacing: style.paragraphSpacing,
+      textCase: style.textCase,
+      textDecoration: style.textDecoration,
+    })),
+  };
+}
+
+/**
+ * Handle getLocalEffectStyles command
+ * Returns all local effect styles
+ */
+export async function handleGetLocalEffectStyles(params: Record<string, any>): Promise<Record<string, any>> {
+  const styles = await figma.getLocalEffectStylesAsync();
+
+  return {
+    styles: styles.map(style => ({
+      id: style.id,
+      name: style.name,
+      description: style.description,
+      key: style.key,
+      effects: style.effects,
+    })),
+  };
+}
+
+/**
+ * Handle getLocalGridStyles command
+ * Returns all local grid styles
+ */
+export async function handleGetLocalGridStyles(params: Record<string, any>): Promise<Record<string, any>> {
+  const styles = await figma.getLocalGridStylesAsync();
+
+  return {
+    styles: styles.map(style => ({
+      id: style.id,
+      name: style.name,
+      description: style.description,
+      key: style.key,
+      layoutGrids: style.layoutGrids,
+    })),
+  };
+}
+
+// ============================================================================
+// STYLE CREATION HANDLERS (Category 11: Style Management)
+// ============================================================================
+
+/**
+ * Handle createPaintStyle command
+ * Creates a new paint (color/fill) style
+ */
+export async function handleCreatePaintStyle(params: Record<string, any>): Promise<Record<string, any>> {
+  const style = figma.createPaintStyle();
+
+  if (params.name) {
+    style.name = params.name;
+  }
+  if (params.description) {
+    style.description = params.description;
+  }
+  if (params.paints) {
+    style.paints = params.paints;
+  }
+
+  return {
+    styleId: style.id,
+    name: style.name,
+    type: style.type,
+  };
+}
+
+/**
+ * Handle createTextStyle command
+ * Creates a new text style
+ */
+export async function handleCreateTextStyle(params: Record<string, any>): Promise<Record<string, any>> {
+  const style = figma.createTextStyle();
+
+  if (params.name) {
+    style.name = params.name;
+  }
+  if (params.description) {
+    style.description = params.description;
+  }
+  if (params.fontSize) {
+    style.fontSize = params.fontSize;
+  }
+  if (params.fontFamily && params.fontWeight) {
+    style.fontName = { family: params.fontFamily, style: params.fontWeight };
+  }
+  if (params.lineHeight) {
+    style.lineHeight = params.lineHeight;
+  }
+  if (params.letterSpacing) {
+    style.letterSpacing = params.letterSpacing;
+  }
+
+  return {
+    styleId: style.id,
+    name: style.name,
+    type: style.type,
+  };
+}
+
+/**
+ * Handle createEffectStyle command
+ * Creates a new effect style
+ */
+export async function handleCreateEffectStyle(params: Record<string, any>): Promise<Record<string, any>> {
+  const style = figma.createEffectStyle();
+
+  if (params.name) {
+    style.name = params.name;
+  }
+  if (params.description) {
+    style.description = params.description;
+  }
+  if (params.effects) {
+    style.effects = params.effects;
+  }
+
+  return {
+    styleId: style.id,
+    name: style.name,
+    type: style.type,
+  };
+}
+
+/**
+ * Handle createGridStyle command
+ * Creates a new grid/layout style
+ */
+export async function handleCreateGridStyle(params: Record<string, any>): Promise<Record<string, any>> {
+  const style = figma.createGridStyle();
+
+  if (params.name) {
+    style.name = params.name;
+  }
+  if (params.description) {
+    style.description = params.description;
+  }
+  if (params.layoutGrids) {
+    style.layoutGrids = params.layoutGrids;
+  }
+
+  return {
+    styleId: style.id,
+    name: style.name,
+    type: style.type,
+  };
+}

@@ -15,6 +15,7 @@ import com.figma.mcp.tools.impl.hierarchy.*
 import com.figma.mcp.tools.impl.components.*
 import com.figma.mcp.tools.impl.variables.*
 import com.figma.mcp.tools.impl.images.*
+import com.figma.mcp.tools.impl.styles.*
 import com.figma.mcp.transport.McpServer
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
@@ -183,7 +184,18 @@ val appModule = module {
             SetVisibleTool(get(), get()),
             SetLockedTool(get(), get()),
             NotifyTool(get(), get()),
-            GetUserInfoTool(get(), get())
+            GetUserInfoTool(get(), get()),
+
+            // Category 11: Style Management Tools (9 tools)
+            GetStyleByIdTool(get(), get()),
+            GetLocalPaintStylesTool(get(), get()),
+            GetLocalTextStylesTool(get(), get()),
+            GetLocalEffectStylesTool(get(), get()),
+            GetLocalGridStylesTool(get(), get()),
+            CreatePaintStyleTool(get(), get()),
+            CreateTextStyleTool(get(), get()),
+            CreateEffectStyleTool(get(), get()),
+            CreateGridStyleTool(get(), get())
 
             // Future categories can be added here:
             // Category 2: Layout Management Tools

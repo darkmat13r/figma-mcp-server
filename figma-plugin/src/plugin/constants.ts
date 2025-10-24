@@ -85,6 +85,16 @@ export const PluginMethods = {
   GET_IMAGE_FILLS: 'getImageFills',
   // User & File Info methods
   GET_USER_INFO: 'getUserInfo',
+  // Style Management methods (Category 11)
+  GET_STYLE_BY_ID: 'getStyleById',
+  GET_LOCAL_PAINT_STYLES: 'getLocalPaintStyles',
+  GET_LOCAL_TEXT_STYLES: 'getLocalTextStyles',
+  GET_LOCAL_EFFECT_STYLES: 'getLocalEffectStyles',
+  GET_LOCAL_GRID_STYLES: 'getLocalGridStyles',
+  CREATE_PAINT_STYLE: 'createPaintStyle',
+  CREATE_TEXT_STYLE: 'createTextStyle',
+  CREATE_EFFECT_STYLE: 'createEffectStyle',
+  CREATE_GRID_STYLE: 'createGridStyle',
 } as const;
 
 // ============================================================================
