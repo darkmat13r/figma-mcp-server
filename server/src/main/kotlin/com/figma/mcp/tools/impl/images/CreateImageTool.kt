@@ -26,6 +26,7 @@ import kotlinx.serialization.json.*
  * - height: number (optional) - Image height in pixels
  * - x: number (optional) - X position
  * - y: number (optional) - Y position
+ * - effectStyleId: string (optional) - Effect style ID to apply
  *
  * ## Returns
  * {
@@ -64,6 +65,10 @@ class CreateImageTool(
                     ParamNames.Y to mapOf(
                         "type" to "number",
                         "description" to "Y position (optional, default: ${Defaults.DEFAULT_POSITION_Y})"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this image (optional)"
                     )
                 ),
                 required = listOf(ParamNames.IMAGE_DATA)
@@ -82,6 +87,7 @@ class CreateImageTool(
             params.getDoubleOrNull(ParamNames.HEIGHT)?.let { put(ParamNames.HEIGHT, it) }
             put(ParamNames.X, params.getDoubleOrDefault(ParamNames.X, Defaults.DEFAULT_POSITION_X))
             put(ParamNames.Y, params.getDoubleOrDefault(ParamNames.Y, Defaults.DEFAULT_POSITION_Y))
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 

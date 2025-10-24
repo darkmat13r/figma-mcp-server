@@ -24,6 +24,9 @@ import kotlinx.serialization.json.put
  * - name: string (required) - Section name
  * - width: number (optional) - Section width
  * - height: number (optional) - Section height
+ * - fillStyleId: string (optional) - Fill/paint style ID to apply
+ * - strokeStyleId: string (optional) - Stroke style ID to apply
+ * - effectStyleId: string (optional) - Effect style ID to apply
  */
 class CreateSectionTool(
     logger: ILogger,
@@ -50,6 +53,18 @@ class CreateSectionTool(
                     ParamNames.HEIGHT to mapOf(
                         "type" to "number",
                         "description" to "Height in pixels (optional, default: ${Defaults.DEFAULT_HEIGHT})"
+                    ),
+                    ParamNames.FILL_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Fill/paint style ID to apply to this section (optional)"
+                    ),
+                    ParamNames.STROKE_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Stroke style ID to apply to this section (optional)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this section (optional)"
                     )
                 ),
                 required = listOf(ParamNames.NAME)
@@ -63,6 +78,9 @@ class CreateSectionTool(
             put(ParamNames.NAME, params.getRequiredString(ParamNames.NAME))
             put(ParamNames.WIDTH, params.getDoubleOrDefault(ParamNames.WIDTH, Defaults.DEFAULT_WIDTH))
             put(ParamNames.HEIGHT, params.getDoubleOrDefault(ParamNames.HEIGHT, Defaults.DEFAULT_HEIGHT))
+            params.getStringOrNull(ParamNames.FILL_STYLE_ID)?.let { put(ParamNames.FILL_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.STROKE_STYLE_ID)?.let { put(ParamNames.STROKE_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 }

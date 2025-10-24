@@ -23,6 +23,9 @@ import kotlinx.serialization.json.*
  * ## Parameters
  * - operation: "UNION" | "SUBTRACT" | "INTERSECT" | "EXCLUDE" (required)
  * - nodeIds: string[] (required, minimum 2) - IDs of nodes to combine
+ * - fillStyleId: string (optional) - Fill/paint style ID to apply
+ * - strokeStyleId: string (optional) - Stroke style ID to apply
+ * - effectStyleId: string (optional) - Effect style ID to apply
  *
  * ## Boolean Operations Explained
  * - UNION: Combines shapes (A + B)
@@ -62,6 +65,18 @@ class CreateBooleanOperationTool(
                         "type" to "array",
                         "items" to mapOf("type" to "string"),
                         "description" to "Array of node IDs to combine (required, minimum ${Defaults.MIN_BOOLEAN_OP_NODES} nodes)"
+                    ),
+                    ParamNames.FILL_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Fill/paint style ID to apply to the boolean operation result (optional)"
+                    ),
+                    ParamNames.STROKE_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Stroke style ID to apply to the boolean operation result (optional)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to the boolean operation result (optional)"
                     )
                 ),
                 required = listOf(ParamNames.OPERATION, ParamNames.NODE_IDS)
@@ -104,6 +119,9 @@ class CreateBooleanOperationTool(
         return buildJsonObject {
             put(ParamNames.OPERATION, params.getRequiredString(ParamNames.OPERATION))
             put(ParamNames.NODE_IDS, params.getRequiredArray(ParamNames.NODE_IDS))
+            params.getStringOrNull(ParamNames.FILL_STYLE_ID)?.let { put(ParamNames.FILL_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.STROKE_STYLE_ID)?.let { put(ParamNames.STROKE_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 

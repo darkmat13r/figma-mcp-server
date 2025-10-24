@@ -25,7 +25,9 @@ import kotlinx.serialization.json.put
  * - x2: number (required) - End X coordinate
  * - y2: number (required) - End Y coordinate
  * - strokes: Paint[] (optional) - Line color
+ * - strokeStyleId: string (optional) - Stroke style ID to apply
  * - strokeWeight: number (optional) - Line thickness
+ * - effectStyleId: string (optional) - Effect style ID to apply
  */
 class CreateLineTool(
     logger: ILogger,
@@ -60,9 +62,17 @@ class CreateLineTool(
                         "type" to "array",
                         "description" to "Array of Paint objects for line color (optional)"
                     ),
+                    ParamNames.STROKE_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Stroke style ID to apply to this line (optional)"
+                    ),
                     ParamNames.STROKE_WEIGHT to mapOf(
                         "type" to "number",
                         "description" to "Line thickness in pixels (optional, default: 1)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this line (optional)"
                     )
                 ),
                 required = listOf(ParamNames.X1, ParamNames.Y1, ParamNames.X2, ParamNames.Y2)
@@ -80,7 +90,9 @@ class CreateLineTool(
 
             // Optional styling
             params.getArrayOrNull(ParamNames.STROKES)?.let { put(ParamNames.STROKES, it) }
+            params.getStringOrNull(ParamNames.STROKE_STYLE_ID)?.let { put(ParamNames.STROKE_STYLE_ID, it) }
             params.getDoubleOrNull(ParamNames.STROKE_WEIGHT)?.let { put(ParamNames.STROKE_WEIGHT, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 }
