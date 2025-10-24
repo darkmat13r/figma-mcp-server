@@ -42,7 +42,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   const [fileId, setFileId] = useState<string>('');
   const [mcpUrl, setMcpUrl] = useState<string>('');
   const [copySuccess, setCopySuccess] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   // Get file ID from Figma on mount and when file changes
   useEffect(() => {

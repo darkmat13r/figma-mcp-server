@@ -2,22 +2,13 @@ import React from 'react';
 import { useWebSocket } from './hooks/useWebSocket';
 import { ConnectionPanel } from './components/ConnectionPanel';
 import { ConsolePanel } from './components/ConsolePanel';
-import { TestPanel } from './components/TestPanel';
-import { StylingTestPanel } from './components/StylingTestPanel';
-import { TypographyTestPanel } from './components/TypographyTestPanel';
-import { HierarchyTestPanel } from './components/HierarchyTestPanel';
-import { ComponentsTestPanel } from './components/ComponentsTestPanel';
-import { VariablesTestPanel } from './components/VariablesTestPanel';
-import { ImageTestPanel } from './components/ImageTestPanel';
-import { StyleTestPanel } from './components/StyleTestPanel';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 
 export const App: React.FC = () => {
   console.log('App component rendering...');
 
   let content;
   try {
-    const { connectionState, error, logs, connect, disconnect, clearLogs, sendRequest } = useWebSocket();
+    const { connectionState, error, logs, connect, disconnect, clearLogs } = useWebSocket();
 
     console.log('Hooks initialized successfully');
 
@@ -29,92 +20,22 @@ export const App: React.FC = () => {
             Figma MCP Bridge
           </h1>
           <p className="text-xs text-muted-foreground">
-            Connect to MCP server and control Figma
+            Connect to MCP server and control Figma with Claude Code
           </p>
         </div>
 
-        {/* Connection Panel */}
-        <ConnectionPanel
-          connectionState={connectionState}
-          error={error}
-          onConnect={connect}
-          onDisconnect={disconnect}
-        />
+        {/* Collapsible Panels Container */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Connection Panel - Open by default */}
+          <ConnectionPanel
+            connectionState={connectionState}
+            error={error}
+            onConnect={connect}
+            onDisconnect={disconnect}
+          />
 
-        {/* Main Content with Tabs */}
-        <div className="flex-1 overflow-hidden">
-          <Tabs defaultValue="node-creation" className="h-full flex flex-col">
-            <TabsList className="w-full justify-start rounded-none border-b overflow-x-auto flex-nowrap">
-              <TabsTrigger value="node-creation">Node Creation</TabsTrigger>
-              <TabsTrigger value="styling">Styling</TabsTrigger>
-              <TabsTrigger value="style-management">Style Management</TabsTrigger>
-              <TabsTrigger value="typography">Typography</TabsTrigger>
-              <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
-              <TabsTrigger value="components">Components</TabsTrigger>
-              <TabsTrigger value="variables">Variables</TabsTrigger>
-              <TabsTrigger value="images">Images</TabsTrigger>
-              <TabsTrigger value="console">Console</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="node-creation" className="flex-1 overflow-auto m-0">
-              <TestPanel
-                connectionState={connectionState}
-                onSendMessage={sendRequest}
-              />
-            </TabsContent>
-
-            <TabsContent value="styling" className="flex-1 overflow-auto m-0">
-              <StylingTestPanel
-                onSendCommand={sendRequest}
-                isConnected={connectionState === 'connected'}
-              />
-            </TabsContent>
-
-            <TabsContent value="style-management" className="flex-1 overflow-auto m-0">
-              <div className="p-4">
-                <StyleTestPanel onSendMessage={sendRequest} />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="typography" className="flex-1 overflow-auto m-0">
-              <TypographyTestPanel
-                onSendCommand={sendRequest}
-                isConnected={connectionState === 'connected'}
-              />
-            </TabsContent>
-
-            <TabsContent value="hierarchy" className="flex-1 overflow-auto m-0">
-              <HierarchyTestPanel
-                onSendCommand={sendRequest}
-                isConnected={connectionState === 'connected'}
-              />
-            </TabsContent>
-
-            <TabsContent value="components" className="flex-1 overflow-auto m-0">
-              <ComponentsTestPanel
-                onSendCommand={sendRequest}
-                isConnected={connectionState === 'connected'}
-              />
-            </TabsContent>
-
-            <TabsContent value="variables" className="flex-1 overflow-auto m-0">
-              <VariablesTestPanel
-                onSendCommand={sendRequest}
-                isConnected={connectionState === 'connected'}
-              />
-            </TabsContent>
-
-            <TabsContent value="images" className="flex-1 overflow-auto m-0">
-              <ImageTestPanel
-                onSendCommand={sendRequest}
-                isConnected={connectionState === 'connected'}
-              />
-            </TabsContent>
-
-            <TabsContent value="console" className="flex-1 overflow-auto m-0">
-              <ConsolePanel logs={logs} onClear={clearLogs} />
-            </TabsContent>
-          </Tabs>
+          {/* Console Panel - Collapsed by default */}
+          <ConsolePanel logs={logs} onClear={clearLogs} />
         </div>
       </div>
     );
