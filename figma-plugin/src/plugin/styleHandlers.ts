@@ -449,3 +449,34 @@ export async function handleCreateGridStyle(params: Record<string, any>): Promis
     type: style.type,
   };
 }
+
+// ============================================================================
+// STYLE APPLICATION HANDLERS
+// ============================================================================
+
+/**
+ * Handle setFillStyleId command
+ * Applies a fill style to a node
+ */
+export async function handleSetFillStyleId(params: Record<string, any>): Promise<void> {
+  const nodeId = params.nodeId;
+  const styleId = params.styleId;
+
+  if (!nodeId) {
+    throw new Error(ErrorMessages.missingParam('nodeId'));
+  }
+  if (!styleId) {
+    throw new Error(ErrorMessages.missingParam('styleId'));
+  }
+
+  const node = await figma.getNodeByIdAsync(nodeId);
+  if (!node) {
+    throw new Error(`Node not found: ${nodeId}`);
+  }
+
+  if ('fillStyleId' in node) {
+    (node as MinimalFillsMixin).fillStyleId = styleId;
+  } else {
+    throw new Error('Node does not support fill styles');
+  }
+}

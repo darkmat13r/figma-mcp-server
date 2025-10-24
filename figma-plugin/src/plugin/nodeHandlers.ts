@@ -80,6 +80,17 @@ function applyCommonProperties(node: SceneNode, params: Record<string, any>): vo
   if (params[ParamNames.CORNER_RADIUS] !== undefined && 'cornerRadius' in node) {
     (node as RectangleNode | FrameNode).cornerRadius = params[ParamNames.CORNER_RADIUS];
   }
+
+  // Style IDs - Apply styles after other properties
+  if (params.fillStyleId && 'fillStyleId' in node) {
+    (node as MinimalFillsMixin).fillStyleId = params.fillStyleId;
+  }
+  if (params.strokeStyleId && 'strokeStyleId' in node) {
+    (node as MinimalStrokesMixin).strokeStyleId = params.strokeStyleId;
+  }
+  if (params.effectStyleId && 'effectStyleId' in node) {
+    (node as BlendMixin).effectStyleId = params.effectStyleId;
+  }
 }
 
 /**
@@ -268,6 +279,11 @@ export async function createText(params: Record<string, any>): Promise<TextNode>
   // Text alignment
   if (params[ParamNames.TEXT_ALIGN_HORIZONTAL]) {
     textNode.textAlignHorizontal = params[ParamNames.TEXT_ALIGN_HORIZONTAL];
+  }
+
+  // Apply text style ID if provided
+  if (params.textStyleId) {
+    textNode.textStyleId = params.textStyleId;
   }
 
   applyCommonProperties(textNode, params);

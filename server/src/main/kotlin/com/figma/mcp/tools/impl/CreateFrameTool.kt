@@ -29,6 +29,9 @@ import kotlinx.serialization.json.put
  * - y: number (optional, default: 0) - Y position
  * - layoutMode: "NONE" | "HORIZONTAL" | "VERTICAL" (optional) - Auto-layout mode
  * - fills: Paint[] (optional) - Fill colors/gradients
+ * - fillStyleId: string (optional) - Fill/paint style ID to apply
+ * - strokeStyleId: string (optional) - Stroke style ID to apply
+ * - effectStyleId: string (optional) - Effect style ID to apply
  *
  * ## Example Usage
  * ```json
@@ -85,6 +88,18 @@ class CreateFrameTool(
                     ParamNames.FILLS to mapOf(
                         "type" to "array",
                         "description" to "Array of Paint objects for fill colors (optional)"
+                    ),
+                    ParamNames.FILL_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Fill/paint style ID to apply to this frame (optional)"
+                    ),
+                    ParamNames.STROKE_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Stroke style ID to apply to this frame (optional)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this frame (optional)"
                     ),
                     "paddingLeft" to mapOf(
                         "type" to "number",
@@ -152,6 +167,11 @@ class CreateFrameTool(
             params.getArrayOrNull(ParamNames.FILLS)?.let {
                 put(ParamNames.FILLS, it)
             }
+
+            // Style IDs (optional)
+            params.getStringOrNull(ParamNames.FILL_STYLE_ID)?.let { put(ParamNames.FILL_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.STROKE_STYLE_ID)?.let { put(ParamNames.STROKE_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
 
             // Auto layout padding properties
             params.getDoubleOrNull("paddingLeft")?.let { put("paddingLeft", it) }

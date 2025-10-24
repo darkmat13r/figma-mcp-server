@@ -1184,6 +1184,25 @@ async function handleCreateGridStyleCommand(params: Record<string, any>, request
 }
 
 /**
+ * Handle setFillStyleId command
+ */
+async function handleSetFillStyleIdCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    await StyleHandlers.handleSetFillStyleId(params);
+    sendWSResponse(requestId, {
+      success: true,
+      message: `Successfully applied fill style ${params.styleId} to node ${params.nodeId}`,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Main WebSocket command handler
  * ✅ REFACTORED: Cleaner routing to specific handlers
  */
@@ -1415,6 +1434,10 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.CREATE_GRID_STYLE:
         await handleCreateGridStyleCommand(params, id);
+        break;
+
+      case PluginMethods.SET_FILL_STYLE_ID:
+        await handleSetFillStyleIdCommand(params, id);
         break;
 
       default:

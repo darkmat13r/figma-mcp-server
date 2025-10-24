@@ -95,6 +95,7 @@ export const PluginMethods = {
   CREATE_TEXT_STYLE: 'createTextStyle',
   CREATE_EFFECT_STYLE: 'createEffectStyle',
   CREATE_GRID_STYLE: 'createGridStyle',
+  SET_FILL_STYLE_ID: 'setFillStyleId',
 } as const;
 
 // ============================================================================

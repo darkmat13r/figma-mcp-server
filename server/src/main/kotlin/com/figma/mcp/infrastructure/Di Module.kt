@@ -186,7 +186,7 @@ val appModule = module {
             NotifyTool(get(), get()),
             GetUserInfoTool(get(), get()),
 
-            // Category 11: Style Management Tools (9 tools)
+            // Category 11: Style Management Tools (10 tools)
             GetStyleByIdTool(get(), get()),
             GetLocalPaintStylesTool(get(), get()),
             GetLocalTextStylesTool(get(), get()),
@@ -195,7 +195,8 @@ val appModule = module {
             CreatePaintStyleTool(get(), get()),
             CreateTextStyleTool(get(), get()),
             CreateEffectStyleTool(get(), get()),
-            CreateGridStyleTool(get(), get())
+            CreateGridStyleTool(get(), get()),
+            SetFillStyleIdTool(get(), get())
 
             // Future categories can be added here:
             // Category 2: Layout Management Tools

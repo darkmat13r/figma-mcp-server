@@ -26,6 +26,9 @@ import kotlinx.serialization.json.put
  * - fontSize: number (optional) - Font size in pixels
  * - textAlignHorizontal: string (optional) - Text alignment
  * - fills: Paint[] (optional) - Text color
+ * - textStyleId: string (optional) - Text style ID to apply
+ * - fillStyleId: string (optional) - Fill/paint style ID to apply
+ * - effectStyleId: string (optional) - Effect style ID to apply
  * - x: number (optional) - X position
  * - y: number (optional) - Y position
  */
@@ -67,6 +70,18 @@ class CreateTextTool(
                         "type" to "array",
                         "description" to "Array of Paint objects for text color (optional)"
                     ),
+                    ParamNames.TEXT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Text style ID to apply to this text node (optional)"
+                    ),
+                    ParamNames.FILL_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Fill/paint style ID to apply to this text node (optional)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this text node (optional)"
+                    ),
                     ParamNames.X to mapOf(
                         "type" to "number",
                         "description" to "X position (optional, default: ${Defaults.DEFAULT_POSITION_X})"
@@ -94,6 +109,9 @@ class CreateTextTool(
             // Optional parameters
             params.getStringOrNull(ParamNames.TEXT_ALIGN_HORIZONTAL)?.let { put(ParamNames.TEXT_ALIGN_HORIZONTAL, it) }
             params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
+            params.getStringOrNull(ParamNames.TEXT_STYLE_ID)?.let { put(ParamNames.TEXT_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.FILL_STYLE_ID)?.let { put(ParamNames.FILL_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 }

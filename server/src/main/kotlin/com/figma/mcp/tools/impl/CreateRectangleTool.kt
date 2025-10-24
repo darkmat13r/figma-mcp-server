@@ -26,9 +26,12 @@ import kotlinx.serialization.json.put
  * - x: number (optional) - X position
  * - y: number (optional) - Y position
  * - fills: Paint[] (optional) - Fill colors
+ * - fillStyleId: string (optional) - Fill/paint style ID to apply
  * - cornerRadius: number (optional) - Corner radius for rounded corners
  * - strokes: Paint[] (optional) - Stroke colors
+ * - strokeStyleId: string (optional) - Stroke style ID to apply
  * - strokeWeight: number (optional) - Stroke thickness
+ * - effectStyleId: string (optional) - Effect style ID to apply
  */
 class CreateRectangleTool(
     logger: ILogger,
@@ -67,6 +70,10 @@ class CreateRectangleTool(
                         "type" to "string",
                         "description" to "Fill color as hex code (e.g., '#FF0000') - shorthand for solid fill (optional)"
                     ),
+                    ParamNames.FILL_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Fill/paint style ID to apply to this rectangle (optional)"
+                    ),
                     ParamNames.CORNER_RADIUS to mapOf(
                         "type" to "number",
                         "description" to "Corner radius for rounded corners (optional)"
@@ -75,9 +82,17 @@ class CreateRectangleTool(
                         "type" to "array",
                         "description" to "Array of Paint objects for strokes (optional)"
                     ),
+                    ParamNames.STROKE_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Stroke style ID to apply to this rectangle (optional)"
+                    ),
                     ParamNames.STROKE_WEIGHT to mapOf(
                         "type" to "number",
                         "description" to "Stroke thickness in pixels (optional)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this rectangle (optional)"
                     )
                 ),
                 required = listOf(ParamNames.WIDTH, ParamNames.HEIGHT)
@@ -96,9 +111,12 @@ class CreateRectangleTool(
             // Optional styling parameters
             params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
             params.getStringOrNull(ParamNames.FILL_COLOR)?.let { put(ParamNames.FILL_COLOR, it) }
+            params.getStringOrNull(ParamNames.FILL_STYLE_ID)?.let { put(ParamNames.FILL_STYLE_ID, it) }
             params.getDoubleOrNull(ParamNames.CORNER_RADIUS)?.let { put(ParamNames.CORNER_RADIUS, it) }
             params.getArrayOrNull(ParamNames.STROKES)?.let { put(ParamNames.STROKES, it) }
+            params.getStringOrNull(ParamNames.STROKE_STYLE_ID)?.let { put(ParamNames.STROKE_STYLE_ID, it) }
             params.getDoubleOrNull(ParamNames.STROKE_WEIGHT)?.let { put(ParamNames.STROKE_WEIGHT, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 }

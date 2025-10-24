@@ -277,6 +277,10 @@ object FigmaConstants {
         const val BLEND_MODE = "blendMode"
         const val STYLE_TYPE = "styleType"
         const val STYLE_ID = "styleId"
+        const val FILL_STYLE_ID = "fillStyleId"
+        const val STROKE_STYLE_ID = "strokeStyleId"
+        const val EFFECT_STYLE_ID = "effectStyleId"
+        const val TEXT_STYLE_ID = "textStyleId"
 
         // Layout
         const val LAYOUT_MODE = "layoutMode"

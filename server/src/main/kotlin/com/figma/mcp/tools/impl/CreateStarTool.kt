@@ -25,6 +25,9 @@ import kotlinx.serialization.json.*
  * - x: number (optional) - X position
  * - y: number (optional) - Y position
  * - fills: Paint[] (optional) - Fill colors
+ * - fillStyleId: string (optional) - Fill/paint style ID to apply
+ * - strokeStyleId: string (optional) - Stroke style ID to apply
+ * - effectStyleId: string (optional) - Effect style ID to apply
  */
 class CreateStarTool(
     logger: ILogger,
@@ -64,6 +67,18 @@ class CreateStarTool(
                     ParamNames.FILLS to mapOf(
                         "type" to "array",
                         "description" to "Array of Paint objects for fills (optional)"
+                    ),
+                    ParamNames.FILL_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Fill/paint style ID to apply to this star (optional)"
+                    ),
+                    ParamNames.STROKE_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Stroke style ID to apply to this star (optional)"
+                    ),
+                    ParamNames.EFFECT_STYLE_ID to mapOf(
+                        "type" to "string",
+                        "description" to "Effect style ID to apply to this star (optional)"
                     )
                 ),
                 required = listOf(ParamNames.POINTS, ParamNames.RADIUS)
@@ -97,6 +112,9 @@ class CreateStarTool(
             // Optional parameters
             params.getDoubleOrNull(ParamNames.INNER_RADIUS)?.let { put(ParamNames.INNER_RADIUS, it) }
             params.getArrayOrNull(ParamNames.FILLS)?.let { put(ParamNames.FILLS, it) }
+            params.getStringOrNull(ParamNames.FILL_STYLE_ID)?.let { put(ParamNames.FILL_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.STROKE_STYLE_ID)?.let { put(ParamNames.STROKE_STYLE_ID, it) }
+            params.getStringOrNull(ParamNames.EFFECT_STYLE_ID)?.let { put(ParamNames.EFFECT_STYLE_ID, it) }
         }
     }
 
