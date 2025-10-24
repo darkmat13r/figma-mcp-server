@@ -189,7 +189,7 @@ async function handleGetInfo(params: Record<string, any>, requestId: string): Pr
       }));
       sendWSResponse(requestId, selectionInfo);
     } else if (params.nodeId) {
-      const node = figma.getNodeById(params.nodeId);
+      const node = await figma.getNodeByIdAsync(params.nodeId);
       if (node) {
         const nodeInfo = {
           id: node.id,

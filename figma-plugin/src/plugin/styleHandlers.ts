@@ -477,7 +477,8 @@ export async function handleSetFillStyleId(params: Record<string, any>): Promise
   }
 
   if ('fillStyleId' in node) {
-    await (node as MinimalFillsMixin).setFillStyleIdAsync(styleId);
+      console.log("fillStyleId", node, styleId)
+    await (node).setFillStyleIdAsync(styleId);
   } else {
     throw new Error('Node does not support fill styles');
   }

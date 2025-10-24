@@ -79,16 +79,19 @@ async function applyCommonProperties(node: SceneNode, params: Record<string, any
     if (params[ParamNames.CORNER_RADIUS] !== undefined && 'cornerRadius' in node) {
         (node as RectangleNode | FrameNode).cornerRadius = params[ParamNames.CORNER_RADIUS];
     }
-
+    console.log("fillStyleId", params)
     // Style IDs - Apply styles after other properties
     if (params.fillStyleId && 'fillStyleId' in node) {
-        await  (node as MinimalFillsMixin).setFillStyleIdAsync(params.fillStyleId);
+        console.log("fillStyleId", params.fillStyleId, node)
+        await  (node).setFillStyleIdAsync(params.fillStyleId);
     }
     if (params.strokeStyleId && 'strokeStyleId' in node) {
-        await (node as MinimalStrokesMixin).setStrokeStyleIdAsync(params.strokeStyleId);
+        console.log("strokeStyleId", params.fillStyleId, node)
+        await (node).setStrokeStyleIdAsync(params.strokeStyleId);
     }
     if (params.effectStyleId && 'effectStyleId' in node) {
-        await  (node as BlendMixin).setEffectStyleIdAsync(params.effectStyleId);
+        console.log("effectStyleId", params.fillStyleId, node)
+        await  (node).setEffectStyleIdAsync(params.effectStyleId);
     }
 }
 
