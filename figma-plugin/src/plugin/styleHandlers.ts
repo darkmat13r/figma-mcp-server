@@ -269,6 +269,8 @@ export async function handleGetStyleById(params: Record<string, any>): Promise<R
 export async function handleGetLocalPaintStyles(params: Record<string, any>): Promise<Record<string, any>> {
   const styles = await figma.getLocalPaintStylesAsync();
 
+  console.log("styles", styles)
+
   return {
     styles: styles.map(style => ({
       id: style.id,

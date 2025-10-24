@@ -2,8 +2,10 @@ package com.figma.mcp.tools.impl.styles
 
 import com.figma.mcp.config.FigmaConstants
 import com.figma.mcp.core.ILogger
+import com.figma.mcp.protocol.CallToolResult
 import com.figma.mcp.protocol.JSONSchema
 import com.figma.mcp.protocol.Tool
+import com.figma.mcp.protocol.ToolContent
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.tools.BaseFigmaTool
 import kotlinx.serialization.json.*
@@ -59,6 +61,25 @@ class GetStyleByIdTool(
         return buildJsonObject {
             put("styleId", styleId)
         }
+    }
+
+    override fun formatSuccessResponse(
+        pluginResponse: JsonElement?,
+        params: JsonObject
+    ): CallToolResult {
+        // Return the style data as JSON
+        val styleData = pluginResponse?.jsonObject ?: buildJsonObject {}
+
+        val styleName = styleData["name"]?.jsonPrimitive?.contentOrNull ?: "Unknown"
+        val styleType = styleData["type"]?.jsonPrimitive?.contentOrNull ?: "Unknown"
+        val jsonString = styleData.toJsonString()
+
+        return CallToolResult(
+            content = listOf(
+                ToolContent.TextContent(text = "Style '$styleName' ($styleType): $jsonString")
+            ),
+            isError = false
+        )
     }
 
     override fun buildSuccessMessage(pluginResponse: JsonElement?, params: JsonObject): String {

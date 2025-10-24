@@ -1036,6 +1036,7 @@ async function handleGetStyleByIdCommand(params: Record<string, any>, requestId:
  */
 async function handleGetLocalPaintStylesCommand(params: Record<string, any>, requestId: string): Promise<void> {
   try {
+      console.log("params ", params)
     const result = await StyleHandlers.handleGetLocalPaintStyles(params);
     sendWSResponse(requestId, {
       success: true,
@@ -1471,6 +1472,7 @@ function sendMessage(message: PluginMessage): void {
  * Send WebSocket response via UI
  */
 function sendWSResponse(requestId: string, result: any): void {
+    console.log("result", result)
   sendMessage({
     type: 'ws-response',
     requestId: requestId,

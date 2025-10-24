@@ -1,8 +1,10 @@
 package com.figma.mcp.tools.impl.styles
 
 import com.figma.mcp.core.ILogger
+import com.figma.mcp.protocol.CallToolResult
 import com.figma.mcp.protocol.JSONSchema
 import com.figma.mcp.protocol.Tool
+import com.figma.mcp.protocol.ToolContent
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.tools.BaseFigmaTool
 import kotlinx.serialization.json.*
@@ -51,6 +53,26 @@ class GetLocalPaintStylesTool(
         return buildJsonObject {
             // No parameters needed for this tool
         }
+    }
+
+    override fun formatSuccessResponse(
+        pluginResponse: JsonElement?,
+        params: JsonObject
+    ): CallToolResult {
+        // Return the styles array data as JSON
+        val stylesData = pluginResponse?.jsonObject ?: buildJsonObject {
+            put("styles", buildJsonArray {})
+        }
+
+        val styleCount = stylesData["styles"]?.jsonArray?.size ?: 0
+        val jsonString = stylesData.toJsonString()
+
+        return CallToolResult(
+            content = listOf(
+                ToolContent.TextContent(text = "Paint Styles ($styleCount): $jsonString")
+            ),
+            isError = false
+        )
     }
 
     override fun buildSuccessMessage(pluginResponse: JsonElement?, params: JsonObject): String {
