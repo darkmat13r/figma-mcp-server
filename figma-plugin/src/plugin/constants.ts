@@ -146,6 +146,30 @@ export const Defaults = {
 } as const;
 
 // ============================================================================
+// CONNECTION CONFIGURATION
+// ============================================================================
+
+export const ConnectionConfig = {
+  // WebSocket endpoints
+  WS_BASE_URL: 'ws://localhost:8080',
+  WS_FIGMA_PATH: '/figma',
+
+  // SSE endpoints (for Claude Code)
+  SSE_BASE_URL: 'http://localhost:1234',
+  SSE_PATH: '/sse',
+
+  // Build WebSocket URL with fileId
+  buildWebSocketUrl: (fileId: string) => {
+    return `${ConnectionConfig.WS_BASE_URL}${ConnectionConfig.WS_FIGMA_PATH}?fileId=${encodeURIComponent(fileId)}`;
+  },
+
+  // Build SSE URL with fileId (for Claude Code configuration)
+  buildSseUrl: (fileId: string) => {
+    return `${ConnectionConfig.SSE_BASE_URL}${ConnectionConfig.SSE_PATH}?fileId=${encodeURIComponent(fileId)}`;
+  },
+} as const;
+
+// ============================================================================
 // PARAMETER NAMES
 // ============================================================================
 

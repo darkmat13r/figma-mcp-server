@@ -50,7 +50,8 @@ export type PluginMessage =
   | { type: 'ws-response'; requestId: string; result: any }
   | { type: 'selection-changed'; selection: SelectionInfo[] }
   | { type: 'operation-complete'; message: string }
-  | { type: 'operation-error'; error: string };
+  | { type: 'operation-error'; error: string }
+  | { type: 'file-info'; fileKey: string; fileName: string };
 
 export type UIMessage =
   | { type: 'connect-ws'; url: string }
@@ -61,4 +62,5 @@ export type UIMessage =
   | { type: 'create-color-styles'; colors: ColorToken[] }
   | { type: 'create-text-styles'; styles: TextStyleToken[] }
   | { type: 'create-node'; nodeType: string; properties: Record<string, any> }
-  | { type: 'get-selection' };
+  | { type: 'get-selection' }
+  | { type: 'get-file-info' };

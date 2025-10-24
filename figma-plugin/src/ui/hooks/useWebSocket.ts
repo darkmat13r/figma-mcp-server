@@ -104,13 +104,20 @@ export function useWebSocket() {
     return () => window.removeEventListener('message', handleMessage);
   }, [addLog]);
 
-  const connect = useCallback((url: string) => {
+  const connect = useCallback((url: string, fileId?: string) => {
     setConnectionState(ConnectionState.CONNECTING);
     setError(null);
 
     try {
+      // Add fileId to URL if provided
+      let connectionUrl = url;
+      if (fileId) {
+        const separator = url.includes('?') ? '&' : '?';
+        connectionUrl = `${url}${separator}fileId=${encodeURIComponent(fileId)}`;
+      }
+
       // Create WebSocket connection
-      const ws = new WebSocket(url);
+      const ws = new WebSocket(connectionUrl);
       wsRef.current = ws;
 
       ws.onopen = () => {

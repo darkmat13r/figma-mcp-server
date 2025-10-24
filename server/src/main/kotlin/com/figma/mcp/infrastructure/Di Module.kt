@@ -9,6 +9,9 @@ import com.figma.mcp.routes.WebSocketRoutes
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.services.FigmaToolExecutor
 import com.figma.mcp.services.ExportedImageResourceManager
+import com.figma.mcp.session.SseSessionManager
+import com.figma.mcp.session.WebSocketSessionManager
+import com.figma.mcp.session.RouteResolver
 import com.figma.mcp.tools.FigmaToolRegistry
 import com.figma.mcp.tools.impl.*
 import com.figma.mcp.tools.impl.hierarchy.*
@@ -71,6 +74,32 @@ val appModule = module {
             isLenient = true
             ignoreUnknownKeys = true
         }
+    }
+
+    // ========================================
+    // Session Management (NEW - File-Specific Routing)
+    // ========================================
+
+    // SSE Session Manager (Singleton)
+    // Manages SSE sessions (Claude Code connections) with file ID tracking
+    single {
+        SseSessionManager(get())
+    }
+
+    // WebSocket Session Manager (Singleton)
+    // Manages WebSocket sessions (Figma Plugin connections) with file ID tracking
+    single {
+        WebSocketSessionManager(get())
+    }
+
+    // Route Resolver (Singleton)
+    // Resolves which WebSocket session to route commands to based on SSE session
+    single {
+        RouteResolver(
+            sseSessionManager = get(),
+            webSocketSessionManager = get(),
+            logger = get()
+        )
     }
 
     // ========================================
@@ -260,7 +289,8 @@ val appModule = module {
             commandRegistry = get(),
             logger = get(),
             json = get(),
-            figmaConnectionManager = get()
+            figmaConnectionManager = get(),
+            webSocketSessionManager = get()  // Added for file-specific routing
         )
     }
 
@@ -269,6 +299,7 @@ val appModule = module {
     single {
         McpRoutes(
             mcpServer = get(),
+            sseSessionManager = get(),  // Added for file-specific routing
             logger = get(),
             json = get()
         )

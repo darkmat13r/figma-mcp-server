@@ -1,17 +1,27 @@
 /**
- * ConnectionPanel Component
+ * ConnectionPanel Component with File-Specific Routing
  *
- * Displays MCP server connection status and controls.
- * Uses design system components for consistent styling.
+ * ## Purpose
+ * Displays MCP server connection status and provides the MCP URL for Claude Code configuration.
+ *
+ * ## File-Specific Routing
+ * - Shows the WebSocket URL with the current Figma file's ID
+ * - Displays the MCP URL that Claude Code should use
+ * - Provides copy-to-clipboard functionality for easy setup
+ *
+ * ## SOLID Principles
+ * - Single Responsibility: Only displays connection information and controls
+ * - Dependency Inversion: Receives props, doesn't know about internal state management
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ConnectionState } from '../types';
 import { Button } from '@/ui/components/ui/button';
 import { Input } from '@/ui/components/ui/input';
 import { Alert, AlertDescription } from '@/ui/components/ui/alert';
 import { Section } from '@/ui/components/composed/Section';
 import { StatusBadge, StatusType } from '@/ui/components/composed/StatusBadge';
+import { Label } from '@/ui/components/ui/label';
 
 interface ConnectionPanelProps {
   connectionState: ConnectionState;
@@ -26,11 +36,56 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   onConnect,
   onDisconnect,
 }) => {
-  const [serverUrl, setServerUrl] = useState('ws://localhost:8081');
+  const [serverUrl, setServerUrl] = useState('ws://localhost:8080/figma');
+  const [fileId, setFileId] = useState<string>('');
+  const [mcpUrl, setMcpUrl] = useState<string>('');
+  const [copySuccess, setCopySuccess] = useState<string>('');
+
+  // Get file ID from Figma on mount and when file changes
+  useEffect(() => {
+    // Request file info from plugin
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'get-file-info',
+        },
+      },
+      '*'
+    );
+
+    // Listen for file info response
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data.pluginMessage;
+      if (message?.type === 'file-info') {
+        const fid = message.fileKey || 'unknown';
+        setFileId(fid);
+
+        // Build MCP URL with fileId
+        const sseUrl = `http://localhost:1234/sse?fileId=${encodeURIComponent(fid)}`;
+        setMcpUrl(sseUrl);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   const handleConnect = () => {
     if (serverUrl.trim()) {
-      onConnect(serverUrl.trim());
+      // Build URL with fileId
+      const separator = serverUrl.includes('?') ? '&' : '?';
+      const urlWithFileId = `${serverUrl}${separator}fileId=${encodeURIComponent(fileId)}`;
+      onConnect(urlWithFileId);
+    }
+  };
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(label);
+      setTimeout(() => setCopySuccess(''), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
@@ -63,7 +118,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
   return (
     <div className="border-b border-border bg-card p-4">
       <Section
-        title="MCP Server"
+        title="Connection"
         action={
           <StatusBadge
             status={getStatusType()}
@@ -73,34 +128,89 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
         className="space-y-3"
       >
         <div className="space-y-3">
-          {/* Server URL Input */}
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
+          {/* File ID Display */}
+          <div className="space-y-1">
+            <Label className="text-xs font-medium text-muted-foreground">
+              File ID
+            </Label>
+            <div className="flex gap-2">
               <Input
                 type="text"
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="ws://localhost:8081/mcp"
-                disabled={connectionState === ConnectionState.CONNECTED}
+                value={fileId || 'Loading...'}
+                readOnly
+                className="text-xs font-mono"
               />
+              <Button
+                onClick={() => copyToClipboard(fileId, 'fileId')}
+                variant="outline"
+                size="sm"
+                disabled={!fileId}
+              >
+                {copySuccess === 'fileId' ? 'Copied!' : 'Copy'}
+              </Button>
             </div>
-            {connectionState === ConnectionState.CONNECTED ? (
+          </div>
+
+          {/* MCP URL for Claude Code */}
+          <div className="space-y-1">
+            <Label className="text-xs font-medium text-muted-foreground">
+              MCP URL (for Claude Code Config)
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={mcpUrl || 'Waiting for file ID...'}
+                readOnly
+                className="text-xs font-mono"
+              />
               <Button
-                onClick={onDisconnect}
-                variant="destructive"
+                onClick={() => copyToClipboard(mcpUrl, 'mcpUrl')}
+                variant="outline"
                 size="sm"
+                disabled={!mcpUrl}
               >
-                Disconnect
+                {copySuccess === 'mcpUrl' ? 'Copied!' : 'Copy'}
               </Button>
-            ) : (
-              <Button
-                onClick={handleConnect}
-                disabled={connectionState === ConnectionState.CONNECTING}
-                size="sm"
-              >
-                Connect
-              </Button>
-            )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Use this URL in your Claude Desktop MCP configuration
+            </p>
+          </div>
+
+          {/* WebSocket Server URL */}
+          <div className="space-y-1">
+            <Label className="text-xs font-medium text-muted-foreground">
+              WebSocket Server
+            </Label>
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Input
+                  type="text"
+                  value={serverUrl}
+                  onChange={(e) => setServerUrl(e.target.value)}
+                  placeholder="ws://localhost:8080/figma"
+                  disabled={connectionState === ConnectionState.CONNECTED}
+                  className="text-xs"
+                />
+              </div>
+              {connectionState === ConnectionState.CONNECTED ? (
+                <Button
+                  onClick={onDisconnect}
+                  variant="destructive"
+                  size="sm"
+                >
+                  Disconnect
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleConnect}
+                  disabled={connectionState === ConnectionState.CONNECTING || !fileId}
+                  size="sm"
+                >
+                  Connect
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Error Message */}
@@ -108,6 +218,15 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
             <Alert variant="destructive">
               <AlertDescription className="text-xs">
                 {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Connection Info */}
+          {connectionState === ConnectionState.CONNECTED && (
+            <Alert>
+              <AlertDescription className="text-xs">
+                Connected to file: {fileId}
               </AlertDescription>
             </Alert>
           )}

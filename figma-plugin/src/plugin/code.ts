@@ -1525,6 +1525,15 @@ figma.ui.onmessage = async (msg: UIMessage) => {
       });
       break;
 
+    case 'get-file-info':
+      // Send file ID to UI for MCP URL generation
+      sendMessage({
+        type: 'file-info',
+        fileKey: figma.fileKey || 'unknown',
+        fileName: figma.root.name,
+      });
+      break;
+
     default:
       console.warn('Unknown message type:', (msg as any).type);
   }
