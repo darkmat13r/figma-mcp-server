@@ -4,14 +4,46 @@ A Model Context Protocol (MCP) server that enables Claude Code to interact with 
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/developeru)
 
-## What is This?
+## What Problem Does This Solve?
 
-This project implements an MCP server that bridges Claude Code and Figma, allowing you to:
+Creating consistent, scalable design systems is time-consuming and error-prone. This project solves that by enabling you to **control Figma through natural language prompts**, making design system creation and maintenance dramatically faster and more consistent.
+
+### Primary Use Cases
+
+**1. Design System Creation & Management**
+- Create design tokens (colors, typography, spacing) through prompts
+- Build variable collections and styles systematically
+- Ensure consistency across your entire design system
+- Update tokens globally with simple commands
+
+**2. AI-Powered Design Generation**
+- Generate UI components from descriptions
+- Create consistent designs following your design system
+- Iterate on designs through conversational prompts
+- Automate repetitive design tasks
+
+**3. Design-to-Code Workflow**
+- Import designs with full access to design tokens
+- Generate code with accurate design system values
+- Maintain consistency between design and implementation
+- Access all variables, styles, and components programmatically
+
+### Why This Matters
+
+When you have programmatic access to design tokens, variables, and components, code generation becomes:
+- **Consistent**: Uses actual design system values, not approximations
+- **Accurate**: References real component libraries and styles
+- **Maintainable**: Updates automatically when design system changes
+- **Scalable**: Works seamlessly across large design systems
+
+## Features
 
 - ✅ Create and modify Figma nodes using natural language
-- ✅ Query Figma selections and node properties
-- ✅ Automate design workflows with AI assistance
-- ✅ Build design systems with Claude's help
+- ✅ Build complete design systems through prompts
+- ✅ Manage variables, styles, and components programmatically
+- ✅ Query design properties and selections
+- ✅ Generate consistent, token-based designs
+- ✅ Export designs with full design system context
 
 ## Quick Start
 
