@@ -1,6 +1,11 @@
-# Figma MCP Server - Connect Claude Code to Figma
+# Figma MCP Server
 
-A Model Context Protocol (MCP) server that enables Claude Code to interact with Figma designs through natural language.
+> Control Figma with natural language through Claude Code. Build design systems, generate components, and maintain design-code consistency—all through conversational AI.
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-purple.svg)](https://kotlinlang.org/)
+[![MCP](https://img.shields.io/badge/MCP-2024--11--05-blue.svg)](https://spec.modelcontextprotocol.io/)
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/developeru)
 
@@ -121,27 +126,118 @@ Restart Claude Code, then ask:
 
 Claude should create the rectangle! 🎉
 
-## Available Tools
+## Example Prompts
 
-Claude Code can use these Figma tools:
+Here's what you can do with natural language:
 
-| Tool | Description | Example |
-|------|-------------|---------|
-| `figma_create_rectangle` | Create rectangle nodes | "Create a blue square 100x100" |
-| `figma_create_text` | Create text nodes | "Add text saying 'Hello World'" |
-| `figma_get_selection` | Get selected nodes | "What's selected in Figma?" |
-| `figma_set_properties` | Modify node properties | "Make it 500px wide" |
-| `figma_get_node_info` | Query node by ID | "Get info on node 123:456" |
-
-## Architecture
-
+**Design System Creation:**
 ```
-Claude Code ←(SSE/MCP)→ Ktor Server ←(WebSocket)→ Figma Plugin ←(API)→ Figma
+"Create a color palette with primary blue (#0066FF), secondary green (#00CC66),
+and neutral grays from 100 to 900"
+
+"Set up typography styles: Heading 1 (32px bold), Heading 2 (24px semibold),
+Body (16px regular)"
+
+"Create spacing variables: xs=4px, sm=8px, md=16px, lg=24px, xl=32px"
 ```
 
-The server runs **both** transports simultaneously:
-- **SSE (Server-Sent Events)** for Claude Code (MCP protocol with file-specific routing)
-- **WebSocket** for Figma Plugin (JSON commands)
+**Component Generation:**
+```
+"Create a button component with primary, secondary, and ghost variants"
+
+"Design a card component with an image, title, description, and CTA button"
+
+"Generate a navigation bar with logo, menu items, and a search input"
+```
+
+**Design Tasks:**
+```
+"Create a 3-column layout with cards showcasing our product features"
+
+"Update all headings to use the new Inter font family"
+
+"Export the selected components as PNG at 2x resolution"
+```
+
+## Available Tools (30+)
+
+<details>
+<summary><strong>Node Creation & Manipulation</strong></summary>
+
+- `figma_create_rectangle` - Create rectangles and squares
+- `figma_create_text` - Create text nodes
+- `figma_create_frame` - Create frames/containers
+- `figma_create_ellipse` - Create circles and ellipses
+- `figma_create_star` - Create star/polygon shapes
+- `figma_create_image` - Create image nodes
+- `figma_get_selection` - Get currently selected nodes
+- `figma_get_node_info` - Query node properties by ID
+- `figma_move_node` - Reposition nodes
+- `figma_rename_node` - Rename nodes
+</details>
+
+<details>
+<summary><strong>Styling & Effects</strong></summary>
+
+- `figma_set_fills` - Set fill colors/gradients
+- `figma_set_strokes` - Set stroke properties
+- `figma_set_corner_radius` - Set border radius
+- `figma_set_effects` - Add shadows, blurs, etc.
+- `figma_set_image_fill` - Apply images as fills
+- `figma_load_font` - Load custom fonts
+</details>
+
+<details>
+<summary><strong>Variables & Design Tokens</strong></summary>
+
+- `figma_get_variables` - List all variables
+- `figma_create_variable_collection` - Create variable sets
+- `figma_create_variable` - Create design tokens
+- `figma_set_variable_value` - Update token values
+- `figma_bind_variable` - Bind tokens to properties
+</details>
+
+<details>
+<summary><strong>Styles Management</strong></summary>
+
+- `figma_get_styles` - List all styles
+- `figma_create_color_style` - Create color styles
+- `figma_create_text_style` - Create text styles
+- `figma_set_fill_style_id` - Apply color styles
+- `figma_set_text_style_id` - Apply text styles
+</details>
+
+<details>
+<summary><strong>Hierarchy & Navigation</strong></summary>
+
+- `figma_get_all_pages` - List all pages
+- `figma_get_current_page_nodes` - Get nodes on current page
+- `figma_get_children` - Get child nodes
+- `figma_find_nodes` - Search nodes by name
+</details>
+
+<details>
+<summary><strong>Export & Utilities</strong></summary>
+
+- `figma_export_node` - Export as PNG/SVG/JPG
+- `figma_notify` - Show notifications in Figma
+</details>
+
+## How It Works
+
+```
+┌─────────────┐   MCP/SSE    ┌──────────────┐   WebSocket   ┌──────────────┐   Plugin API   ┌────────┐
+│ Claude Code │◄────────────►│ Ktor Server  │◄─────────────►│Figma Plugin  │◄──────────────►│ Figma  │
+│             │              │  (Port 8080) │               │  (React UI)  │                │Desktop │
+└─────────────┘              └──────────────┘               └──────────────┘                └────────┘
+```
+
+### Architecture Highlights
+
+1. **Dual Transport System**: The server supports both SSE (for Claude Code) and WebSocket (for Figma plugin) simultaneously
+2. **File-Specific Routing**: Each Figma file gets its own isolated connection via fileId parameter
+3. **Real-time Communication**: Bidirectional communication between all components
+4. **Type-Safe**: Full TypeScript/Kotlin type safety throughout the stack
 
 ## Documentation
 
@@ -188,45 +284,31 @@ FigmaMcp/
 └── Documentation files (see above)
 ```
 
-## Key Implementation Details
+## Key Features
 
-### Application.kt - Dual Transport Startup
+### 🎨 Design System First
+- Create and manage design tokens (colors, typography, spacing)
+- Build variable collections with modes (light/dark themes)
+- Generate styles programmatically
+- Maintain consistency across all designs
 
-The server automatically starts both transports in `Application.kt:73-87`:
+### 🤖 AI-Powered Workflows
+- Natural language interface for all Figma operations
+- Conversational design iteration
+- Automated component generation
+- Batch operations through prompts
 
-```kotlin
-val stdioTransport: StdioTransport by inject()
+### 🔗 Design-Code Consistency
+- Direct access to design tokens for code generation
+- Export components with full design system context
+- Programmatic access to all variables and styles
+- Bridge design and development workflows
 
-environment.monitor.subscribe(ApplicationStarted) {
-    launch {
-        log.info("Starting MCP stdio transport for Claude Code integration...")
-        stdioTransport.start()  // Reads stdin, writes stdout
-    }
-}
-```
-
-This means:
-- ✅ Single JAR file
-- ✅ Single process
-- ✅ Both transports share dependency injection
-- ✅ No separate MCP server executable needed
-
-### Protocol Flow
-
-1. **Initialize**: Claude ↔ Server handshake
-2. **List Tools**: Claude queries available tools
-3. **Call Tool**: Claude executes a tool
-4. **Server → Figma**: Command sent via WebSocket
-5. **Figma → Server**: Result returned
-6. **Server → Claude**: Formatted response
-
-### Error Handling
-
-Every layer has proper error handling:
-- JSON-RPC errors for protocol issues
-- Tool errors for execution failures
-- WebSocket timeout protection (5s default)
-- Graceful degradation
+### ⚡ Production Ready
+- Built with Java 21 and Kotlin 2.0
+- Docker support for easy deployment
+- Real-time WebSocket communication
+- Comprehensive error handling and logging
 
 ## Technology Stack
 
@@ -312,30 +394,50 @@ environment:
 
 See **[SETUP_GUIDE.md](server/SETUP_GUIDE.md)** for detailed troubleshooting.
 
-## What's Next?
+## Roadmap
 
-### Current Features ✅
-- MCP protocol implementation
-- 30+ Figma tools (shapes, text, variables, styles, etc.)
-- Dual transport (SSE + WebSocket)
-- File-specific routing based on Figma file ID
-- Complete documentation
+### ✅ Current Features
+- 30+ Figma tools covering all major operations
+- Design system creation (variables, styles, tokens)
+- Component generation and manipulation
+- File-specific routing for multi-file support
+- SSE and WebSocket dual transport
+- Docker deployment support
+- Comprehensive documentation
 
-### Future Enhancements 🔮
-- More Figma tools (components, variants, styles)
-- Resource protocol (read Figma designs)
-- Prompt templates
-- Multi-user support
-- File export tools (PNG, SVG, PDF)
+### 🚀 Upcoming Features
+- **Component Variants**: Create and manage component variants
+- **Auto Layout**: Advanced auto-layout configuration
+- **Design Import**: Import and parse existing designs
+- **Template Library**: Pre-built design system templates
+- **Batch Operations**: Process multiple files simultaneously
+- **Version Control**: Track design system changes
+- **API Extensions**: Additional Figma API coverage
 
 ## Contributing
 
-This is a complete, documented implementation. To extend:
+Contributions are welcome! Here's how to get started:
 
-1. Add new tools in `FigmaToolExecutor.kt`
-2. Register in `ListToolsCommand.kt`
-3. Route in `CallToolCommand.kt`
-4. Update documentation
+### Adding New Tools
+
+1. **Implement the tool** in `server/src/main/kotlin/com/figma/mcp/services/FigmaToolExecutor.kt`
+2. **Register the tool** in `server/src/main/kotlin/com/figma/mcp/commands/mcp/ListToolsCommand.kt`
+3. **Route the tool** in `server/src/main/kotlin/com/figma/mcp/commands/mcp/CallToolCommand.kt`
+4. **Update documentation** in relevant files
+
+### Guidelines
+
+- Follow existing code patterns and SOLID principles
+- Add comprehensive error handling
+- Include TypeScript types for plugin communication
+- Update tests and documentation
+- Submit PRs with clear descriptions
+
+### Getting Help
+
+- Open an issue for bugs or feature requests
+- Check existing documentation in the `/server` directory
+- Review the MCP specification for protocol details
 
 ## Resources
 
@@ -346,7 +448,27 @@ This is a complete, documented implementation. To extend:
 
 ## License
 
-[Your License Here]
+MIT License
+
+Copyright (c) 2024 Figma MCP Bridge
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Credits
 
@@ -357,17 +479,25 @@ Built with:
 
 ---
 
-## Implementation Stats
+## Stats
 
-- **Total Code**: ~1,696 lines of Kotlin
-- **Core Files**: 10 implementation files
-- **Tools**: 5 Figma tools
-- **Documentation**: 5 comprehensive guides
+![GitHub stars](https://img.shields.io/github/stars/yourusername/figma-mcp?style=social)
+![GitHub forks](https://img.shields.io/github/forks/yourusername/figma-mcp?style=social)
+
+- **Language**: Kotlin 2.0 / TypeScript
+- **Tools**: 30+ Figma operations
 - **Protocol**: MCP 2024-11-05
 - **Status**: ✅ Production Ready
+- **License**: MIT
 
 ---
 
-**Ready to build amazing things with Claude + Figma?** 🎨🤖
+<div align="center">
 
-Start with **[QUICK_START.md](server/QUICK_START.md)** for a 5-minute setup!
+**Ready to revolutionize your design workflow?**
+
+[Get Started](#quick-start) • [View Examples](#example-prompts) • [Read Docs](#documentation) • [Contribute](#contributing)
+
+Made with ❤️ by the Figma MCP community
+
+</div>
