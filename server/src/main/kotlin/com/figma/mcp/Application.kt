@@ -77,7 +77,7 @@ fun Application.module() {
 
 
     launch {
-        embeddedServer(CIO, host = "127.0.0.1", port = 1234) {
+        embeddedServer(CIO, host = "0.0.0.0", port = 1234) {
             mcp {
                 val mcpServer by inject<McpServer>()
                 return@mcp mcpServer.getServer()

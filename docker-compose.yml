@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  figma-mcp-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: figma-mcp-server
+    restart: unless-stopped
+    ports:
+      - "8081:8081"  # Main HTTP server
+      - "1234:1234"  # MCP server
+    environment:
+      - KTOR_ENV=production
+    volumes:
+      # Optional: Mount logs directory if you want to persist logs
+      - ./server/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - figma-mcp-network
+
+networks:
+  figma-mcp-network:
+    driver: bridge

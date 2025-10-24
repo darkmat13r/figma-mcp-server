@@ -1,0 +1,31 @@
+# Build output
+build/
+.gradle/
+.kotlin/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Local configuration
+local.properties
+claude-code-*.json
+
+# Documentation
+*.md
+QUICK_START.md
+SETUP_GUIDE.md
+IMPLEMENTATION_SUMMARY.md
+MCP_IMPLEMENTATION.md
+PLUGIN_ARCHITECTURE.md
+README.md
+
+# Git
+.git/
+.gitignore
