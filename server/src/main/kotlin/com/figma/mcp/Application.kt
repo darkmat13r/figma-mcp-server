@@ -4,6 +4,7 @@ import com.figma.mcp.plugins.*
 import com.figma.mcp.transport.McpServer
 import io.ktor.server.application.*
 import io.ktor.server.cio.CIO
+import io.ktor.server.config.tryGetString
 import io.ktor.server.engine.embeddedServer
 import io.modelcontextprotocol.kotlin.sdk.server.mcp
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +78,10 @@ fun Application.module() {
 
 
     launch {
-        embeddedServer(CIO, host = "0.0.0.0", port = 1234) {
+        val config = this@module.environment.config.config("mcp")
+        val port = config.tryGetString("port")?.toIntOrNull() ?: 1234
+        val host = config.tryGetString("host") ?: "0.0.0.0"
+        embeddedServer(CIO, host = host, port = port) {
             mcp {
                 val mcpServer by inject<McpServer>()
                 return@mcp mcpServer.getServer()

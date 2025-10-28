@@ -3,6 +3,10 @@ ktor:
     modules:
       - com.figma.mcp.ApplicationKt.module
   deployment:
-    port: 8081
+    port: $PORT:8081
     host: 0.0.0.0
   development: true
+
+mcp:
+  port: $MCP_PORT:1234
+  host: 0.0.0.0
