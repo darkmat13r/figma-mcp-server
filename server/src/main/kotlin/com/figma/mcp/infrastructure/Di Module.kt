@@ -9,6 +9,7 @@ import com.figma.mcp.routes.WebSocketRoutes
 import com.figma.mcp.services.FigmaConnectionManager
 import com.figma.mcp.services.FigmaToolExecutor
 import com.figma.mcp.services.ExportedImageResourceManager
+import com.figma.mcp.services.LucideIconService
 import com.figma.mcp.session.SseSessionManager
 import com.figma.mcp.session.WebSocketSessionManager
 import com.figma.mcp.session.RouteResolver
@@ -18,6 +19,7 @@ import com.figma.mcp.tools.impl.hierarchy.*
 import com.figma.mcp.tools.impl.components.*
 import com.figma.mcp.tools.impl.variables.*
 import com.figma.mcp.tools.impl.images.*
+import com.figma.mcp.tools.impl.icons.*
 import com.figma.mcp.tools.impl.styles.*
 import com.figma.mcp.transport.McpServer
 import kotlinx.serialization.json.Json
@@ -123,6 +125,16 @@ val appModule = module {
     }
 
     // ========================================
+    // Lucide Icon Service
+    // ========================================
+
+    // Lucide Icon Service (Singleton)
+    // Manages access to Lucide icon library (SVG files and metadata)
+    single {
+        LucideIconService(get())
+    }
+
+    // ========================================
     // Figma Tool Registry (NEW - Extensible Architecture)
     // ========================================
 
@@ -205,6 +217,10 @@ val appModule = module {
             SetImageFillTool(get(), get()),
             ExportNodeTool(get(), get(), get()),  // Now includes ExportedImageResourceManager
             GetImageFillsTool(get(), get()),
+
+            // Category 9b: Lucide Icon Tools (2 tools)
+            CreateLucideIconTool(get(), get(), get()),  // Includes LucideIconService
+            ListLucideIconsTool(get(), get(), get()),   // Includes LucideIconService
 
             // Category 10: Utility Tools (7 tools)
             DeleteNodeTool(get(), get()),

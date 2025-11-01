@@ -61,9 +61,6 @@ fun Application.module() {
     // Configure WebSocket support
     configureWebSockets()
 
-    // Configure Server-Sent Events (SSE) for MCP
-    configureSSE()
-
     // Configure JSON serialization
     configureSerialization()
 
@@ -74,18 +71,7 @@ fun Application.module() {
     configureMonitoring()
 
     // Configure routing (WebSocket + MCP + REST endpoints)
+    configureSSE()
+
     configureRouting()
-
-
-    launch {
-        val config = this@module.environment.config.config("mcp")
-        val port = config.tryGetString("port")?.toIntOrNull() ?: 1234
-        val host = config.tryGetString("host") ?: "0.0.0.0"
-        embeddedServer(CIO, host = host, port = port) {
-            mcp {
-                val mcpServer by inject<McpServer>()
-                return@mcp mcpServer.getServer()
-            }
-        }.startSuspend(wait = true)
-    }
 }

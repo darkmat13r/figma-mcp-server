@@ -99,6 +99,10 @@ object FigmaConstants {
         const val EXPORT_NODE = "figma_export_node"
         const val GET_IMAGE_FILLS = "figma_get_image_fills"
 
+        // Category 9b: Lucide Icon Tools
+        const val CREATE_LUCIDE_ICON = "figma_create_lucide_icon"
+        const val LIST_LUCIDE_ICONS = "figma_list_lucide_icons"
+
         // Category 10: Utility Tools
         const val DELETE_NODE = "figma_delete_node"
         const val SHOW_NODE = "figma_show_node"
@@ -172,6 +176,9 @@ object FigmaConstants {
         const val EXPORT_NODE = "exportNode"
         const val GET_IMAGE_FILLS = "getImageFills"
 
+        // Lucide Icon methods
+        const val CREATE_LUCIDE_ICON = "createLucideIcon"
+
         // User & File Info methods
         const val GET_USER_INFO = "getUserInfo"
     }
@@ -244,6 +251,10 @@ object FigmaConstants {
 
         // Constraints
         const val MIN_BOOLEAN_OP_NODES = 2
+
+        // Lucide Icons
+        const val DEFAULT_ICON_SIZE = 24.0
+        const val DEFAULT_ICON_COLOR = "#000000"
     }
 
     // ========================================================================
@@ -375,6 +386,14 @@ object FigmaConstants {
         const val FORMAT = "format"
         const val SCALE = "scale"
         const val CONSTRAINT = "constraint"
+
+        // Lucide Icon Parameters
+        const val ICON_NAME = "iconName"
+        const val SIZE = "size"
+        const val COLOR = "color"
+        const val QUERY = "query"
+        const val CATEGORY = "category"
+        const val LIMIT = "limit"
     }
 
     // ========================================================================
@@ -407,5 +426,46 @@ object FigmaConstants {
         fun nodesGrouped(count: Int) = "Successfully grouped $count nodes"
         fun booleanOpCreated(operation: String, count: Int) =
             "Successfully created $operation boolean operation with $count nodes"
+        fun lucideIconCreated(iconName: String, nodeId: String?) =
+            if (nodeId != null) {
+                "Successfully created Lucide icon '$iconName' with ID: $nodeId"
+            } else {
+                "Successfully created Lucide icon '$iconName'"
+            }
+    }
+
+    // ========================================================================
+    // LUCIDE ICON CONSTANTS
+    // ========================================================================
+
+    object LucideIcons {
+        // Directory paths
+        const val ICONS_DIRECTORY_PATH = "/Volumes/ExtStorage/Projects/FigmaMcp/figma-plugin/external/lucide/icons"
+
+        // File extensions
+        const val SVG_EXTENSION = ".svg"
+        const val JSON_EXTENSION = ".json"
+
+        // Metadata field names
+        const val METADATA_FIELD_CATEGORIES = "categories"
+        const val METADATA_FIELD_TAGS = "tags"
+        const val METADATA_FIELD_CONTRIBUTORS = "contributors"
+
+        // Search configuration
+        const val SEARCH_DEFAULT_LIMIT = 20
+        const val SEARCH_SCORE_NAME_EXACT = 100
+        const val SEARCH_SCORE_NAME_CONTAINS = 50
+        const val SEARCH_SCORE_CATEGORY_MATCH = 30
+        const val SEARCH_SCORE_TAG_MATCH = 20
+
+        // Error messages
+        const val ERROR_DIRECTORY_NOT_FOUND = "Lucide icons directory not found"
+        const val ERROR_DIRECTORY_NOT_READABLE = "Lucide icons directory not readable"
+        const val ERROR_ICON_NOT_FOUND = "Icon not found"
+        const val ERROR_FAILED_TO_READ = "Failed to read icon"
+        const val ERROR_FAILED_TO_LIST = "Failed to list icons"
+        const val ERROR_SEARCH_FAILED = "Icon search failed"
+        const val ERROR_CATEGORY_SEARCH_FAILED = "Category search failed"
+        const val ERROR_FAILED_TO_LIST_CATEGORIES = "Failed to list categories"
     }
 }

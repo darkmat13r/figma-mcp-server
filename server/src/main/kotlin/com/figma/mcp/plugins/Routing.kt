@@ -49,9 +49,5 @@ fun Application.configureRouting() {
             }
         }
 
-        // Legacy health check (kept for backwards compatibility)
-        get("/health") {
-            call.respond(mapOf("status" to "healthy"))
-        }
     }
 }

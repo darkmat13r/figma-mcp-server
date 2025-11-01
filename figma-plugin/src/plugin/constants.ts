@@ -83,6 +83,7 @@ export const PluginMethods = {
   SET_IMAGE_FILL: 'setImageFill',
   EXPORT_NODE: 'exportNode',
   GET_IMAGE_FILLS: 'getImageFills',
+  CREATE_LUCIDE_ICON: 'createLucideIcon',
   // User & File Info methods
   GET_USER_INFO: 'getUserInfo',
   // Style Management methods (Category 11)
@@ -302,6 +303,13 @@ export const ParamNames = {
   SCALE: 'scale',
   CONSTRAINT: 'constraint',
   ROTATION: 'rotation',
+
+  // Icon specific
+  ICON_NAME: 'iconName',
+  SVG_CONTENT: 'svgContent',
+  SVG_DATA: 'svgData',
+  COLOR: 'color',
+  SIZE: 'size',
 } as const;
 
 // ============================================================================
@@ -315,6 +323,10 @@ export const ErrorMessages = {
   INSUFFICIENT_NODES: 'Insufficient nodes for operation',
   INVALID_BOOLEAN_OP: 'Invalid boolean operation type',
   FONT_LOAD_FAILED: 'Failed to load font',
+  INVALID_SVG: 'Invalid SVG content',
+  SVG_PARSE_FAILED: 'Failed to parse SVG content',
+  NO_SVG_PATHS: 'No valid paths found in SVG',
+  ICON_CREATION_FAILED: 'Failed to create icon',
 
   missingParam: (paramName: string) =>
     `${ErrorMessages.MISSING_REQUIRED_PARAM}: ${paramName}`,
@@ -340,4 +352,7 @@ export const SuccessMessages = {
 
   booleanOpCreated: (operation: string, count: number) =>
     `Successfully created ${operation} boolean operation with ${count} nodes`,
+
+  iconCreated: (iconName: string, nodeId: string) =>
+    `Successfully created Lucide icon '${iconName}' with ID: ${nodeId}`,
 } as const;

@@ -42,6 +42,22 @@ class McpRoutes(
         with(routing) {
             // SSE endpoint with fileId support
             // URL: http://localhost:1234/sse?fileId=abc123
+            mcp {
+                val fileId = call.request.queryParameters[SessionConstants.QUERY_PARAM_FILE_ID]!!
+                val sessionId = "${SessionConstants.SESSION_ID_PREFIX_SSE}${UUID.randomUUID()}"
+
+                // Register this SSE session with its file ID
+                sseSessionManager.registerSession(sessionId, fileId, call)
+
+                logger.info(
+                    "MCP client connected via SSE",
+                    "sessionId" to sessionId,
+                    "fileId" to fileId
+                )
+
+                // Return the configured MCP server instance
+                mcpServer.getServer()
+            }
             route(SessionConstants.SSE_PATH_SSE) {
                 get {
                     // First validate fileId before setting up MCP
@@ -60,61 +76,9 @@ class McpRoutes(
                     }
                 }
 
-                mcp {
-                    val fileId = call.request.queryParameters[SessionConstants.QUERY_PARAM_FILE_ID]!!
-                    val sessionId = "${SessionConstants.SESSION_ID_PREFIX_SSE}${UUID.randomUUID()}"
 
-                    // Register this SSE session with its file ID
-                    sseSessionManager.registerSession(sessionId, fileId, call)
-
-                    logger.info(
-                        "MCP client connected via SSE",
-                        "sessionId" to sessionId,
-                        "fileId" to fileId
-                    )
-
-                    // Return the configured MCP server instance
-                    mcpServer.getServer()
-                }
             }
 
-            // Legacy MCP endpoint (without fileId) - for backward compatibility
-            route(SessionConstants.SSE_PATH_MCP) {
-                get {
-                    // First validate fileId before setting up MCP
-                    val fileId = call.request.queryParameters[SessionConstants.QUERY_PARAM_FILE_ID]
-
-                    if (fileId.isNullOrBlank()) {
-                        logger.warn(
-                            "MCP connection attempt without fileId - this is deprecated",
-                            "remoteHost" to call.request.local.remoteHost
-                        )
-                        call.respond(
-                            HttpStatusCode.BadRequest,
-                            mapOf(
-                                "error" to SessionConstants.ERROR_NO_FILE_ID,
-                                "message" to "Please use /sse?fileId=your-file-id endpoint instead of /mcp",
-                                "example" to "http://localhost:1234/sse?fileId=abc123"
-                            )
-                        )
-                        return@get
-                    }
-                }
-
-                mcp {
-                    val fileId = call.request.queryParameters[SessionConstants.QUERY_PARAM_FILE_ID]!!
-                    val sessionId = "${SessionConstants.SESSION_ID_PREFIX_SSE}${UUID.randomUUID()}"
-                    sseSessionManager.registerSession(sessionId, fileId, call)
-
-                    logger.info(
-                        "MCP client connected via legacy /mcp endpoint",
-                        "sessionId" to sessionId,
-                        "fileId" to fileId
-                    )
-
-                    mcpServer.getServer()
-                }
-            }
 
             // Health check endpoint for MCP server
             get("/mcp/health") {

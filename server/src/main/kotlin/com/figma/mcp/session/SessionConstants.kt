@@ -22,7 +22,7 @@ object SessionConstants {
 
     // SSE Paths
     const val SSE_PATH_MCP = "/mcp"
-    const val SSE_PATH_SSE = "/sse"
+    const val SSE_PATH_SSE = "sse"
 
     // Error Messages
     const val ERROR_NO_FILE_ID = "No fileId query parameter provided"

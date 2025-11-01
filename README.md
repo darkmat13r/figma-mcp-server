@@ -245,7 +245,7 @@ Body (16px regular)"
 |----------|---------|
 | **[QUICK_START.md](server/QUICK_START.md)** | 5-minute setup guide |
 | **[SETUP_GUIDE.md](server/SETUP_GUIDE.md)** | Complete setup instructions |
-| **[INTEGRATION_FLOW.md](INTEGRATION_FLOW.md)** | How everything works together |
+| **[INTEGRATION_FLOW.md](docs/INTEGRATION_FLOW.md)** | How everything works together |
 | **[IMPLEMENTATION_SUMMARY.md](server/IMPLEMENTATION_SUMMARY.md)** | Technical implementation details |
 | **[MCP_IMPLEMENTATION.md](server/MCP_IMPLEMENTATION.md)** | MCP protocol specifics |
 

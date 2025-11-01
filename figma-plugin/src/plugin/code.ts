@@ -31,6 +31,7 @@ import * as HierarchyHandlers from './hierarchyHandlers';
 import * as ComponentHandlers from './componentHandlers';
 import * as VariableHandlers from './variableHandlers';
 import * as ImageHandlers from './imageHandlers';
+import * as IconHandlers from './iconHandlers';
 
 // ============================================================================
 // PLUGIN STATE
@@ -990,6 +991,26 @@ async function handleGetImageFillsCommand(params: Record<string, any>, requestId
 }
 
 /**
+ * Handle createLucideIcon command (Category 9: Image & Media Tools)
+ */
+async function handleCreateLucideIconCommand(params: Record<string, any>, requestId: string): Promise<void> {
+  try {
+    const result = await IconHandlers.handleCreateLucideIcon(params);
+    sendWSResponse(requestId, {
+      success: true,
+      ...result,
+      message: SuccessMessages.iconCreated(result.iconName, result.iconNodeId),
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    sendWSResponse(requestId, {
+      success: false,
+      error: errorMessage,
+    });
+  }
+}
+
+/**
  * Handle getUserInfo command (User & File Information)
  */
 async function handleGetUserInfoCommand(params: Record<string, any>, requestId: string): Promise<void> {
@@ -1393,6 +1414,10 @@ async function handleWSCommand(command: any): Promise<void> {
 
       case PluginMethods.GET_IMAGE_FILLS:
         await handleGetImageFillsCommand(params, id);
+        break;
+
+      case PluginMethods.CREATE_LUCIDE_ICON:
+        await handleCreateLucideIconCommand(params, id);
         break;
 
       // User & File Information
