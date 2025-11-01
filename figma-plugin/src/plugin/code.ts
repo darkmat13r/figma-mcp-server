@@ -1573,6 +1573,23 @@ figma.ui.onmessage = async (msg: UIMessage) => {
       });
       break;
 
+    case 'copy-to-clipboard':
+      // Handle clipboard copy request from UI
+      if (msg.text) {
+        figma.notify('Copied to clipboard!');
+        // Note: In Figma plugins, the UI iframe can't access the clipboard directly.
+        // We need to use a workaround by creating a temporary textarea in the UI.
+        // Send the text back to UI with a special flag to trigger the workaround.
+        sendMessage({
+          type: 'clipboard-copy-response',
+          text: msg.text,
+          success: true,
+        });
+      } else {
+        console.error('No text provided for clipboard copy');
+      }
+      break;
+
     default:
       console.warn('Unknown message type:', (msg as any).type);
   }

@@ -51,7 +51,8 @@ export type PluginMessage =
   | { type: 'selection-changed'; selection: SelectionInfo[] }
   | { type: 'operation-complete'; message: string }
   | { type: 'operation-error'; error: string }
-  | { type: 'file-info'; fileKey: string; fileName: string };
+  | { type: 'file-info'; fileKey: string; fileName: string }
+  | { type: 'clipboard-copy-response'; text: string; success: boolean };
 
 export type UIMessage =
   | { type: 'connect-ws'; url: string }
@@ -63,4 +64,5 @@ export type UIMessage =
   | { type: 'create-text-styles'; styles: TextStyleToken[] }
   | { type: 'create-node'; nodeType: string; properties: Record<string, any> }
   | { type: 'get-selection' }
-  | { type: 'get-file-info' };
+  | { type: 'get-file-info' }
+  | { type: 'copy-to-clipboard'; text: string };

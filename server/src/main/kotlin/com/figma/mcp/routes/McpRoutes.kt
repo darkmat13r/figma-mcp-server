@@ -41,7 +41,7 @@ class McpRoutes(
     fun configure(routing: Routing) {
         with(routing) {
             // SSE endpoint with fileId support
-            // URL: http://localhost:1234/sse?fileId=abc123
+            // URL: http://localhost:8082?fileId=abc123
             mcp {
                 val fileId = call.request.queryParameters[SessionConstants.QUERY_PARAM_FILE_ID]!!
                 val sessionId = "${SessionConstants.SESSION_ID_PREFIX_SSE}${UUID.randomUUID()}"

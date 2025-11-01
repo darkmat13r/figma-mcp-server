@@ -64,7 +64,7 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
         setFileId(fid);
 
         // Build MCP URL with fileId
-        const sseUrl = `http://localhost:1234/sse?fileId=${encodeURIComponent(fid)}`;
+        const sseUrl = `http://localhost:8081?fileId=${encodeURIComponent(fid)}`;
         setMcpUrl(sseUrl);
       }
     };
@@ -82,13 +82,35 @@ export const ConnectionPanel: React.FC<ConnectionPanelProps> = ({
     }
   };
 
-  const copyToClipboard = async (text: string, label: string) => {
+  const copyToClipboard = (text: string, label: string) => {
+    // Workaround for clipboard API not being available in Figma plugin UI
+    // Create a temporary textarea element to copy text
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+
     try {
-      await navigator.clipboard.writeText(text);
+      textarea.select();
+      document.execCommand('copy');
       setCopySuccess(label);
       setTimeout(() => setCopySuccess(''), 2000);
+
+      // Notify via Figma plugin
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: 'copy-to-clipboard',
+            text: text,
+          },
+        },
+        '*'
+      );
     } catch (err) {
       console.error('Failed to copy:', err);
+    } finally {
+      document.body.removeChild(textarea);
     }
   };
 
