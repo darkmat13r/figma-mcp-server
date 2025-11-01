@@ -6,10 +6,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 /**
  * Lucide Icon Service
@@ -91,57 +89,60 @@ class LucideIconService(
     )
 
     /**
-     * Get the icons directory path
+     * Get resource as string from classpath
      *
-     * Uses absolute path from FigmaConstants.
-     * Validates that directory exists and is readable.
+     * Loads embedded resources from JAR file.
      *
-     * @return Path to icons directory
-     * @throws IconServiceException if directory doesn't exist or isn't readable
+     * @param resourcePath Path to resource (e.g., "lucide-icons/heart.svg")
+     * @return Resource content as string
+     * @throws IconServiceException if resource not found
      */
-    private fun getIconsDirectory(): Path {
-        val iconsPath = Paths.get(FigmaConstants.LucideIcons.ICONS_DIRECTORY_PATH)
+    private fun getResourceAsString(resourcePath: String): String {
+        val inputStream = javaClass.classLoader.getResourceAsStream(resourcePath)
+            ?: throw IconServiceException("Resource not found: $resourcePath")
 
-        if (!Files.exists(iconsPath)) {
-            throw IconServiceException(
-                "${FigmaConstants.LucideIcons.ERROR_DIRECTORY_NOT_FOUND}: ${iconsPath.toAbsolutePath()}"
-            )
+        return inputStream.bufferedReader().use { it.readText() }
+    }
+
+    /**
+     * List all icon resources from classpath
+     *
+     * Since we can't list JAR resources directly, we load from a pre-generated index file.
+     *
+     * @return List of icon names
+     * @throws IconServiceException if icons index not found
+     */
+    private fun listIconResources(): List<String> {
+        return try {
+            // Load icon names from embedded index file
+            val iconsList = getResourceAsString("lucide-icons/icons-index.txt")
+            iconsList.lines()
+                .filter { it.isNotBlank() }
+                .sorted()
+        } catch (e: Exception) {
+            logger.error("Failed to load icons index: ${e.message}")
+            throw IconServiceException("${FigmaConstants.LucideIcons.ERROR_FAILED_TO_LIST}: ${e.message}")
         }
-
-        if (!Files.isReadable(iconsPath)) {
-            throw IconServiceException(
-                "${FigmaConstants.LucideIcons.ERROR_DIRECTORY_NOT_READABLE}: ${iconsPath.toAbsolutePath()}"
-            )
-        }
-
-        return iconsPath
     }
 
     /**
      * Get all available icon names
      *
-     * Scans the icons directory for .svg files and returns icon names.
-     * Names are extracted from filenames (e.g., "accessibility.svg" -> "accessibility").
+     * Loads icon names from embedded index file.
+     * Names are pre-generated during build (e.g., "accessibility", "heart").
      *
      * @return List of icon names, sorted alphabetically
-     * @throws IconServiceException if directory cannot be read
+     * @throws IconServiceException if index cannot be read
      */
     fun listAllIcons(): List<String> {
         return try {
-            val iconsDir = getIconsDirectory()
-
-            Files.list(iconsDir)
-                .filter { it.toString().endsWith(FigmaConstants.LucideIcons.SVG_EXTENSION) }
-                .map { it.fileName.toString().removeSuffix(FigmaConstants.LucideIcons.SVG_EXTENSION) }
-                .sorted()
-                .toList()
-                .also {
-                    logger.info("Listed ${it.size} Lucide icons")
-                }
+            listIconResources().also {
+                logger.info("Listed ${it.size} Lucide icons from embedded resources")
+            }
         } catch (e: IconServiceException) {
             throw e
         } catch (e: Exception) {
-            logger.error("Failed to list icons", e)
+            logger.error("Failed to list icons: ${e.message}")
             throw IconServiceException("${FigmaConstants.LucideIcons.ERROR_FAILED_TO_LIST}: ${e.message}")
         }
     }
@@ -149,7 +150,7 @@ class LucideIconService(
     /**
      * Get icon by name
      *
-     * Retrieves icon SVG content and metadata.
+     * Retrieves icon SVG content and metadata from embedded resources.
      * Parses both .svg and .json files for complete icon data.
      *
      * @param iconName Icon name without extension (e.g., "accessibility")
@@ -158,25 +159,23 @@ class LucideIconService(
      */
     fun getIcon(iconName: String): LucideIcon {
         return try {
-            val iconsDir = getIconsDirectory()
-            val svgFile = iconsDir.resolve("$iconName${FigmaConstants.LucideIcons.SVG_EXTENSION}")
-            val jsonFile = iconsDir.resolve("$iconName${FigmaConstants.LucideIcons.JSON_EXTENSION}")
+            val svgPath = "lucide-icons/$iconName${FigmaConstants.LucideIcons.SVG_EXTENSION}"
+            val jsonPath = "lucide-icons/$iconName${FigmaConstants.LucideIcons.JSON_EXTENSION}"
 
-            // Validate SVG file exists
-            if (!Files.exists(svgFile)) {
+            // Read SVG content from classpath
+            val svgContent = try {
+                getResourceAsString(svgPath)
+            } catch (e: Exception) {
                 throw IconServiceException(
                     "${FigmaConstants.LucideIcons.ERROR_ICON_NOT_FOUND}: $iconName"
                 )
             }
 
-            // Read SVG content
-            val svgContent = Files.readString(svgFile)
-
             // Read metadata if available
-            val (categories, tags, contributors) = if (Files.exists(jsonFile)) {
-                parseMetadata(jsonFile)
-            } else {
-                logger.warn("Metadata file not found for icon: $iconName")
+            val (categories, tags, contributors) = try {
+                parseMetadataFromString(getResourceAsString(jsonPath))
+            } catch (e: Exception) {
+                logger.warn("Metadata not found for icon: $iconName")
                 Triple(emptyList(), emptyList(), emptyList())
             }
 
@@ -187,13 +186,13 @@ class LucideIconService(
                 tags = tags,
                 contributors = contributors
             ).also {
-                logger.debug("Loaded icon: $iconName (${categories.size} categories, ${tags.size} tags)")
+                logger.debug("Loaded icon from resources: $iconName (${categories.size} categories, ${tags.size} tags)")
             }
 
         } catch (e: IconServiceException) {
             throw e
         } catch (e: Exception) {
-            logger.error("Failed to get icon: $iconName", e)
+            logger.error("Failed to get icon: $iconName - ${e.message}")
             throw IconServiceException(
                 "${FigmaConstants.LucideIcons.ERROR_FAILED_TO_READ}: $iconName - ${e.message}"
             )
@@ -201,16 +200,15 @@ class LucideIconService(
     }
 
     /**
-     * Parse metadata JSON file
+     * Parse metadata JSON string
      *
      * Extracts categories, tags, and contributors from icon metadata.
      *
-     * @param jsonFile Path to .json metadata file
+     * @param jsonContent JSON content as string
      * @return Triple of (categories, tags, contributors)
      */
-    private fun parseMetadata(jsonFile: Path): Triple<List<String>, List<String>, List<String>> {
+    private fun parseMetadataFromString(jsonContent: String): Triple<List<String>, List<String>, List<String>> {
         return try {
-            val jsonContent = Files.readString(jsonFile)
             val jsonObject = json.parseToJsonElement(jsonContent).jsonObject
 
             val categories = jsonObject[FigmaConstants.LucideIcons.METADATA_FIELD_CATEGORIES]
@@ -230,7 +228,7 @@ class LucideIconService(
 
             Triple(categories, tags, contributors)
         } catch (e: Exception) {
-            logger.warn("Failed to parse metadata: ${jsonFile.fileName}", "error" to (e.message ?: "unknown"))
+            logger.warn("Failed to parse metadata: ${e.message}")
             Triple(emptyList(), emptyList(), emptyList())
         }
     }

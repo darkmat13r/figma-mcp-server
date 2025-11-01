@@ -4,12 +4,14 @@
   "description": "Figma plugin bridge to MCP server with React, TypeScript, and Tailwind CSS",
   "main": "dist/code.js",
   "scripts": {
-    "build": "webpack --mode=production",
+    "prebuild": "node scripts/generate-icons.js",
+    "build": "npm run prebuild && webpack --mode=production",
     "build:ui": "webpack --mode=production --config-name ui",
-    "build:code": "webpack --mode=production --config-name plugin",
-    "dev": "webpack --mode=development --watch",
+    "build:code": "npm run prebuild && webpack --mode=production --config-name plugin",
+    "dev": "npm run prebuild && webpack --mode=development --watch",
     "dev:ui": "webpack --mode=development --watch --config-name ui",
-    "dev:code": "webpack --mode=development --watch --config-name plugin",
+    "dev:code": "npm run prebuild && webpack --mode=development --watch --config-name plugin",
+    "generate-icons": "node scripts/generate-icons.js",
     "lint": "eslint --ext .ts,.tsx src/",
     "typecheck": "tsc --noEmit"
   },

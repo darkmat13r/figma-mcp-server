@@ -439,8 +439,9 @@ object FigmaConstants {
     // ========================================================================
 
     object LucideIcons {
-        // Directory paths
-        const val ICONS_DIRECTORY_PATH = "/Volumes/ExtStorage/Projects/FigmaMcp/figma-plugin/external/lucide/icons"
+        // Resource paths (embedded in JAR)
+        const val ICONS_RESOURCE_PATH = "lucide-icons"
+        const val ICONS_INDEX_FILE = "icons-index.txt"
 
         // File extensions
         const val SVG_EXTENSION = ".svg"
