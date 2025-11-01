@@ -48,7 +48,7 @@ class BindVariableTool(
                     ),
                     ParamNames.VARIABLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "ID of the variable to bind (required)"
+                        "description" to "ID of the variable to bind (required). Format: \"VariableID:\" followed by mode and index (e.g., \"VariableID:1:65\"). Use figma_get_variables to get available variable IDs."
                     )
                 ),
                 required = listOf(ParamNames.NODE_ID, ParamNames.FIELD, ParamNames.VARIABLE_ID)

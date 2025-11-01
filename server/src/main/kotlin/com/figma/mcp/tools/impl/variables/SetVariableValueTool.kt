@@ -39,7 +39,7 @@ class SetVariableValueTool(
                 properties = mapOf(
                     ParamNames.VARIABLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "ID of the variable to update (required)"
+                        "description" to "ID of the variable to update (required). Format: \"VariableID:\" followed by mode and index (e.g., \"VariableID:1:65\"). Use figma_get_variables to get available variable IDs."
                     ),
                     ParamNames.VALUE to mapOf(
                         "description" to "New value for the variable (required). " +

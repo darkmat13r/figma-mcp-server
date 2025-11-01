@@ -72,15 +72,15 @@ class CreateTextTool(
                     ),
                     ParamNames.TEXT_STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "Text style ID to apply to this text node (optional)"
+                        "description" to "Text style ID to apply to this text node (optional). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\")"
                     ),
                     ParamNames.FILL_STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "Fill/paint style ID to apply to this text node (optional)"
+                        "description" to "Fill/paint style ID to apply to this node (optional). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\")"
                     ),
                     ParamNames.EFFECT_STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "Effect style ID to apply to this text node (optional)"
+                        "description" to "Effect style ID to apply to this node (optional). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\")"
                     ),
                     ParamNames.X to mapOf(
                         "type" to "number",

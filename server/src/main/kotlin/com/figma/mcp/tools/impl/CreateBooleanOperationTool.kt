@@ -68,15 +68,15 @@ class CreateBooleanOperationTool(
                     ),
                     ParamNames.FILL_STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "Fill/paint style ID to apply to the boolean operation result (optional)"
+                        "description" to "Fill/paint style ID to apply to this node (optional). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\")"
                     ),
                     ParamNames.STROKE_STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "Stroke style ID to apply to the boolean operation result (optional)"
+                        "description" to "Stroke style ID to apply to this node (optional). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\")"
                     ),
                     ParamNames.EFFECT_STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "Effect style ID to apply to the boolean operation result (optional)"
+                        "description" to "Effect style ID to apply to this node (optional). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\")"
                     )
                 ),
                 required = listOf(ParamNames.OPERATION, ParamNames.NODE_IDS)

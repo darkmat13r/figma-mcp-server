@@ -46,7 +46,7 @@ class ApplyPaintStyleTool(
                     ),
                     ParamNames.STYLE_ID to mapOf(
                         "type" to "string",
-                        "description" to "ID of the existing paint style to apply (required)"
+                        "description" to "ID of the existing paint style to apply (required). Format: \"S:\" followed by hex string (e.g., \"S:c5dea36132bf5a4ec0ef125f93e21c0ca0073976,\"). Use figma_get_local_paint_styles to get available style IDs."
                     )
                 ),
                 required = listOf(ParamNames.NODE_ID, ParamNames.STYLE_TYPE, ParamNames.STYLE_ID)
