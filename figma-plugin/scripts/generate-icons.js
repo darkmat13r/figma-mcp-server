@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ICONS_DIR = path.join(__dirname, '../external/lucide/icons');
+const ICONS_DIR = path.join(__dirname, '../../external/lucide/icons');
 const OUTPUT_FILE = path.join(__dirname, '../src/plugin/icons/lucide-icons.ts');
 
 console.log('Generating embedded icons module...');

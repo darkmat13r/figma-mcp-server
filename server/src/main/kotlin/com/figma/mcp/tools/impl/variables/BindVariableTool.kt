@@ -35,7 +35,8 @@ class BindVariableTool(
             description = "Bind a variable to a node property. " +
                     "This allows the property value to be controlled by a variable, " +
                     "enabling design tokens and theming. " +
-                    "Common fields: fills, strokes, opacity, width, height, cornerRadius.",
+                    "Common fields: fills, strokes, opacity, width, height, cornerRadius. " +
+                    "For fills and strokes, the variable is bound to the color property of the first paint in the array.",
             inputSchema = JSONSchema.createObjectSchema(
                 properties = mapOf(
                     ParamNames.NODE_ID to mapOf(
@@ -44,7 +45,9 @@ class BindVariableTool(
                     ),
                     ParamNames.FIELD to mapOf(
                         "type" to "string",
-                        "description" to "Property to bind variable to (required, e.g., 'fills', 'opacity', 'width')"
+                        "description" to "Property to bind variable to (required, e.g., 'fills', 'strokes', 'opacity', 'width'). " +
+                                "Note: For 'fills' and 'strokes', the node must have at least one fill/stroke, and the variable " +
+                                "will be bound to the color property of the first paint."
                     ),
                     ParamNames.VARIABLE_ID to mapOf(
                         "type" to "string",

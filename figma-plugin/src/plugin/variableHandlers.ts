@@ -425,13 +425,49 @@ export async function handleBindVariable(params: Record<string, any>): Promise<v
     // Type-cast to work around the strict type checking
     const bindableNode = node as any;
 
-    // Check if node supports setBoundVariable
+    // Check if node supports the field
     if (!bindableNode.setBoundVariable || typeof bindableNode.setBoundVariable !== 'function') {
       throw new Error(`Node type ${node.type} does not support variable binding`);
     }
 
-    bindableNode.setBoundVariable(field, variable);
-    console.log('[VariableHandlers] Bound variable:', variableId, 'to field:', field, 'on node:', nodeId);
+    // Special handling for fills and strokes
+    // According to Figma API: "fills and strokes variable bindings must be set on paints directly"
+    if (field === 'fills' || field === 'strokes') {
+      // Verify the node has the field
+      if (!bindableNode[field]) {
+        throw new Error(`Node does not have ${field} property`);
+      }
+
+      // Get the current fills/strokes array
+      const paints = bindableNode[field] as Paint[];
+
+      if (!paints || paints.length === 0) {
+        throw new Error(`Node has no ${field} to bind variable to. Add at least one ${field.slice(0, -1)} first.`);
+      }
+
+      // Find the first solid paint
+      const firstSolidIndex = paints.findIndex((paint) => paint.type === 'SOLID');
+      if (firstSolidIndex === -1) {
+        throw new Error(`Node has no SOLID ${field.slice(0, -1)} to bind color variable to. Color variables can only be bound to solid paints.`);
+      }
+
+      // Clone the paints array and bind variable to the first solid paint
+      const newPaints = paints.map((paint, index) => {
+        if (index === firstSolidIndex && paint.type === 'SOLID') {
+          // Bind variable to the first solid paint
+          return figma.variables.setBoundVariableForPaint(paint as SolidPaint, 'color', variable);
+        }
+        return paint;
+      });
+
+      // Apply the modified paints back to the node
+      bindableNode[field] = newPaints;
+      console.log('[VariableHandlers] Bound variable:', variableId, 'to', field, `[${firstSolidIndex}].color on node:`, nodeId);
+    } else {
+      // For other fields, use the standard binding method
+      bindableNode.setBoundVariable(field, variable);
+      console.log('[VariableHandlers] Bound variable:', variableId, 'to field:', field, 'on node:', nodeId);
+    }
   } catch (error) {
     throw new Error(
       `Failed to bind variable to field '${field}': ${error instanceof Error ? error.message : String(error)}`
