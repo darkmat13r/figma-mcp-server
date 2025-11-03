@@ -85,6 +85,7 @@ async function getNode(nodeId: string): Promise<SceneNode> {
 
 /**
  * Serialize a node into a comprehensive NodeInfo object
+ * Note: Handles symbol values for mixed styling (returns "MIXED" string)
  */
 function serializeNode(node: BaseNode): NodeInfo {
   const info: NodeInfo = {
@@ -123,12 +124,18 @@ function serializeNode(node: BaseNode): NodeInfo {
     info.locked = node.locked;
   }
 
-  // Add opacity and blend mode
-  if ('opacity' in node && typeof node.opacity === 'number') {
-    info.opacity = node.opacity;
+  // Add opacity and blend mode (handle symbols)
+  if ('opacity' in node) {
+    const opacity = (node as any).opacity;
+    if (typeof opacity === 'number') {
+      info.opacity = opacity;
+    }
   }
   if ('blendMode' in node) {
-    info.blendMode = (node as any).blendMode;
+    const blendMode = (node as any).blendMode;
+    if (typeof blendMode !== 'symbol') {
+      info.blendMode = blendMode;
+    }
   }
 
   // Add layout properties (for frames/components)
@@ -139,33 +146,54 @@ function serializeNode(node: BaseNode): NodeInfo {
     info.layoutAlign = (node as any).layoutAlign;
   }
   if ('constraints' in node) {
-    info.constraints = (node as any).constraints;
+    const constraints = (node as any).constraints;
+    if (typeof constraints !== 'symbol') {
+      info.constraints = constraints;
+    }
   }
 
-  // Add style properties
+  // Add style properties (check for symbols)
   if ('fills' in node) {
-    info.fills = (node as any).fills;
+    const fills = (node as any).fills;
+    if (typeof fills !== 'symbol' && fills !== figma.mixed) {
+      info.fills = fills;
+    }
   }
   if ('strokes' in node) {
-    info.strokes = (node as any).strokes;
+    const strokes = (node as any).strokes;
+    if (typeof strokes !== 'symbol' && strokes !== figma.mixed) {
+      info.strokes = strokes;
+    }
   }
   if ('effects' in node) {
-    info.effects = (node as any).effects;
+    const effects = (node as any).effects;
+    if (typeof effects !== 'symbol' && effects !== figma.mixed) {
+      info.effects = effects;
+    }
   }
   if ('cornerRadius' in node) {
-    info.cornerRadius = (node as any).cornerRadius;
+    const cornerRadius = (node as any).cornerRadius;
+    if (typeof cornerRadius === 'number') {
+      info.cornerRadius = cornerRadius;
+    }
   }
 
-  // Add text properties (for text nodes)
+  // Add text properties (for text nodes) - handle mixed styling
   if (node.type === 'TEXT') {
     const textNode = node as TextNode;
     info.characters = textNode.characters;
 
+    // Handle fontName (can be mixed for mixed fonts)
     const fontName = textNode.fontName;
-    if (typeof fontName !== 'symbol') {
-      info.fontSize = textNode.fontSize as number;
-      info.fontFamily = fontName.family;
-      info.fontStyle = fontName.style;
+    if (fontName !== figma.mixed) {
+      info.fontFamily = (fontName as FontName).family;
+      info.fontStyle = (fontName as FontName).style;
+    }
+
+    // Handle fontSize (can be mixed for mixed sizes)
+    const fontSize = textNode.fontSize;
+    if (fontSize !== figma.mixed && typeof fontSize === 'number') {
+      info.fontSize = fontSize;
     }
 
     info.textAlignHorizontal = textNode.textAlignHorizontal;
